@@ -18,5 +18,5 @@ def test_verify():
         num_subcircuits=[5],
     )
     cut_circuit.run_subcircuits()
-    cut_circuit.postprocess()
-    cut_circuit.verify()
+    probabilities = cut_circuit.postprocess()
+    cut_circuit.verify(probabilities=probabilities)

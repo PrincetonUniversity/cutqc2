@@ -8,6 +8,10 @@ class ComputeGraph:
         self.nodes = {}
         self.edges = []
 
+    @property
+    def effective_qubits(self):
+        return sum(node["effective"] for node in self.nodes.values())
+
     def add_node(self, subcircuit_idx, attributes):
         self.nodes[subcircuit_idx] = attributes
 

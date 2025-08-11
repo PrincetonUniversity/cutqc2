@@ -78,9 +78,16 @@ if __name__ == "__main__":
 
     # We perform the postprocessing step on the reloaded cut-circuit,
     # though we could have done this on the original cut-circuit as well.
-    cut_circuit.postprocess()
+
+    # Modify the `capacity` and `max_recursion` parameters to control
+    # the accuracy/runtime of the reconstruction process.
+    probabilities = cut_circuit.postprocess(capacity=3, max_recursion=9)
 
     # Verification involves comparing the generated probabilities
     # with the expected probabilities from a simulation of the uncut circuit.
     # By default we use the `statevector_simulator` backend from qiskit.
-    cut_circuit.verify()
+    error = cut_circuit.verify(probabilities, raise_error=False)
+    print(f"Verification error: {error}")
+
+    # Plot the results of the reconstruction
+    cut_circuit.plot()
