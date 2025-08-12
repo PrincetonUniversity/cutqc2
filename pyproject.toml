@@ -29,7 +29,8 @@ dependencies = [
     "cudaq",
     "h5py",
     "qiskit-qasm3-import",
-    "zarr"
+    "zarr",
+    "dask[distributed]"
 ]
 
 [project.optional-dependencies]

@@ -7,6 +7,8 @@ from typing import Self
 from dataclasses import dataclass
 import warnings
 from matplotlib import pyplot as plt
+from dask.diagnostics import ProgressBar
+import dask.array as da
 
 from qiskit import QuantumCircuit
 from qiskit.circuit.operation import Operation
@@ -21,10 +23,7 @@ from cutqc2.cutqc.helper_functions.non_ibmq_functions import evaluate_circ
 from cutqc2.cutqc.helper_functions.conversions import quasi_to_real
 from cutqc2.cutqc.helper_functions.metrics import MSE
 from cutqc2.core.dag import DagNode, DAGEdge
-from cutqc2.core.utils import (
-    merge_prob_vector,
-    permute_bits,
-)
+from cutqc2.core.utils import merge_prob_vector, permute_bits_vectorized
 from cutqc2.core.dynamic_definition import DynamicDefinition
 
 
@@ -62,6 +61,7 @@ class CutCircuit:
         self,
         circuit: QuantumCircuit,
         add_labels: bool = True,
+        preallocate: bool = True,
     ):
         self.check_valid(circuit)
 
@@ -88,6 +88,10 @@ class CutCircuit:
 
         self.dynamic_definition: DynamicDefinition | None = None
         self.probabilities: np.ndarray | None = None
+
+        self.preallocated: np.ndarray | da.Array | None = None
+        if preallocate:
+            self.preallocated = da.zeros(2**self.circuit.num_qubits, dtype="float32")
 
     def __str__(self):
         return str(self.unlabeled_circuit.draw(output="text", fold=-1))
@@ -772,7 +776,7 @@ class CutCircuit:
             itertools.product(range(self.n_basis), repeat=sum(self.in_degrees))
         ):
             if (j + 1) % 10_000 == 0:
-                logger.info(f"{j + 1}/{total_initializations}")
+                logger.info(f"{j + 1}/{total_initializations} initializations done")
 
             # `itertools.product` causes the rightmost element to advance on
             # every iteration, to maintain lexical ordering. (00, 01, 10 ...)
@@ -813,6 +817,10 @@ class CutCircuit:
     def postprocess(
         self, capacity: int | None = None, max_recursion: int = 1
     ) -> np.ndarray:
+        # reset old computations before proceeding
+        if self.preallocated is not None:
+            self.preallocated[:] = 0
+
         logger.info("Postprocessing the cut circuit")
         if capacity is None:
             capacity = self.compute_graph.effective_qubits
@@ -860,16 +868,25 @@ class CutCircuit:
             num_qubits=self.compute_graph.effective_qubits,
             capacity=capacity,
             prob_fn=self.compute_probabilities,
+            preallocated=self.preallocated,
         )
+        logger.info("Starting dynamic definition run")
         unmerged_probabilities = self.dynamic_definition.run(
             max_recursion=max_recursion
         )
 
-        perm = self.reconstruction_flat_qubit_order()
+        logger.info("Permuting bits to match original circuit order")
         reconstructed_probabilities = np.zeros_like(unmerged_probabilities)
-        for j, _prob in enumerate(unmerged_probabilities):
-            reconstructed_probabilities[permute_bits(j, perm)] = _prob
+        permuted_indices = permute_bits_vectorized(
+            arr=np.arange(len(unmerged_probabilities)),
+            permutation=self.reconstruction_flat_qubit_order(),
+            n_bits=self.circuit.num_qubits,
+        )
+        reconstructed_probabilities[permuted_indices] = unmerged_probabilities
+        with ProgressBar():
+            reconstructed_probabilities = reconstructed_probabilities.compute()
 
+        logger.info("Converting quasi to real probabilities")
         reconstructed_probabilities = quasi_to_real(
             quasiprobability=reconstructed_probabilities, mode="nearest"
         )
@@ -877,6 +894,7 @@ class CutCircuit:
         return reconstructed_probabilities
 
     def get_ground_truth(self, backend: str) -> np.ndarray:
+        logger.info(f"Evaluating ground truth using {backend}")
         return evaluate_circ(circuit=self.raw_circuit, backend=backend)
 
     def verify(
@@ -888,6 +906,7 @@ class CutCircuit:
         atol: float = 1e-10,
         raise_error: bool = True,
     ) -> float:
+        logger.info("Verifying cut circuit against original circuit")
         if probabilities is None:
             probabilities = self.postprocess(
                 capacity=capacity, max_recursion=max_recursion
@@ -1014,17 +1033,19 @@ class CutCircuit:
         assert filepath.suffix in supported_formats, "Unsupported format"
         return supported_formats[filepath.suffix](self, filepath, *args, **kwargs)
 
-    def plot(self, plot_ground_truth: bool = True) -> None:
+    def plot(self, plot_ground_truth: bool = True, xlim=None) -> None:
         fig, ax = plt.subplots()
         if plot_ground_truth:
             ground_truth = self.get_ground_truth(backend="statevector_simulator")
             ax.plot(range(len(ground_truth)), ground_truth, linestyle="--", color="r")
 
-        probabilities = self.probabilities
+        probabilities = self.preallocated.compute()
         ax.bar(np.arange(len(probabilities)), probabilities)
-        ax.set_title(
-            f"Capacity {self.dynamic_definition.capacity}, Recursion {self.dynamic_definition.recursion_level}"
-        )
+        if xlim is not None:
+            ax.set_xlim(xlim)
+        # ax.set_title(
+        #     f"Capacity {self.dynamic_definition.capacity}, Recursion {self.dynamic_definition.recursion_level}"
+        # )
 
         plt.tight_layout()
         plt.show()
