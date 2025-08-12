@@ -1033,7 +1033,9 @@ class CutCircuit:
         assert filepath.suffix in supported_formats, "Unsupported format"
         return supported_formats[filepath.suffix](self, filepath, *args, **kwargs)
 
-    def plot(self, plot_ground_truth: bool = True, xlim=None) -> None:
+    def plot(
+        self, plot_ground_truth: bool = True, xlim: tuple[int, int] | None = None
+    ) -> None:
         fig, ax = plt.subplots()
         if plot_ground_truth:
             ground_truth = self.get_ground_truth(backend="statevector_simulator")
@@ -1043,9 +1045,10 @@ class CutCircuit:
         ax.bar(np.arange(len(probabilities)), probabilities)
         if xlim is not None:
             ax.set_xlim(xlim)
-        # ax.set_title(
-        #     f"Capacity {self.dynamic_definition.capacity}, Recursion {self.dynamic_definition.recursion_level}"
-        # )
+
+        ax.set_title(
+            f"Capacity {self.dynamic_definition.capacity}, Recursion {self.dynamic_definition.recursion_level}"
+        )
 
         plt.tight_layout()
         plt.show()
