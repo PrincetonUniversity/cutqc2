@@ -1,4 +1,9 @@
+import logging
 import numpy as np
+import dask.array as da
+
+
+logger = logging.getLogger(__name__)
 
 
 def permute_bits(n: int, permutation: list[int]) -> int:
@@ -7,6 +12,23 @@ def permute_bits(n: int, permutation: list[int]) -> int:
     # Get bit i from position permutation[i]
     binary_n_permuted = "".join(binary_n[permutation[i]] for i in range(n_bits))
     return int(binary_n_permuted, 2)
+
+
+def permute_bits_vectorized(
+    arr: np.ndarray, permutation: np.ndarray, n_bits: int
+) -> np.ndarray:
+    n_bits = len(permutation)
+    result = np.zeros_like(arr)
+
+    for dest_bit_msb, src_bit_msb in enumerate(permutation):
+        # Convert MSB index to LSB index for bit operations
+        src_bit_lsb = n_bits - 1 - src_bit_msb
+        dest_bit_lsb = n_bits - 1 - dest_bit_msb
+
+        # Extract source bit and place in destination position
+        result |= ((arr >> src_bit_lsb) & 1) << dest_bit_lsb
+
+    return result
 
 
 def distribute(n_qubits: int, probabilities: dict[str, np.array], capacity: int) -> str:
@@ -91,7 +113,12 @@ def merge_prob_vector(unmerged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
     return merged_prob_vector
 
 
-def unmerge_prob_vector(merged_prob_vector: np.ndarray, qubit_spec: str) -> np.ndarray:
+def unmerge_prob_vector(
+    merged_prob_vector: np.ndarray,
+    qubit_spec: str,
+    preallocated: da.Array | np.ndarray | None = None,
+    in_memory=True,
+) -> None:
     """
     Expand a merged quantum probability vector back to a full vector
     by evenly distributing over merged qubits and conditioning on fixed ones.
@@ -105,11 +132,11 @@ def unmerge_prob_vector(merged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
         - "A": active (preserved)
         - "M": merged (marginalized out)
         - "0"/"1": fixed bits
-
-    Returns
-    -------
-    np.ndarray
-        Expanded full probability vector of shape (2^num_qubits,)
+    preallocated : da.Array | np.ndarray | None
+        Preallocated array to store expanded probabilities (2^num_qubits,)
+        If None, a new array will be created.
+    in_memory : bool, optional
+        If True, compute the dask array immediately, by default False
     """
     num_qubits = len(qubit_spec)
     active_qubit_indices = [i for i, q in enumerate(qubit_spec) if q == "A"]
@@ -121,8 +148,19 @@ def unmerge_prob_vector(merged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
     num_active = len(active_qubit_indices)
     num_merged = len(merged_qubit_indices)
 
-    expanded = np.zeros(2**num_qubits, dtype=np.float32)
+    if in_memory and isinstance(preallocated, da.Array):
+        unmerged = preallocated.compute()
+    else:
+        in_memory = True
+        unmerged = (
+            preallocated
+            if preallocated is not None
+            else np.zeros(2**num_qubits, dtype="float32")
+        )
 
+    logger.info(
+        f"Unmerging probabilities for {num_qubits} qubits ({num_active} active)"
+    )
     for full_state in range(2**num_qubits):
         match = True
         for i, val in fixed_qubit_conditions.items():
@@ -144,7 +182,16 @@ def unmerge_prob_vector(merged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
 
         num_merge_combinations = 2**num_merged
 
-        # Uniformly distribute merged prob
-        expanded[full_state] = merged_prob_vector[active_index] / num_merge_combinations
+        if full_state.bit_count() == 1:
+            logger.info(f"{full_state:0{num_qubits}b}")
 
-    return expanded
+        # Uniformly distribute merged prob
+        unmerged[full_state] += (
+            merged_prob_vector[active_index] / num_merge_combinations
+        )
+
+    if in_memory and preallocated is not None:
+        logger.info("Updating preallocated array in memory")
+        preallocated[:] = unmerged
+
+    return unmerged

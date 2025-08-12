@@ -41,11 +41,17 @@ class DynamicDefinition:
     """
 
     def __init__(
-        self, num_qubits: int, capacity: int, prob_fn: Callable, epsilon: float = 1e-4
+        self,
+        num_qubits: int,
+        capacity: int,
+        prob_fn: Callable,
+        epsilon: float = 1e-4,
+        preallocated: np.ndarray = None,
     ):
         self.num_qubits = num_qubits
         self.capacity = capacity
         self.prob_fn = prob_fn
+        self.preallocated = preallocated
         # Probability-mass threshold below which we do not process a bin.
         self.epsilon = epsilon
 
@@ -88,7 +94,10 @@ class DynamicDefinition:
         self.push(initial_bin)
         if self.capacity < self.num_qubits:
             self._recurse(recursion_level=1, max_recursion=max_recursion)
-        return self.probabilities
+
+        for bin in self.bins:
+            unmerge_prob_vector(bin.probabilities, bin.qubit_spec, self.preallocated)
+        return self.preallocated
 
     def _recurse(self, recursion_level: int, max_recursion: int = 10):
         if not self.bins or (recursion_level > max_recursion):
@@ -122,14 +131,6 @@ class DynamicDefinition:
                 self.push(bin)
 
         self._recurse(recursion_level + 1, max_recursion)
-
-    @property
-    def probabilities(self) -> np.ndarray:
-        probabilities = np.zeros(2**self.num_qubits)
-        for bin in self.bins:
-            unmerged = unmerge_prob_vector(bin.probabilities, bin.qubit_spec)
-            probabilities += unmerged
-        return probabilities
 
     def plot(self):
         probabilities = self.probabilities
