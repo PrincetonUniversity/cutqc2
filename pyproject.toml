@@ -28,7 +28,8 @@ dependencies = [
     "qiskit-aer",
     "cudaq",
     "h5py",
-    "qiskit-qasm3-import"
+    "qiskit-qasm3-import",
+    "zarr"
 ]
 
 [project.optional-dependencies]

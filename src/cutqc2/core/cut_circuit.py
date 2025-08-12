@@ -127,8 +127,9 @@ class CutCircuit:
 
         # Keep imports local to this function
         from cutqc2.io.h5 import h5_to_cut_circuit
+        from cutqc2.io.zarr import zarr_to_cut_circuit
 
-        supported_formats = {".h5": h5_to_cut_circuit}
+        supported_formats = {".h5": h5_to_cut_circuit, ".zarr": zarr_to_cut_circuit}
         assert filepath.suffix in supported_formats, "Unsupported format"
         return supported_formats[filepath.suffix](filepath, *args, **kwargs)
 
@@ -1007,8 +1008,9 @@ class CutCircuit:
 
         # Keep imports local to this function
         from cutqc2.io.h5 import cut_circuit_to_h5
+        from cutqc2.io.zarr import cut_circuit_to_zarr
 
-        supported_formats = {".h5": cut_circuit_to_h5}
+        supported_formats = {".h5": cut_circuit_to_h5, ".zarr": cut_circuit_to_zarr}
         assert filepath.suffix in supported_formats, "Unsupported format"
         return supported_formats[filepath.suffix](self, filepath, *args, **kwargs)
 
