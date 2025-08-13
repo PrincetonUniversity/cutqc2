@@ -169,7 +169,7 @@ def zarr_to_cut_circuit(filepath: str | Path, *args, **kwargs) -> CutCircuit:
     if "probabilities" in root:
         # Don't load these by performing a `[()]`,
         # but maintain a reference
-        cut_circuit.preallocated_probability_vector = root["probabilities"]
+        cut_circuit.probabilities = root["probabilities"]
 
     if reconstruction_qubit_order:
         cut_circuit.reconstruction_qubit_order = reconstruction_qubit_order

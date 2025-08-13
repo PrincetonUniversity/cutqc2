@@ -7,8 +7,7 @@ from typing import Self
 from dataclasses import dataclass
 import warnings
 from matplotlib import pyplot as plt
-from dask.diagnostics import ProgressBar
-import dask.array as da
+import zarr
 
 from qiskit import QuantumCircuit
 from qiskit.circuit.operation import Operation
@@ -89,9 +88,9 @@ class CutCircuit:
         self.dynamic_definition: DynamicDefinition | None = None
         self.probabilities: np.ndarray | None = None
 
-        self.preallocated: np.ndarray | da.Array | None = None
+        self.preallocated: np.ndarray | zarr.Array | None = None
         if preallocate:
-            self.preallocated = da.zeros(2**self.circuit.num_qubits, dtype="float32")
+            self.preallocated = zarr.zeros(2**self.circuit.num_qubits, dtype="float32")
 
     def __str__(self):
         return str(self.unlabeled_circuit.draw(output="text", fold=-1))
@@ -815,7 +814,11 @@ class CutCircuit:
         return result
 
     def postprocess(
-        self, capacity: int | None = None, max_recursion: int = 1
+        self,
+        capacity: int | None = None,
+        max_recursion: int = 1,
+        quasi: bool = False,
+        compute: bool = True,
     ) -> np.ndarray:
         # reset old computations before proceeding
         if self.preallocated is not None:
@@ -878,20 +881,23 @@ class CutCircuit:
         logger.info("Permuting bits to match original circuit order")
         reconstructed_probabilities = np.zeros_like(unmerged_probabilities)
         permuted_indices = permute_bits_vectorized(
-            arr=np.arange(len(unmerged_probabilities)),
+            arr=np.arange(unmerged_probabilities.size),
             permutation=self.reconstruction_flat_qubit_order(),
             n_bits=self.circuit.num_qubits,
         )
         reconstructed_probabilities[permuted_indices] = unmerged_probabilities
-        with ProgressBar():
-            reconstructed_probabilities = reconstructed_probabilities.compute()
 
-        logger.info("Converting quasi to real probabilities")
-        reconstructed_probabilities = quasi_to_real(
-            quasiprobability=reconstructed_probabilities, mode="nearest"
-        )
+        if not quasi:
+            logger.info("Converting quasi to real probabilities")
+            reconstructed_probabilities = quasi_to_real(
+                quasiprobability=reconstructed_probabilities, mode="nearest"
+            )
         self.probabilities = reconstructed_probabilities
-        return reconstructed_probabilities
+
+        if compute and isinstance(self.probabilities, zarr.Array):
+            return self.probabilities[:]
+        else:
+            return self.probabilities
 
     def get_ground_truth(self, backend: str) -> np.ndarray:
         logger.info(f"Evaluating ground truth using {backend}")
@@ -899,7 +905,7 @@ class CutCircuit:
 
     def verify(
         self,
-        probabilities: np.ndarray | None = None,
+        probabilities: np.ndarray,
         capacity: int | None = None,
         max_recursion: int = 1,
         backend: str = "statevector_simulator",
@@ -907,10 +913,6 @@ class CutCircuit:
         raise_error: bool = True,
     ) -> float:
         logger.info("Verifying cut circuit against original circuit")
-        if probabilities is None:
-            probabilities = self.postprocess(
-                capacity=capacity, max_recursion=max_recursion
-            )
         ground_truth = self.get_ground_truth(backend)
 
         approximation_error = (
@@ -1041,14 +1043,15 @@ class CutCircuit:
             ground_truth = self.get_ground_truth(backend="statevector_simulator")
             ax.plot(range(len(ground_truth)), ground_truth, linestyle="--", color="r")
 
-        probabilities = self.preallocated.compute()
+        probabilities = self.probabilities[:]
         ax.bar(np.arange(len(probabilities)), probabilities)
         if xlim is not None:
             ax.set_xlim(xlim)
 
-        ax.set_title(
-            f"Capacity {self.dynamic_definition.capacity}, Recursion {self.dynamic_definition.recursion_level}"
-        )
+        if self.dynamic_definition is not None:
+            ax.set_title(
+                f"Capacity {self.dynamic_definition.capacity}, Recursion {self.dynamic_definition.recursion_level}"
+            )
 
         plt.tight_layout()
         plt.show()

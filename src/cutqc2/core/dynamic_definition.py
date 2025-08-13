@@ -46,12 +46,17 @@ class DynamicDefinition:
         capacity: int,
         prob_fn: Callable,
         epsilon: float = 1e-4,
-        preallocated: np.ndarray = None,
+        preallocated: np.ndarray | None = None,
     ):
         self.num_qubits = num_qubits
         self.capacity = capacity
         self.prob_fn = prob_fn
-        self.preallocated = preallocated
+        self.preallocated = (
+            preallocated
+            if preallocated is not None
+            else np.zeros(2**num_qubits, dtype="float32")
+        )
+
         # Probability-mass threshold below which we do not process a bin.
         self.epsilon = epsilon
 

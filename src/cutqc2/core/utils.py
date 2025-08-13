@@ -1,6 +1,6 @@
 import logging
 import numpy as np
-import dask.array as da
+import zarr
 
 
 logger = logging.getLogger(__name__)
@@ -116,7 +116,7 @@ def merge_prob_vector(unmerged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
 def unmerge_prob_vector(
     merged_prob_vector: np.ndarray,
     qubit_spec: str,
-    preallocated: da.Array | np.ndarray | None = None,
+    preallocated: zarr.Array | np.ndarray | None = None,
     in_memory=True,
 ) -> None:
     """
@@ -132,11 +132,11 @@ def unmerge_prob_vector(
         - "A": active (preserved)
         - "M": merged (marginalized out)
         - "0"/"1": fixed bits
-    preallocated : da.Array | np.ndarray | None
+    preallocated : zarr.Array | np.ndarray | None
         Preallocated array to store expanded probabilities (2^num_qubits,)
         If None, a new array will be created.
     in_memory : bool, optional
-        If True, compute the dask array immediately, by default False
+        If True, compute the array immediately, by default False
     """
     num_qubits = len(qubit_spec)
     active_qubit_indices = [i for i, q in enumerate(qubit_spec) if q == "A"]
@@ -148,8 +148,8 @@ def unmerge_prob_vector(
     num_active = len(active_qubit_indices)
     num_merged = len(merged_qubit_indices)
 
-    if in_memory and isinstance(preallocated, da.Array):
-        unmerged = preallocated.compute()
+    if in_memory and isinstance(preallocated, zarr.Array):
+        unmerged = preallocated[:]
     else:
         in_memory = True
         unmerged = (
@@ -181,9 +181,6 @@ def unmerge_prob_vector(
                 active_index |= 1 << (num_active - 1 - out_pos)
 
         num_merge_combinations = 2**num_merged
-
-        if full_state.bit_count() == 1:
-            logger.info(f"{full_state:0{num_qubits}b}")
 
         # Uniformly distribute merged prob
         unmerged[full_state] += (

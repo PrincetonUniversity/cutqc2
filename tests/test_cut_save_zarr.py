@@ -22,10 +22,10 @@ def test_figure4_save(figure_4_qiskit_circuit, tmp_path):
     cut_circuit.run_subcircuits()
     cut_circuit.to_file(save_path)
 
-    cut_circuit.postprocess()
+    probabilties = cut_circuit.postprocess()
     cut_circuit.to_file(save_path)
 
-    cut_circuit.verify()
+    cut_circuit.verify(probabilties)
     cut_circuit.to_file(save_path)
 
 
