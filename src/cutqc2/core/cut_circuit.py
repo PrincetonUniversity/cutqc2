@@ -8,8 +8,10 @@ from dataclasses import dataclass
 import warnings
 from matplotlib import pyplot as plt
 import zarr
+from mpi4py import MPI
 
 from qiskit import QuantumCircuit
+from qiskit.qasm3 import loads
 from qiskit.circuit.operation import Operation
 from qiskit.circuit.library import UnitaryGate
 from qiskit.circuit import Qubit, QuantumRegister, CircuitInstruction
@@ -22,11 +24,19 @@ from cutqc2.cutqc.helper_functions.non_ibmq_functions import evaluate_circ
 from cutqc2.cutqc.helper_functions.conversions import quasi_to_real
 from cutqc2.cutqc.helper_functions.metrics import MSE
 from cutqc2.core.dag import DagNode, DAGEdge
-from cutqc2.core.utils import merge_prob_vector, permute_bits_vectorized
+from cutqc2.core.utils import chunked, merge_prob_vector, permute_bits_vectorized
 from cutqc2.core.dynamic_definition import DynamicDefinition
 
 
 logger = logging.getLogger(__name__)
+
+mpi_comm = MPI.COMM_WORLD
+mpi_rank = mpi_comm.Get_rank()
+mpi_size = mpi_comm.Get_size()
+
+MPI_WORK_TAG = 1
+MPI_DONE_TAG = 2
+MPI_RESULT_TAG = 3
 
 
 @dataclass
@@ -58,10 +68,14 @@ class WireCutGate(UnitaryGate):
 class CutCircuit:
     def __init__(
         self,
-        circuit: QuantumCircuit,
+        circuit: QuantumCircuit | None = None,
+        circuit_qasm3: str | None = None,
         add_labels: bool = True,
         preallocate: bool = True,
     ):
+        if circuit is None:
+            assert circuit_qasm3 is not None
+            circuit = loads(circuit_qasm3)
         self.check_valid(circuit)
 
         self.raw_circuit = circuit.copy()
@@ -760,22 +774,23 @@ class CutCircuit:
             effective_qubits_dict[j] = qubit_spec[start:end]
         return effective_qubits_dict, active_qubits
 
-    def compute_probabilities(self, qubit_spec: str | None = None) -> np.array:
-        effective_qubits_dict, active_qubits = self.get_subcircuit_effective_qubits(
-            qubit_spec
-        )
-        subcircuit_packed_probs = self.get_all_subcircuit_packed_probs(
-            qubit_specs=effective_qubits_dict
-        )
+    def _compute_probabilities(
+        self,
+        active_qubits,
+        subcircuit_packed_probs,
+        initializations_list,
+        total_initializations: int,
+    ) -> np.array:
+        logger.info(f"Processing {total_initializations} initializations")
+        logger.info(f"{active_qubits=}")
 
         result = np.zeros(2**active_qubits, dtype=np.float32)
-        total_initializations = self.n_basis ** sum(self.in_degrees)
 
-        for j, initializations in enumerate(
-            itertools.product(range(self.n_basis), repeat=sum(self.in_degrees))
-        ):
+        for j, initializations in enumerate(initializations_list):
             if (j + 1) % 10_000 == 0:
-                logger.info(f"{j + 1}/{total_initializations} initializations done")
+                logger.info(
+                    f"Processed {j + 1}/{total_initializations} initializations"
+                )
 
             # `itertools.product` causes the rightmost element to advance on
             # every iteration, to maintain lexical ordering. (00, 01, 10 ...)
@@ -810,6 +825,80 @@ class CutCircuit:
                 )
             result += initialization_probabilities
 
+        return result
+
+    def compute_probabilities(self, qubit_spec: str | None = None) -> np.array:
+        logger.info(f"Computing probabilities for qubit spec {qubit_spec}")
+
+        effective_qubits_dict, active_qubits = self.get_subcircuit_effective_qubits(
+            qubit_spec
+        )
+        subcircuit_packed_probs = self.get_all_subcircuit_packed_probs(
+            qubit_specs=effective_qubits_dict
+        )
+
+        total_work = self.n_basis ** sum(self.in_degrees)
+        gen = itertools.product(range(self.n_basis), repeat=sum(self.in_degrees))
+        num_workers = mpi_size - 1
+        active_workers = 0
+
+        if mpi_rank == 0:
+            if num_workers == 0:
+                # No workers, just do the work locally
+                result = self._compute_probabilities(
+                    active_qubits,
+                    subcircuit_packed_probs,
+                    gen,
+                    total_initializations=total_work,
+                )
+            else:
+                logger.info(f"Using {num_workers} workers")
+                gen = chunked(gen, chunk_size=total_work // mpi_size)
+                result = np.zeros(2**active_qubits, dtype=np.float32)
+
+                # Initially send one work item to each worker
+                for worker_rank in range(1, mpi_size):
+                    try:
+                        work = next(gen)
+                        mpi_comm.send(
+                            [active_qubits, subcircuit_packed_probs, work, len(work)],
+                            dest=worker_rank,
+                            tag=MPI_WORK_TAG,
+                        )
+                        active_workers += 1
+                    except StopIteration:
+                        break
+
+                while active_workers > 0:
+                    # Receive results from any worker
+                    status = MPI.Status()
+                    _result = mpi_comm.recv(
+                        source=MPI.ANY_SOURCE, tag=MPI_RESULT_TAG, status=status
+                    )
+                    result += _result
+
+                    worker_rank = status.Get_source()
+                    try:
+                        work = next(gen)
+                        mpi_comm.send(
+                            [active_qubits, subcircuit_packed_probs, work, len(work)],
+                            dest=worker_rank,
+                            tag=MPI_WORK_TAG,
+                        )
+                    except StopIteration:
+                        # No more work; tell this worker to stop
+                        mpi_comm.send(None, dest=worker_rank, tag=MPI_DONE_TAG)
+                        active_workers -= 1
+        else:
+            # Worker process
+            while True:
+                status = MPI.Status()
+                work = mpi_comm.recv(source=0, tag=MPI.ANY_TAG, status=status)
+                if status.Get_tag() == MPI_DONE_TAG:
+                    break
+                result = self._compute_probabilities(*work)
+                mpi_comm.send(result, dest=0, tag=MPI_RESULT_TAG)
+
         result /= 2**self.num_cuts
         return result
 
@@ -820,10 +909,6 @@ class CutCircuit:
         quasi: bool = False,
         compute: bool = True,
     ) -> np.ndarray:
-        # reset old computations before proceeding
-        if self.preallocated is not None:
-            self.preallocated[:] = 0
-
         logger.info("Postprocessing the cut circuit")
         if capacity is None:
             capacity = self.compute_graph.effective_qubits
@@ -867,6 +952,10 @@ class CutCircuit:
                 in_to_out_permutation.append(out_indices[from_subcircuit][from_qubit])
         self.in_to_out_mask = np.argsort(in_to_out_permutation)
 
+        # reset old computations before proceeding
+        if self.preallocated is not None:
+            self.preallocated[:] = 0
+
         self.dynamic_definition = DynamicDefinition(
             num_qubits=self.compute_graph.effective_qubits,
             capacity=capacity,
@@ -906,8 +995,6 @@ class CutCircuit:
     def verify(
         self,
         probabilities: np.ndarray,
-        capacity: int | None = None,
-        max_recursion: int = 1,
         backend: str = "statevector_simulator",
         atol: float = 1e-10,
         raise_error: bool = True,
@@ -921,10 +1008,13 @@ class CutCircuit:
             / np.linalg.norm(ground_truth) ** 2
         )
 
-        if approximation_error > atol and raise_error:
-            raise RuntimeError(
-                "Difference in cut circuit and uncut circuit is outside of floating point error tolerance"
-            )
+        if approximation_error > atol:
+            msg = "Difference in cut circuit and uncut circuit is outside of floating point error tolerance"
+            if raise_error:
+                raise RuntimeError(msg)
+            else:
+                logger.error(msg)
+
         return approximation_error
 
     def populate_compute_graph(self):

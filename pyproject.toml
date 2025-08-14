@@ -29,8 +29,13 @@ dependencies = [
     "cudaq",
     "h5py",
     "qiskit-qasm3-import",
-    "zarr"
+    "zarr",
+    "mpi4py",
+    "click"
 ]
+
+[project.scripts]
+cutqc2 = "cutqc2.__main__:cli"
 
 [project.optional-dependencies]
 dev = [

@@ -1,9 +1,20 @@
 import logging
+import itertools
 import numpy as np
 import zarr
 
 
 logger = logging.getLogger(__name__)
+
+
+def chunked(gen, chunk_size):
+    """Yield lists of length chunk_size from generator gen."""
+    gen = iter(gen)
+    while True:
+        chunk = list(itertools.islice(gen, chunk_size))
+        if not chunk:
+            break
+        yield chunk
 
 
 def permute_bits(n: int, permutation: list[int]) -> int:

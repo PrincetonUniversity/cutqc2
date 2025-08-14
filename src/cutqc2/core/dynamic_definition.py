@@ -1,8 +1,12 @@
 from typing import Callable
+import logging
 import heapq
 import numpy as np
 from matplotlib import pyplot as plt
 from cutqc2.core.utils import unmerge_prob_vector
+
+
+logger = logging.getLogger(__name__)
 
 
 class Bin:
@@ -93,6 +97,9 @@ class DynamicDefinition:
         initial_qubit_spec = ("A" * self.capacity) + (
             "M" * (self.num_qubits - self.capacity)
         )
+        logger.info(
+            f"Calculating initial probabilities for qubit spec {initial_qubit_spec}"
+        )
         initial_probabilities = self.prob_fn(initial_qubit_spec)
         initial_bin = Bin(initial_qubit_spec, initial_probabilities)
 
@@ -106,10 +113,13 @@ class DynamicDefinition:
 
     def _recurse(self, recursion_level: int, max_recursion: int = 10):
         if not self.bins or (recursion_level > max_recursion):
+            logger.info("No more bins to process or max recursion level reached.")
             return
 
         current_bin = self.pop()
         qubit_spec = current_bin.qubit_spec
+        logger.info(f"{recursion_level=}, {qubit_spec=}")
+
         if (
             "M" not in qubit_spec and "A" not in qubit_spec
         ):  # zoomed-in completely; nothing else to do
