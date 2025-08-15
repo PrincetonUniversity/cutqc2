@@ -1,10 +1,5 @@
-from mpi4py import MPI
 import click
 from cutqc2.core.cut_circuit import CutCircuit
-
-
-comm = MPI.COMM_WORLD
-rank = comm.Get_rank()
 
 
 @click.group()
@@ -88,11 +83,10 @@ def postprocess(file, capacity, max_recursion, verify, save, atol):
     probabilties = cut_circuit.postprocess(
         capacity=capacity, max_recursion=max_recursion, compute=False
     )
-    if rank == 0:
-        if verify:
-            cut_circuit.verify(probabilties, atol=atol, raise_error=False)
-        if save:
-            cut_circuit.to_file(file)
+    if verify:
+        cut_circuit.verify(probabilties, atol=atol, raise_error=False)
+    if save:
+        cut_circuit.to_file(file)
 
 
 @cli.command()

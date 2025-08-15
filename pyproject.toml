@@ -30,7 +30,6 @@ dependencies = [
     "h5py",
     "qiskit-qasm3-import",
     "zarr",
-    "mpi4py",
     "click"
 ]
 
