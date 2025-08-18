@@ -1,8 +1,8 @@
 from typing import Callable
 import logging
+import warnings
 import heapq
 import numpy as np
-from matplotlib import pyplot as plt
 from cutqc2.core.utils import unmerge_prob_vector
 
 
@@ -45,21 +45,11 @@ class DynamicDefinition:
     """
 
     def __init__(
-        self,
-        num_qubits: int,
-        capacity: int,
-        prob_fn: Callable,
-        epsilon: float = 1e-4,
-        preallocated: np.ndarray | None = None,
+        self, num_qubits: int, capacity: int, prob_fn: Callable, epsilon: float = 1e-4
     ):
         self.num_qubits = num_qubits
         self.capacity = capacity
         self.prob_fn = prob_fn
-        self.preallocated = (
-            preallocated
-            if preallocated is not None
-            else np.zeros(2**num_qubits, dtype="float32")
-        )
 
         # Probability-mass threshold below which we do not process a bin.
         self.epsilon = epsilon
@@ -88,7 +78,7 @@ class DynamicDefinition:
         self._qubit_specs_in_bins.remove(bin.qubit_spec)
         return bin
 
-    def run(self, max_recursion: int = 10) -> np.ndarray:
+    def run(self, max_recursion: int = 10, **kwargs) -> np.ndarray:
         # clear key attributes before running
         self.recursion_level = 0
         self.bins = []
@@ -100,18 +90,14 @@ class DynamicDefinition:
         logger.info(
             f"Calculating initial probabilities for qubit spec {initial_qubit_spec}"
         )
-        initial_probabilities = self.prob_fn(initial_qubit_spec)
+        initial_probabilities = self.prob_fn(initial_qubit_spec, **kwargs)
         initial_bin = Bin(initial_qubit_spec, initial_probabilities)
 
         self.push(initial_bin)
         if self.capacity < self.num_qubits:
-            self._recurse(recursion_level=1, max_recursion=max_recursion)
+            self._recurse(recursion_level=1, max_recursion=max_recursion, **kwargs)
 
-        for bin in self.bins:
-            unmerge_prob_vector(bin.probabilities, bin.qubit_spec, self.preallocated)
-        return self.preallocated
-
-    def _recurse(self, recursion_level: int, max_recursion: int = 10):
+    def _recurse(self, recursion_level: int, max_recursion: int = 10, **kwargs):
         if not self.bins or (recursion_level > max_recursion):
             logger.info("No more bins to process or max recursion level reached.")
             return
@@ -140,21 +126,23 @@ class DynamicDefinition:
             for j_char in j_str:
                 bin_qubit_spec = bin_qubit_spec.replace("A", j_char, 1)
 
-            bin_probabilities = self.prob_fn(bin_qubit_spec)
+            bin_probabilities = self.prob_fn(bin_qubit_spec, **kwargs)
             if np.sum(bin_probabilities) >= self.epsilon:
                 bin = Bin(bin_qubit_spec, bin_probabilities)
                 self.push(bin)
 
-        self._recurse(recursion_level + 1, max_recursion)
+        self._recurse(recursion_level + 1, max_recursion, **kwargs)
 
-    def plot(self):
-        probabilities = self.probabilities
+    def probabilities(self, full_states: np.ndarray | None = None) -> np.ndarray:
+        if full_states is None:
+            warnings.warn(
+                "Generating all 2^num_qubits states. This may be memory intensive."
+            )
+            full_states = np.arange(2**self.num_qubits, dtype="int64")
 
-        x = np.arange(len(probabilities))
-        plt.figure(figsize=(12, 4))
-        plt.bar(x, probabilities)
-        plt.xlabel("Bitstring index")
-        plt.ylabel("Probability")
-        plt.ylim(0, 1)
-        plt.title(f"Recursion Level {self.recursion_level}")
-        plt.show()
+        probabilities = np.zeros_like(full_states, dtype="float32")
+        for bin in self.bins:
+            probabilities += unmerge_prob_vector(
+                bin.probabilities, bin.qubit_spec, full_states=full_states
+            )
+        return probabilities

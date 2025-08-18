@@ -1,7 +1,7 @@
 import logging
 import itertools
+import warnings
 import numpy as np
-import zarr
 
 
 logger = logging.getLogger(__name__)
@@ -127,8 +127,7 @@ def merge_prob_vector(unmerged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
 def unmerge_prob_vector(
     merged_prob_vector: np.ndarray,
     qubit_spec: str,
-    preallocated: zarr.Array | np.ndarray | None = None,
-    in_memory=True,
+    full_states: np.ndarray | None = None,
 ) -> None:
     """
     Expand a merged quantum probability vector back to a full vector
@@ -143,13 +142,17 @@ def unmerge_prob_vector(
         - "A": active (preserved)
         - "M": merged (marginalized out)
         - "0"/"1": fixed bits
-    preallocated : zarr.Array | np.ndarray | None
-        Preallocated array to store expanded probabilities (2^num_qubits,)
-        If None, a new array will be created.
-    in_memory : bool, optional
-        If True, compute the array immediately, by default False
+    full_states : np.ndarray or None
+        Array of full states to fill in.
+        If None, all 2**|num_qubits| states are filled-in.
     """
     num_qubits = len(qubit_spec)
+    if full_states is None:
+        warnings.warn(
+            "Generating all 2^num_qubits states. This may be memory intensive."
+        )
+        full_states = np.arange(2**num_qubits, dtype=np.int64)
+
     active_qubit_indices = [i for i, q in enumerate(qubit_spec) if q == "A"]
     merged_qubit_indices = [i for i, q in enumerate(qubit_spec) if q == "M"]
     fixed_qubit_conditions = {
@@ -159,20 +162,8 @@ def unmerge_prob_vector(
     num_active = len(active_qubit_indices)
     num_merged = len(merged_qubit_indices)
 
-    if in_memory and isinstance(preallocated, zarr.Array):
-        unmerged = preallocated[:]
-    else:
-        in_memory = True
-        unmerged = (
-            preallocated
-            if preallocated is not None
-            else np.zeros(2**num_qubits, dtype="float32")
-        )
-
-    logger.info(
-        f"Unmerging probabilities for {num_qubits} qubits ({num_active} active)"
-    )
-    for full_state in range(2**num_qubits):
+    unmerged = np.zeros_like(full_states, dtype="float32")
+    for j, full_state in enumerate(full_states):
         match = True
         for i, val in fixed_qubit_conditions.items():
             bit_index = num_qubits - 1 - i  # MSB to LSB
@@ -194,12 +185,6 @@ def unmerge_prob_vector(
         num_merge_combinations = 2**num_merged
 
         # Uniformly distribute merged prob
-        unmerged[full_state] += (
-            merged_prob_vector[active_index] / num_merge_combinations
-        )
-
-    if in_memory and preallocated is not None:
-        logger.info("Updating preallocated array in memory")
-        preallocated[:] = unmerged
+        unmerged[j] += merged_prob_vector[active_index] / num_merge_combinations
 
     return unmerged

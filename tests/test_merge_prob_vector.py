@@ -14,7 +14,7 @@ def test_all_active_qubits_unmerge():
     # 2-qubit system, all active
     prob_vector = np.array([0.1, 0.2, 0.3, 0.4])
     result = np.zeros_like(prob_vector)
-    unmerge_prob_vector(prob_vector, qubit_spec="AA", preallocated=result)
+    result = unmerge_prob_vector(prob_vector, qubit_spec="AA")
     np.testing.assert_array_almost_equal(result, prob_vector)
 
 
@@ -28,8 +28,7 @@ def test_all_merged_qubits_merge():
 def test_all_merged_qubits_unmerge():
     # 2-qubit system, all merged
     prob_vector = np.array([1.0])
-    result = np.zeros(4)
-    unmerge_prob_vector(prob_vector, qubit_spec="MM", preallocated=result)
+    result = unmerge_prob_vector(prob_vector, qubit_spec="MM")
     # probability mass is evenly distributed
     np.testing.assert_array_almost_equal(result, [0.25, 0.25, 0.25, 0.25])
 
@@ -48,8 +47,7 @@ def test_merged_active_qubits_merge():
 def test_merged_active_qubits_unmerge():
     # 2-qubit system, 1 merged, 1 active
     prob_vector = np.array([0.4, 0.6])
-    result = np.zeros(4)
-    unmerge_prob_vector(prob_vector, "MA", result)
+    result = unmerge_prob_vector(prob_vector, "MA")
     # Note that we read the qubit specification from MSB to LSB
     # So qubit 0 is active, qubit 1 is merged
     # 00 (0.4) unmerges into (00, 10) as (0.2, 0.2)
@@ -71,8 +69,7 @@ def test_active_merged_qubits_merge():
 def test_active_merged_qubits_unmerge():
     # 2-qubit system, 1 merged, 1 active
     prob_vector = np.array([0.3, 0.7])
-    result = np.zeros(4)
-    unmerge_prob_vector(prob_vector, "AM", result)
+    result = unmerge_prob_vector(prob_vector, "AM")
     # Note that we read the qubit specification from MSB to LSB
     # So qubit 0 is merged, qubit 1 is active
     # 00 (0.3) unmerges into (00, 01) as (0.15, 0.15)
@@ -95,9 +92,8 @@ def test_mixed_active_merged0_unmerge():
     # 3-qubit system: 2 merged, 1 active
     prob_vector = np.array([1.0, 2.6])
     qubit_spec = "AMM"  # qubit 2 active, qubit 1 and 0 merged
-    result = np.zeros(8)
 
-    unmerge_prob_vector(prob_vector, qubit_spec, result)
+    result = unmerge_prob_vector(prob_vector, qubit_spec)
     # 000 (1.0) unmerges into (000, 001, 010, 011) as (0.25, 0.25, 0.25, 0.25)
     # 100 (2.6) unmerges into (100, 101, 110, 111) as (0.65, 0.65, 0.65, 0.65)
     np.testing.assert_array_almost_equal(
@@ -120,9 +116,8 @@ def test_mixed_active_merged1_merge():
 def test_mixed_active_merged1_unmerge():
     prob_vector = np.array([0.3, 0.7, 1.1, 1.5])
     qubit_spec = "AAM"  # qubit 2 and 1 active, qubit 0 merged
-    result = np.zeros(8)
 
-    unmerge_prob_vector(prob_vector, qubit_spec, result)
+    result = unmerge_prob_vector(prob_vector, qubit_spec)
     # 00 (0.3) unmerges into (000, 001) as (0.15, 0.15)
     # 01 (0.7) unmerges into (010, 011) as (0.35, 0.35)
     # 10 (1.1) unmerges into (100, 101) as (0.55, 0.55)
@@ -146,9 +141,8 @@ def test_unmerge_probability_conservation():
         for qubit_spec in product("AM", repeat=num_qubits):
             num_active = qubit_spec.count("A")
             prob_vector = np.random.random(2**num_active)
-            result = np.zeros(2**num_qubits)
 
-            unmerge_prob_vector(prob_vector, qubit_spec, result)
+            result = unmerge_prob_vector(prob_vector, qubit_spec)
             assert np.isclose(np.sum(result), np.sum(prob_vector))
 
 
@@ -164,9 +158,8 @@ def test_conditioning0_merge():
 def test_conditioning0_unmerge():
     prob_vector = np.array([1.4])
     qubit_spec = "M0M"  # capture indices (0, 1, 4, 5)
-    result = np.zeros(8)
 
-    unmerge_prob_vector(prob_vector, qubit_spec, result)
+    result = unmerge_prob_vector(prob_vector, qubit_spec)
     # 1.4 / 4 = 0.35 for each of the four indices
     np.testing.assert_array_almost_equal(result, [0.35, 0.35, 0, 0, 0.35, 0.35, 0, 0])
 
@@ -183,9 +176,8 @@ def test_conditioning1_merge():
 def test_conditioning1_unmerge():
     prob_vector = np.array([2.2])
     qubit_spec = "M1M"  # capture indices (2, 3, 6, 7)
-    result = np.zeros(8)
 
-    unmerge_prob_vector(prob_vector, qubit_spec, result)
+    result = unmerge_prob_vector(prob_vector, qubit_spec)
     # 2.2 / 4 = 0.55 for each of the four indices
     np.testing.assert_array_almost_equal(result, [0, 0, 0.55, 0.55, 0, 0, 0.55, 0.55])
 
@@ -201,9 +193,20 @@ def test_conditioning2_merge():
 
 def test_conditioning2_unmerge():
     prob_vector = np.array([0.6, 1.4])
-    result = np.zeros(8)
-    unmerge_prob_vector(prob_vector, "AM1", result)
+    result = unmerge_prob_vector(prob_vector, "AM1")
 
     # 0.6 unmerges into (001, 011) as (0.3, 0.3)
     # 1.4 unmerges into (101, 111) as (0.7, 0.7)
     np.testing.assert_array_almost_equal(result, [0, 0.3, 0, 0.3, 0, 0.7, 0, 0.7])
+
+
+def test_conditioning2_selected_unmerge():
+    # Most of the time, we only want to unmerge a few full states.
+    # This case is identical to `test_conditioning2_unmerge`, except that we
+    # only fill in selected full states.
+    prob_vector = np.array([0.6, 1.4])
+    result = unmerge_prob_vector(prob_vector, "AM1", full_states=np.array([1, 3, 5, 7]))
+
+    # 0.6 unmerges into (001, 011) as (0.3, 0.3)
+    # 1.4 unmerges into (101, 111) as (0.7, 0.7)
+    np.testing.assert_array_almost_equal(result, [0.3, 0.3, 0.7, 0.7])

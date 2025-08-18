@@ -88,21 +88,6 @@ def cut_circuit_to_zarr(
                     data=cut_circuit.get_packed_probabilities(subcircuit_i),
                 )
 
-    if cut_circuit.probabilities is not None:
-        root.create_array(
-            "probabilities",
-            data=cut_circuit.probabilities.astype("float32"),
-            chunks=(chunk_size,),
-        )
-    else:
-        # create a large enough empty array anyway
-        root.create_array(
-            "probabilities",
-            shape=(2**cut_circuit.circuit.num_qubits,),
-            dtype="float32",
-            chunks=(chunk_size,),
-        )
-
 
 def zarr_to_cut_circuit(filepath: str | Path, *args, **kwargs) -> CutCircuit:
     if isinstance(filepath, str):
@@ -164,12 +149,6 @@ def zarr_to_cut_circuit(filepath: str | Path, *args, **kwargs) -> CutCircuit:
             if "packed_probabilities" in subcircuit_group:
                 packed_probs = subcircuit_group["packed_probabilities"][()]
                 cut_circuit.subcircuit_packed_probs[subcircuit_idx] = packed_probs
-
-    # Overall calculated probabilities
-    if "probabilities" in root:
-        # Don't load these by performing a `[()]`,
-        # but maintain a reference
-        cut_circuit.probabilities = root["probabilities"]
 
     if reconstruction_qubit_order:
         cut_circuit.reconstruction_qubit_order = reconstruction_qubit_order

@@ -45,7 +45,7 @@ def cut(
 ):
     with open(file, "r") as f:
         circuit_qasm3 = f.read()
-    cut_circuit = CutCircuit(circuit_qasm3=circuit_qasm3, preallocate=True)
+    cut_circuit = CutCircuit(circuit_qasm3=circuit_qasm3)
     cut_circuit.cut(
         max_subcircuit_width=max_subcircuit_width,
         max_subcircuit_cuts=max_subcircuit_cuts,

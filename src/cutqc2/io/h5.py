@@ -86,10 +86,6 @@ def cut_circuit_to_h5(
                         data=cut_circuit.get_packed_probabilities(subcircuit_i),
                     )
 
-        # overall calculated probabilities - expensive to compute and store.
-        if cut_circuit.probabilities is not None:
-            f.create_dataset("probabilities", data=cut_circuit.probabilities)
-
 
 def h5_to_cut_circuit(filepath: str | Path, *args, **kwargs) -> CutCircuit:
     with h5py.File(filepath, "r") as f:
@@ -145,10 +141,6 @@ def h5_to_cut_circuit(filepath: str | Path, *args, **kwargs) -> CutCircuit:
                 if "packed_probabilities" in subcircuit_group:
                     packed_probs = subcircuit_group["packed_probabilities"][()]
                     cut_circuit.subcircuit_packed_probs[subcircuit_i] = packed_probs
-
-        # overall calculated probabilities - expensive to compute and store.
-        if "probabilities" in f:
-            cut_circuit.probabilities = f["probabilities"][()]
 
         if reconstruction_qubit_order:
             cut_circuit.reconstruction_qubit_order = reconstruction_qubit_order

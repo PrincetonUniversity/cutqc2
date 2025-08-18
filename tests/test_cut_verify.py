@@ -27,7 +27,8 @@ def test_adder_verify():
     )
 
     cut_circuit.run_subcircuits()
-    probabilities = cut_circuit.postprocess()
+    cut_circuit.postprocess()
+    probabilities = cut_circuit.get_probabilities()
     cut_circuit.verify(probabilities)
 
 
@@ -42,7 +43,9 @@ def test_figure4_verify(figure_4_qiskit_circuit):
     )
 
     cut_circuit.run_subcircuits()
-    probabilities = cut_circuit.postprocess()
+    cut_circuit.postprocess()
+    probabilities = cut_circuit.get_probabilities()
+    cut_circuit.plot()
     cut_circuit.verify(probabilities)
 
 
@@ -66,5 +69,7 @@ def test_supremacy_verify():
     )
 
     cut_circuit.run_subcircuits()
-    probabilities = cut_circuit.postprocess()
+    cut_circuit.postprocess()
+    probabilities = cut_circuit.get_probabilities()
+    cut_circuit.plot()
     cut_circuit.verify(probabilities)

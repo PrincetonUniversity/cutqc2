@@ -22,7 +22,8 @@ def test_supremacy_reconstruction_with_increasing_capacity():
         num_subcircuits=[3],
     )
     cut_circuit.run_subcircuits()
-    probabilities = cut_circuit.postprocess()
+    cut_circuit.postprocess()
+    probabilities = cut_circuit.get_probabilities()
 
     error = cut_circuit.verify(probabilities, raise_error=False)
     for capacity in (

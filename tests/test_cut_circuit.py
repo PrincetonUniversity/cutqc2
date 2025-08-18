@@ -153,7 +153,8 @@ def test_cut_circuit_verify(simple_circuit):
     cut_circuit.add_cuts_and_generate_subcircuits(cut_edge_pairs, subcircuits)
 
     cut_circuit.run_subcircuits()
-    probabilities = cut_circuit.postprocess()
+    cut_circuit.postprocess()
+    probabilities = cut_circuit.get_probabilities()
     cut_circuit.verify(probabilities)
 
 
@@ -210,9 +211,8 @@ def test_cut_circuit_figure4_reconstruction_order(figure_4_qiskit_circuit):
     assert cut_circuit.reconstruction_qubit_order == {0: [1, 0], 1: [3, 4, 2]}
 
 
-@pytest.mark.parametrize("preallocate", [False, True])
-def test_cut_circuit_figure4_verify(figure_4_qiskit_circuit, preallocate):
-    cut_circuit = CutCircuit(figure_4_qiskit_circuit, preallocate=preallocate)
+def test_cut_circuit_figure4_verify(figure_4_qiskit_circuit):
+    cut_circuit = CutCircuit(figure_4_qiskit_circuit)
     cut_edge_pairs = [
         (
             DAGEdge(
@@ -249,5 +249,6 @@ def test_cut_circuit_figure4_verify(figure_4_qiskit_circuit, preallocate):
     ]
     cut_circuit.add_cuts_and_generate_subcircuits(cut_edge_pairs, subcircuits)
     cut_circuit.run_subcircuits()
-    probabilities = cut_circuit.postprocess()
+    cut_circuit.postprocess()
+    probabilities = cut_circuit.get_probabilities()
     cut_circuit.verify(probabilities)

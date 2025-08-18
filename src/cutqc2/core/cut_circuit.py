@@ -7,7 +7,6 @@ from typing import Self
 from dataclasses import dataclass
 import warnings
 from matplotlib import pyplot as plt
-import zarr
 
 from qiskit import QuantumCircuit
 from qiskit.qasm3 import loads
@@ -62,7 +61,6 @@ class CutCircuit:
         circuit: QuantumCircuit | None = None,
         circuit_qasm3: str | None = None,
         add_labels: bool = True,
-        preallocate: bool = True,
     ):
         if circuit is None:
             assert circuit_qasm3 is not None
@@ -91,11 +89,6 @@ class CutCircuit:
         self._reconstruction_qubit_order = None
 
         self.dynamic_definition: DynamicDefinition | None = None
-        self.probabilities: np.ndarray | None = None
-
-        self.preallocated: np.ndarray | zarr.Array | None = None
-        if preallocate:
-            self.preallocated = zarr.zeros(2**self.circuit.num_qubits, dtype="float32")
 
     def __str__(self):
         return str(self.unlabeled_circuit.draw(output="text", fold=-1))
@@ -825,10 +818,6 @@ class CutCircuit:
         quasi: bool = False,
         compute: bool = True,
     ) -> np.ndarray:
-        # reset old computations before proceeding
-        if self.preallocated is not None:
-            self.preallocated[:] = 0
-
         logger.info("Postprocessing the cut circuit")
         if capacity is None:
             capacity = self.compute_graph.effective_qubits
@@ -872,41 +861,43 @@ class CutCircuit:
                 in_to_out_permutation.append(out_indices[from_subcircuit][from_qubit])
         self.in_to_out_mask = np.argsort(in_to_out_permutation)
 
-        # reset old computations before proceeding
-        if self.preallocated is not None:
-            self.preallocated[:] = 0
-
         self.dynamic_definition = DynamicDefinition(
             num_qubits=self.compute_graph.effective_qubits,
             capacity=capacity,
             prob_fn=self.compute_probabilities,
-            preallocated=self.preallocated,
         )
         logger.info("Starting dynamic definition run")
-        unmerged_probabilities = self.dynamic_definition.run(
-            max_recursion=max_recursion
-        )
+        self.dynamic_definition.run(max_recursion=max_recursion)
 
-        logger.info("Permuting bits to match original circuit order")
-        reconstructed_probabilities = np.zeros_like(unmerged_probabilities)
-        permuted_indices = permute_bits_vectorized(
-            arr=np.arange(unmerged_probabilities.size),
-            permutation=self.reconstruction_flat_qubit_order(),
+    def get_probabilities(
+        self, full_states: np.ndarray | None = None, quasi: bool = False
+    ) -> np.ndarray:
+        if full_states is None:
+            warnings.warn(
+                "Generating all 2^num_qubits states. This may be memory intensive."
+            )
+            full_states = np.arange(2**self.circuit.num_qubits, dtype="int64")
+
+        perm = self.reconstruction_flat_qubit_order()
+        inverse_perm = np.zeros_like(perm)
+        for dest, src in enumerate(perm):
+            inverse_perm[src] = dest
+
+        inverse_permuted_indices = permute_bits_vectorized(
+            arr=full_states,
+            permutation=inverse_perm,
             n_bits=self.circuit.num_qubits,
         )
-        reconstructed_probabilities[permuted_indices] = unmerged_probabilities
+        reconstructed_probabilities = self.dynamic_definition.probabilities(
+            full_states=inverse_permuted_indices
+        )
 
         if not quasi:
             logger.info("Converting quasi to real probabilities")
             reconstructed_probabilities = quasi_to_real(
                 quasiprobability=reconstructed_probabilities, mode="nearest"
             )
-        self.probabilities = reconstructed_probabilities
-
-        if compute and isinstance(self.probabilities, zarr.Array):
-            return self.probabilities[:]
-        else:
-            return self.probabilities
+        return reconstructed_probabilities
 
     def get_ground_truth(self, backend: str) -> np.ndarray:
         logger.info(f"Evaluating ground truth using {backend}")
@@ -1048,17 +1039,23 @@ class CutCircuit:
         return supported_formats[filepath.suffix](self, filepath, *args, **kwargs)
 
     def plot(
-        self, plot_ground_truth: bool = True, xlim: tuple[int, int] | None = None
+        self, plot_ground_truth: bool = True, full_states: np.ndarray | None = None
     ) -> None:
+        if full_states is None:
+            warnings.warn(
+                "Generating all 2^num_qubits states. This may be memory intensive."
+            )
+            full_states = np.arange(2**self.circuit.num_qubits, dtype="int64")
+
         fig, ax = plt.subplots()
         if plot_ground_truth:
-            ground_truth = self.get_ground_truth(backend="statevector_simulator")
+            ground_truth = self.get_ground_truth(backend="statevector_simulator")[
+                full_states
+            ]
             ax.plot(range(len(ground_truth)), ground_truth, linestyle="--", color="r")
 
-        probabilities = self.probabilities[:]
-        ax.bar(np.arange(len(probabilities)), probabilities)
-        if xlim is not None:
-            ax.set_xlim(xlim)
+        probabilities = self.get_probabilities(full_states=full_states)
+        ax.bar(np.arange(len(full_states)), probabilities)
 
         if self.dynamic_definition is not None:
             ax.set_title(
