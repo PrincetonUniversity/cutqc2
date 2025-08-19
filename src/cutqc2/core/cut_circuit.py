@@ -704,6 +704,7 @@ class CutCircuit:
         probs = cp.zeros(((4,) * n_prob_vecs + (2**prob_vec_length,)), dtype="float32")
 
         for k, v in self.subcircuit_entry_probs[subcircuit_i].items():
+            v = cp.asarray(v)
             # we store probabilities as the flat value of init/meas, without the unused locations,
             # with I=0, X=1, Y=2, Z=3.
             # So, for example, index (0, 1, 2, 0) might correspond to any of:
