@@ -758,7 +758,9 @@ class CutCircuit:
             effective_qubits_dict[j] = qubit_spec[start:end]
         return effective_qubits_dict, active_qubits
 
-    def compute_probabilities(self, qubit_spec: str | None = None) -> np.array:
+    def compute_probabilities(
+        self, qubit_spec: str | None = None, max_initializations: int | None = None
+    ) -> np.array:
         effective_qubits_dict, active_qubits = self.get_subcircuit_effective_qubits(
             qubit_spec
         )
@@ -768,12 +770,16 @@ class CutCircuit:
 
         result = np.zeros(2**active_qubits, dtype=np.float32)
         total_initializations = self.n_basis ** sum(self.in_degrees)
+        if max_initializations is not None:
+            total_initializations = min(total_initializations, max_initializations)
 
         for j, initializations in enumerate(
             itertools.product(range(self.n_basis), repeat=sum(self.in_degrees))
         ):
             if (j + 1) % 10_000 == 0:
                 logger.info(f"{j + 1}/{total_initializations} initializations done")
+            if j >= total_initializations:
+                break
 
             # `itertools.product` causes the rightmost element to advance on
             # every iteration, to maintain lexical ordering. (00, 01, 10 ...)
@@ -816,7 +822,7 @@ class CutCircuit:
         capacity: int | None = None,
         max_recursion: int = 1,
         quasi: bool = False,
-        compute: bool = True,
+        max_initializations: int | None = None,
     ) -> np.ndarray:
         logger.info("Postprocessing the cut circuit")
         if capacity is None:
@@ -867,7 +873,9 @@ class CutCircuit:
             prob_fn=self.compute_probabilities,
         )
         logger.info("Starting dynamic definition run")
-        self.dynamic_definition.run(max_recursion=max_recursion)
+        self.dynamic_definition.run(
+            max_recursion=max_recursion, max_initializations=max_initializations
+        )
 
     def get_probabilities(
         self, full_states: np.ndarray | None = None, quasi: bool = False

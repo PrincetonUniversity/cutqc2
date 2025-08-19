@@ -6,7 +6,7 @@ from cutqc2.core.dynamic_definition import DynamicDefinition
 full_distribution = np.append(np.zeros(15), 1)
 
 
-def probability_distribution(qubit_spec: str) -> np.ndarray:
+def probability_distribution(qubit_spec: str, **kwargs) -> np.ndarray:
     return merge_prob_vector(full_distribution, qubit_spec)
 
 

@@ -1,3 +1,4 @@
+import heapq
 import zarr
 import numpy as np
 from pathlib import Path
@@ -5,6 +6,7 @@ from qiskit.qasm3 import dumps, loads
 from cutqc2 import __version__
 from cutqc2.core.cut_circuit import CutCircuit
 from cutqc2.core.dag import DAGEdge
+from cutqc2.core.dynamic_definition import DynamicDefinition, Bin
 
 
 def cut_circuit_to_zarr(
@@ -88,6 +90,28 @@ def cut_circuit_to_zarr(
                     data=cut_circuit.get_packed_probabilities(subcircuit_i),
                 )
 
+        # Dynamic Definition
+        if (dd := cut_circuit.dynamic_definition) is not None:
+            dd_group = root.create_group("dynamic_definition")
+            dd_group.attrs.put(
+                {
+                    "num_qubits": dd.num_qubits,
+                    "capacity": dd.capacity,
+                    "epsilon": dd.epsilon,
+                }
+            )
+            for j, bin in enumerate(heapq.nsmallest(len(dd.bins), dd.bins)):
+                bin_group = dd_group.create_group(str(j))
+                bin_group.attrs.put(
+                    {
+                        "qubit_spec": bin.qubit_spec,
+                        "probability_mass": float(bin.probability_mass),
+                    }
+                )
+                bin_group.create_array(
+                    "probabilities", data=np.array(bin.probabilities, dtype="float32")
+                )
+
 
 def zarr_to_cut_circuit(filepath: str | Path, *args, **kwargs) -> CutCircuit:
     if isinstance(filepath, str):
@@ -123,7 +147,7 @@ def zarr_to_cut_circuit(filepath: str | Path, *args, **kwargs) -> CutCircuit:
             cut_edge_pairs, subcircuit_dagedges
         )
 
-    # Reconstruction qubit order & probabilities
+    # Reconstruction qubit order & subcircuit probabilities
     reconstruction_qubit_order = {}
     entry_probs = {}
 
@@ -154,5 +178,24 @@ def zarr_to_cut_circuit(filepath: str | Path, *args, **kwargs) -> CutCircuit:
         cut_circuit.reconstruction_qubit_order = reconstruction_qubit_order
     if entry_probs:
         cut_circuit.subcircuit_entry_probs = entry_probs
+
+    # Dynamic Definition
+    if "dynamic_definition" in root:
+        dd_group = root["dynamic_definition"]
+        dd = DynamicDefinition(
+            num_qubits=dd_group.attrs["num_qubits"],
+            capacity=dd_group.attrs["capacity"],
+            prob_fn=cut_circuit.compute_probabilities,
+            epsilon=dd_group.attrs.get("epsilon", 1e-4),
+        )
+
+        for bin_str in dd_group:
+            bin_group = dd_group[bin_str]
+            qubit_spec = bin_group.attrs["qubit_spec"]
+            probabilities = bin_group["probabilities"][()]
+            bin = Bin(qubit_spec=qubit_spec, probabilities=probabilities)
+            dd.push(bin)
+
+        cut_circuit.dynamic_definition = dd
 
     return cut_circuit

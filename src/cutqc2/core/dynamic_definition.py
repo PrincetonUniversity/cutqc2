@@ -78,7 +78,9 @@ class DynamicDefinition:
         self._qubit_specs_in_bins.remove(bin.qubit_spec)
         return bin
 
-    def run(self, max_recursion: int = 10, **kwargs) -> np.ndarray:
+    def run(
+        self, max_recursion: int = 10, max_initializations: int | None = None, **kwargs
+    ) -> np.ndarray:
         # clear key attributes before running
         self.recursion_level = 0
         self.bins = []
@@ -90,14 +92,27 @@ class DynamicDefinition:
         logger.info(
             f"Calculating initial probabilities for qubit spec {initial_qubit_spec}"
         )
-        initial_probabilities = self.prob_fn(initial_qubit_spec, **kwargs)
+        initial_probabilities = self.prob_fn(
+            initial_qubit_spec, max_initializations=max_initializations, **kwargs
+        )
         initial_bin = Bin(initial_qubit_spec, initial_probabilities)
 
         self.push(initial_bin)
         if self.capacity < self.num_qubits:
-            self._recurse(recursion_level=1, max_recursion=max_recursion, **kwargs)
+            self._recurse(
+                recursion_level=1,
+                max_recursion=max_recursion,
+                max_initializations=max_initializations,
+                **kwargs,
+            )
 
-    def _recurse(self, recursion_level: int, max_recursion: int = 10, **kwargs):
+    def _recurse(
+        self,
+        recursion_level: int,
+        max_recursion: int = 10,
+        max_initializations: int | None = None,
+        **kwargs,
+    ):
         if not self.bins or (recursion_level > max_recursion):
             logger.info("No more bins to process or max recursion level reached.")
             return
@@ -126,12 +141,19 @@ class DynamicDefinition:
             for j_char in j_str:
                 bin_qubit_spec = bin_qubit_spec.replace("A", j_char, 1)
 
-            bin_probabilities = self.prob_fn(bin_qubit_spec, **kwargs)
+            bin_probabilities = self.prob_fn(
+                bin_qubit_spec, max_initializations=max_initializations, **kwargs
+            )
             if np.sum(bin_probabilities) >= self.epsilon:
                 bin = Bin(bin_qubit_spec, bin_probabilities)
                 self.push(bin)
 
-        self._recurse(recursion_level + 1, max_recursion, **kwargs)
+        self._recurse(
+            recursion_level + 1,
+            max_recursion,
+            max_initializations=max_initializations,
+            **kwargs,
+        )
 
     def probabilities(self, full_states: np.ndarray | None = None) -> np.ndarray:
         if full_states is None:
