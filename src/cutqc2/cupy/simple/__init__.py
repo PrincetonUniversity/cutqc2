@@ -64,3 +64,28 @@ def matrix_subtract(a: np.array, b: np.array):
         ),
     )
     return cp.asnumpy(result)
+
+
+def vector_kron(a: cp.array, b: cp.array):
+    assert a.ndim == 1 and b.ndim == 1
+    n, m = a.shape[0], b.shape[0]
+
+    vector_kron_kernel = cp_module.get_function("vectorKron")
+
+    threads_per_block = 256
+    blocks_per_grid = (n * m + threads_per_block - 1) // threads_per_block
+
+    result = cp.zeros((n * m,), dtype=cp.float32)
+
+    vector_kron_kernel(
+        (blocks_per_grid,),
+        (threads_per_block,),
+        (
+            a,
+            b,
+            result,
+            cp.int32(n),
+            cp.int32(m),
+        ),
+    )
+    return result

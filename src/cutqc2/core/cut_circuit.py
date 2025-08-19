@@ -7,6 +7,7 @@ from typing import Self
 from dataclasses import dataclass
 import warnings
 from matplotlib import pyplot as plt
+import cupy as cp
 
 from qiskit import QuantumCircuit
 from qiskit.qasm3 import loads
@@ -24,6 +25,7 @@ from cutqc2.cutqc.helper_functions.metrics import MSE
 from cutqc2.core.dag import DagNode, DAGEdge
 from cutqc2.core.utils import merge_prob_vector, permute_bits_vectorized
 from cutqc2.core.dynamic_definition import DynamicDefinition
+from cutqc2.cupy.simple import matrix_add, matrix_subtract, vector_kron
 
 
 logger = logging.getLogger(__name__)
@@ -699,7 +701,7 @@ class CutCircuit:
             if qubit_spec is not None
             else self.compute_graph.nodes[subcircuit_i]["effective"]
         )
-        probs = np.zeros(((4,) * n_prob_vecs + (2**prob_vec_length,)), dtype="float32")
+        probs = cp.zeros(((4,) * n_prob_vecs + (2**prob_vec_length,)), dtype="float32")
 
         for k, v in self.subcircuit_entry_probs[subcircuit_i].items():
             # we store probabilities as the flat value of init/meas, without the unused locations,
@@ -768,15 +770,16 @@ class CutCircuit:
             qubit_specs=effective_qubits_dict
         )
 
-        result = np.zeros(2**active_qubits, dtype=np.float32)
+        result = cp.zeros(2**active_qubits, dtype=cp.float32)
         total_initializations = self.n_basis ** sum(self.in_degrees)
         if max_initializations is not None:
             total_initializations = min(total_initializations, max_initializations)
 
+        logger.info(f"Running {total_initializations} initializations")
         for j, initializations in enumerate(
             itertools.product(range(self.n_basis), repeat=sum(self.in_degrees))
         ):
-            if (j + 1) % 10_000 == 0:
+            if (j + 1) % 1_000 == 0:
                 logger.info(f"{j + 1}/{total_initializations} initializations done")
             if j >= total_initializations:
                 break
@@ -807,11 +810,16 @@ class CutCircuit:
                     subcircuit_index
                 ]
 
-                initialization_probabilities = (
-                    np.kron(initialization_probabilities, subcircuit_probabilities)
-                    if initialization_probabilities is not None
-                    else subcircuit_probabilities
-                )
+                if initialization_probabilities is not None:
+                    if subcircuit_probabilities.size == 1:  # faster
+                        initialization_probabilities *= subcircuit_probabilities
+                    else:
+                        initialization_probabilities = (
+                            vector_kron(initialization_probabilities, subcircuit_probabilities)
+                        )
+                else:
+                    initialization_probabilities = subcircuit_probabilities
+
             result += initialization_probabilities
 
         result /= 2**self.num_cuts

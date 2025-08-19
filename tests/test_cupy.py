@@ -1,5 +1,6 @@
-from cutqc2.cupy.simple import matrix_add, matrix_subtract
+from cutqc2.cupy.simple import matrix_add, matrix_subtract, vector_kron
 import numpy as np
+import cupy as cp
 import pytest
 
 
@@ -19,3 +20,12 @@ def test_matrix_subtract():
     expected = a - b
     result = matrix_subtract(a, b)
     assert np.allclose(result, expected)
+
+
+@pytest.mark.skip(reason="Cannot run on Github CI currently")
+def test_vector_kron():
+    a = cp.random.random(1000, dtype=cp.float32)
+    b = cp.random.random(1000, dtype=cp.float32)
+    expected = cp.kron(a, b)
+    result = vector_kron(a, b)
+    assert cp.allclose(result, expected)
