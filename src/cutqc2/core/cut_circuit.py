@@ -26,7 +26,7 @@ from cutqc2.cutqc.helper_functions.metrics import MSE
 from cutqc2.core.dag import DagNode, DAGEdge
 from cutqc2.core.utils import merge_prob_vector, permute_bits_vectorized
 from cutqc2.core.dynamic_definition import DynamicDefinition
-from cutqc2.cupy.simple import matrix_add, matrix_subtract, vector_kron
+from cutqc2.cupy.simple import vector_kron
 
 
 logger = logging.getLogger(__name__)
@@ -809,16 +809,23 @@ class CutCircuit:
                     subcircuit_index
                 ]
 
-                initialization_probabilities = (
-                    np.kron(initialization_probabilities, subcircuit_probabilities)
-                    if initialization_probabilities is not None
-                    else subcircuit_probabilities
-                )
+                if initialization_probabilities is not None:
+                    if subcircuit_probabilities.size == 1:  # faster
+                        initialization_probabilities *= subcircuit_probabilities
+                    else:
+                        initialization_probabilities = vector_kron(
+                            initialization_probabilities, subcircuit_probabilities
+                        )
+                else:
+                    initialization_probabilities = subcircuit_probabilities
+
             result += initialization_probabilities
 
         return result
 
-    def compute_probabilities(self, qubit_spec: str | None = None, max_initializations: int | None = None) -> np.array:
+    def compute_probabilities(
+        self, qubit_spec: str | None = None, max_initializations: int | None = None
+    ) -> np.array:
         logger.info(f"Computing probabilities for qubit spec {qubit_spec}")
 
         effective_qubits_dict, active_qubits = self.get_subcircuit_effective_qubits(
@@ -829,7 +836,9 @@ class CutCircuit:
         )
 
         total_work = self.n_basis ** sum(self.in_degrees)
-        work = list(itertools.product(range(self.n_basis), repeat=sum(self.in_degrees)))
+        work = list(
+            itertools.product(range(self.n_basis), repeat=sum(self.in_degrees))
+        )[:max_initializations]
         num_workers = mpi_size - 1
 
         if mpi_rank == 0:

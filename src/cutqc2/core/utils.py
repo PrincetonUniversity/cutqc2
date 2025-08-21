@@ -94,7 +94,7 @@ def merge_prob_vector(unmerged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
     num_active = len(active_qubit_indices)
 
     if num_active == num_qubits:
-        return unmerged_prob_vector
+        return cp.copy(cp.asarray(unmerged_prob_vector))
 
     merged_prob_vector = cp.zeros(2**num_active, dtype="float32")
 

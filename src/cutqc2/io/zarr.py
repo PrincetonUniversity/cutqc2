@@ -110,7 +110,7 @@ def cut_circuit_to_zarr(
                     }
                 )
                 bin_group.create_array(
-                    "probabilities", data=np.array(bin.probabilities, dtype="float32")
+                    "probabilities", data=cp.asnumpy(bin.probabilities)
                 )
 
 
