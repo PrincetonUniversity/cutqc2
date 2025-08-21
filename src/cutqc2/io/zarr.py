@@ -1,6 +1,7 @@
 import heapq
 import zarr
 import numpy as np
+import cupy as cp
 from pathlib import Path
 from qiskit.qasm3 import dumps, loads
 from cutqc2 import __version__
@@ -87,7 +88,7 @@ def cut_circuit_to_zarr(
 
                 subcircuit_group.create_array(
                     "packed_probabilities",
-                    data=cut_circuit.get_packed_probabilities(subcircuit_i),
+                    data=cp.asnumpy(cut_circuit.get_packed_probabilities(subcircuit_i)),
                 )
 
         # Dynamic Definition

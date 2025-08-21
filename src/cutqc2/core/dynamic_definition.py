@@ -3,10 +3,15 @@ import logging
 import warnings
 import heapq
 import numpy as np
+from matplotlib import pyplot as plt
+from mpi4py import MPI
 from cutqc2.core.utils import unmerge_prob_vector
 
 
 logger = logging.getLogger(__name__)
+mpi_comm = MPI.COMM_WORLD
+mpi_rank = mpi_comm.Get_rank()
+mpi_size = mpi_comm.Get_size()
 
 
 class Bin:
@@ -18,7 +23,7 @@ class Bin:
     def __init__(self, qubit_spec: str, probabilities: np.ndarray):
         self.qubit_spec = qubit_spec
         self.probabilities = probabilities
-        self.probability_mass = np.sum(probabilities)
+        self.probability_mass = np.sum(probabilities).item()
 
     def __str__(self):
         return f"Bin({self.qubit_spec}, {self.probability_mass:.3f})"
@@ -168,3 +173,27 @@ class DynamicDefinition:
                 bin.probabilities, bin.qubit_spec, full_states=full_states
             )
         return probabilities
+
+    def plot(self, auto: bool = False, prob_mass_threshold: float = 0.9, max_bars: int = 20):
+        if auto:
+            mass_sum = 0
+            x = []
+            y = []
+            for j, bin in enumerate(heapq.nsmallest(len(self.bins), self.bins)):
+                x.append(bin.qubit_spec)
+                y.append(bin.probability_mass)
+
+                mass_sum += bin.probability_mass
+                if mass_sum >= prob_mass_threshold or j > max_bars - 1:
+                    break
+        else:
+            y = self.probabilities()
+            x = np.arange(len(y))
+
+        plt.figure(figsize=(12, 4))
+        plt.bar(x, y)
+        plt.xlabel("Bitstring index")
+        plt.ylabel("Probability")
+        plt.ylim(0, 1)
+        plt.title(f"Recursion Level {self.recursion_level}")
+        plt.show()

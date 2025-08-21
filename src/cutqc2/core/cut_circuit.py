@@ -8,6 +8,7 @@ from dataclasses import dataclass
 import warnings
 from matplotlib import pyplot as plt
 import cupy as cp
+from mpi4py import MPI
 
 from qiskit import QuantumCircuit
 from qiskit.qasm3 import loads
@@ -29,6 +30,9 @@ from cutqc2.cupy.simple import matrix_add, matrix_subtract, vector_kron
 
 
 logger = logging.getLogger(__name__)
+mpi_comm = MPI.COMM_WORLD
+mpi_rank = mpi_comm.Get_rank()
+mpi_size = mpi_comm.Get_size()
 
 
 @dataclass
@@ -761,29 +765,23 @@ class CutCircuit:
             effective_qubits_dict[j] = qubit_spec[start:end]
         return effective_qubits_dict, active_qubits
 
-    def compute_probabilities(
-        self, qubit_spec: str | None = None, max_initializations: int | None = None
+    def _compute_probabilities(
+        self,
+        active_qubits,
+        subcircuit_packed_probs,
+        initializations_list,
+        total_initializations: int,
     ) -> np.array:
-        effective_qubits_dict, active_qubits = self.get_subcircuit_effective_qubits(
-            qubit_spec
-        )
-        subcircuit_packed_probs = self.get_all_subcircuit_packed_probs(
-            qubit_specs=effective_qubits_dict
-        )
+        logger.info(f"Processing {total_initializations} initializations")
+        logger.info(f"{active_qubits=}")
 
-        result = cp.zeros(2**active_qubits, dtype=cp.float32)
-        total_initializations = self.n_basis ** sum(self.in_degrees)
-        if max_initializations is not None:
-            total_initializations = min(total_initializations, max_initializations)
+        result = cp.zeros(2**active_qubits, dtype="float32")
 
-        logger.info(f"Running {total_initializations} initializations")
-        for j, initializations in enumerate(
-            itertools.product(range(self.n_basis), repeat=sum(self.in_degrees))
-        ):
-            if (j + 1) % 1_000 == 0:
-                logger.info(f"{j + 1}/{total_initializations} initializations done")
-            if j >= total_initializations:
-                break
+        for j, initializations in enumerate(initializations_list):
+            if (j + 1) % 10_000 == 0:
+                logger.info(
+                    f"Processed {j + 1}/{total_initializations} initializations"
+                )
 
             # `itertools.product` causes the rightmost element to advance on
             # every iteration, to maintain lexical ordering. (00, 01, 10 ...)
@@ -811,17 +809,44 @@ class CutCircuit:
                     subcircuit_index
                 ]
 
-                if initialization_probabilities is not None:
-                    if subcircuit_probabilities.size == 1:  # faster
-                        initialization_probabilities *= subcircuit_probabilities
-                    else:
-                        initialization_probabilities = (
-                            vector_kron(initialization_probabilities, subcircuit_probabilities)
-                        )
-                else:
-                    initialization_probabilities = subcircuit_probabilities
-
+                initialization_probabilities = (
+                    np.kron(initialization_probabilities, subcircuit_probabilities)
+                    if initialization_probabilities is not None
+                    else subcircuit_probabilities
+                )
             result += initialization_probabilities
+
+        return result
+
+    def compute_probabilities(self, qubit_spec: str | None = None, max_initializations: int | None = None) -> np.array:
+        logger.info(f"Computing probabilities for qubit spec {qubit_spec}")
+
+        effective_qubits_dict, active_qubits = self.get_subcircuit_effective_qubits(
+            qubit_spec
+        )
+        subcircuit_packed_probs = self.get_all_subcircuit_packed_probs(
+            qubit_specs=effective_qubits_dict
+        )
+
+        total_work = self.n_basis ** sum(self.in_degrees)
+        work = list(itertools.product(range(self.n_basis), repeat=sum(self.in_degrees)))
+        num_workers = mpi_size - 1
+
+        if mpi_rank == 0:
+            if num_workers == 0:
+                # No workers, just do the work locally
+                result = self._compute_probabilities(
+                    active_qubits,
+                    subcircuit_packed_probs,
+                    work,
+                    total_initializations=total_work,
+                )
+            else:
+                # TODO: implement this
+                pass
+        else:
+            # TODO: implement this
+            pass
 
         result /= 2**self.num_cuts
         return result
@@ -841,10 +866,6 @@ class CutCircuit:
 
         self.n_basis: int = 4  # I/X/Y/Z
         n_subcircuits: int = len(self)
-
-        self.smart_order = np.argsort(
-            [node["effective"] for node in self.compute_graph.nodes.values()]
-        )
 
         incoming_to_outgoing_graph = self.compute_graph.incoming_to_outgoing_graph()
         self.in_degrees = [
@@ -975,6 +996,10 @@ class CutCircuit:
                         "rho_qubit": path[counter + 1]["subcircuit_qubit"],
                     },
                 )
+
+        self.smart_order = np.argsort(
+            [node["effective"] for node in self.compute_graph.nodes.values()]
+        )
 
     def populate_subcircuit_entries(self):
         compute_graph = self.compute_graph

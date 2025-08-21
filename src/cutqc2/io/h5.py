@@ -1,6 +1,7 @@
 from pathlib import Path
 import h5py
 import numpy as np
+import cupy as cp
 from qiskit.qasm3 import dumps, loads
 from cutqc2 import __version__
 from cutqc2.core.cut_circuit import CutCircuit
@@ -83,7 +84,7 @@ def cut_circuit_to_h5(
 
                     subcircuit_group.create_dataset(
                         "packed_probabilities",
-                        data=cut_circuit.get_packed_probabilities(subcircuit_i),
+                        data=cp.asnumpy(cut_circuit.get_packed_probabilities(subcircuit_i)),
                     )
 
 
