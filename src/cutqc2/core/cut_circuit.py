@@ -810,12 +810,9 @@ class CutCircuit:
                 ]
 
                 if initialization_probabilities is not None:
-                    if subcircuit_probabilities.size == 1:  # faster
-                        initialization_probabilities *= subcircuit_probabilities
-                    else:
-                        initialization_probabilities = vector_kron(
-                            initialization_probabilities, subcircuit_probabilities
-                        )
+                    initialization_probabilities = vector_kron(
+                        initialization_probabilities, subcircuit_probabilities
+                    )
                 else:
                     initialization_probabilities = subcircuit_probabilities
 
