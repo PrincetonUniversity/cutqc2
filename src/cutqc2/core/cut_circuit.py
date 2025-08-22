@@ -24,12 +24,13 @@ from cutqc2.cutqc.helper_functions.non_ibmq_functions import evaluate_circ
 from cutqc2.cutqc.helper_functions.conversions import quasi_to_real
 from cutqc2.cutqc.helper_functions.metrics import MSE
 from cutqc2.core.dag import DagNode, DAGEdge
-from cutqc2.core.utils import merge_prob_vector, permute_bits_vectorized
+from cutqc2.core.utils import merge_prob_vector, permute_bits_vectorized, chunked
 from cutqc2.core.dynamic_definition import DynamicDefinition
-from cutqc2.cupy.simple import vector_kron
+from cutqc2.cupy import vector_kron
 
 
 logger = logging.getLogger(__name__)
+
 mpi_comm = MPI.COMM_WORLD
 mpi_rank = mpi_comm.Get_rank()
 mpi_size = mpi_comm.Get_size()
@@ -770,25 +771,21 @@ class CutCircuit:
         active_qubits,
         subcircuit_packed_probs,
         initializations_list,
-        total_initializations: int,
+        log_every: int | None = None,
+        total_work: int | None = None,
     ) -> np.array:
-        logger.info(f"Processing {total_initializations} initializations")
-        logger.info(f"{active_qubits=}")
-
         result = cp.zeros(2**active_qubits, dtype="float32")
 
         for j, initializations in enumerate(initializations_list):
-            if (j + 1) % 10_000 == 0:
-                logger.info(
-                    f"Processed {j + 1}/{total_initializations} initializations"
-                )
+            if log_every is not None and j % log_every == 0:
+                logger.info(f"  Processed {j}/{total_work} initializations")
 
             # `itertools.product` causes the rightmost element to advance on
             # every iteration, to maintain lexical ordering. (00, 01, 10 ...)
             # We wish to 'count up', with the 0th index advancing fastest,
             # so we reverse the obtained tuple from `itertools.product`.
-            initializations = initializations[::-1]
-            measurements = np.array(initializations)[self.in_to_out_mask]
+            initializations = np.array(initializations)[::-1]
+            measurements = initializations[self.in_to_out_mask]
 
             initialization_probabilities = None
             for subcircuit in self.smart_order:
@@ -820,9 +817,7 @@ class CutCircuit:
 
         return result
 
-    def compute_probabilities(
-        self, qubit_spec: str | None = None, max_initializations: int | None = None
-    ) -> np.array:
+    def compute_probabilities(self, qubit_spec: str | None = None) -> np.array:
         logger.info(f"Computing probabilities for qubit spec {qubit_spec}")
 
         effective_qubits_dict, active_qubits = self.get_subcircuit_effective_qubits(
@@ -833,36 +828,87 @@ class CutCircuit:
         )
 
         total_work = self.n_basis ** sum(self.in_degrees)
-        work = list(
-            itertools.product(range(self.n_basis), repeat=sum(self.in_degrees))
-        )[:max_initializations]
+        gen = itertools.product(range(self.n_basis), repeat=sum(self.in_degrees))
         num_workers = mpi_size - 1
+        active_workers = 0
 
+        MPI_WORK_TAG, MPI_DONE_TAG, MPI_RESULT_TAG = 1, 2, 3
         if mpi_rank == 0:
             if num_workers == 0:
                 # No workers, just do the work locally
                 result = self._compute_probabilities(
                     active_qubits,
                     subcircuit_packed_probs,
-                    work,
-                    total_initializations=total_work,
+                    gen,
+                    log_every=10_000,
+                    total_work=total_work,
                 )
             else:
-                # TODO: implement this
-                pass
-        else:
-            # TODO: implement this
-            pass
+                chunk_size = min(8192, total_work // num_workers)
+                logger.info(f"{num_workers=}, {chunk_size=}")
 
-        result /= 2**self.num_cuts
+                gen = chunked(gen, chunk_size=chunk_size)
+                result = cp.zeros(2**active_qubits, "float32")
+                processed_work = 0
+
+                # Initially send one work item to each worker
+                for worker_rank in range(1, mpi_size):
+                    try:
+                        work = next(gen)
+                        mpi_comm.send(
+                            [active_qubits, subcircuit_packed_probs, work],
+                            dest=worker_rank,
+                            tag=MPI_WORK_TAG,
+                        )
+                        active_workers += 1
+                    except StopIteration:
+                        break
+
+                while active_workers > 0:
+                    # Receive results from any worker
+                    status = MPI.Status()
+                    _result = mpi_comm.recv(
+                        source=MPI.ANY_SOURCE, tag=MPI_RESULT_TAG, status=status
+                    )
+                    processed_work += chunk_size
+                    logger.info(
+                        f"  Processed {processed_work}/{total_work} initializations"
+                    )
+                    result += _result
+
+                    worker_rank = status.Get_source()
+                    try:
+                        work = next(gen)
+                        mpi_comm.send(
+                            [active_qubits, subcircuit_packed_probs, work],
+                            dest=worker_rank,
+                            tag=MPI_WORK_TAG,
+                        )
+                    except StopIteration:
+                        # No more work; tell this worker to stop
+                        mpi_comm.send(None, dest=worker_rank, tag=MPI_DONE_TAG)
+                        active_workers -= 1
+        else:
+            # Worker process
+            while True:
+                status = MPI.Status()
+                work = mpi_comm.recv(source=0, tag=MPI.ANY_TAG, status=status)
+                if status.Get_tag() == MPI_DONE_TAG:
+                    break
+                result = self._compute_probabilities(*work)
+                mpi_comm.send(result, dest=0, tag=MPI_RESULT_TAG)
+
+        if mpi_rank == 0:
+            result /= 2**self.num_cuts
+        else:
+            result = None
+
+        result = mpi_comm.bcast(result, root=0)
+        mpi_comm.Barrier()
         return result
 
     def postprocess(
-        self,
-        capacity: int | None = None,
-        max_recursion: int = 1,
-        quasi: bool = False,
-        max_initializations: int | None = None,
+        self, capacity: int | None = None, max_recursion: int = 1, quasi: bool = False
     ) -> np.ndarray:
         logger.info("Postprocessing the cut circuit")
         if capacity is None:
@@ -909,9 +955,7 @@ class CutCircuit:
             prob_fn=self.compute_probabilities,
         )
         logger.info("Starting dynamic definition run")
-        self.dynamic_definition.run(
-            max_recursion=max_recursion, max_initializations=max_initializations
-        )
+        self.dynamic_definition.run(max_recursion=max_recursion)
 
     def get_probabilities(
         self, full_states: np.ndarray | None = None, quasi: bool = False

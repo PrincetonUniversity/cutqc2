@@ -30,7 +30,9 @@ dependencies = [
     "h5py",
     "qiskit-qasm3-import",
     "zarr",
-    "click"
+    "click",
+    "mpi4py",
+    "cupy"
 ]
 
 [project.scripts]

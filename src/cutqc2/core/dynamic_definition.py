@@ -32,13 +32,8 @@ class Bin:
         """
         This method is used to compare two `Bin` objects in the min-heap, and
         is thus used to decide whether to prioritize *this* bin over *other*.
-
-        Since we only ever care about popping bins with merged qubits ("M" in
-        qubit_spec), we prioritize this bin only if it has an "M", and then
-        compare the probability mass of the two bins to prioritize the one with
-        the larger probability mass.
         """
-        return "M" in self.qubit_spec and self.probability_mass > other.probability_mass
+        return self.probability_mass > other.probability_mass
 
 
 class DynamicDefinition:
@@ -83,9 +78,7 @@ class DynamicDefinition:
         self._qubit_specs_in_bins.remove(bin.qubit_spec)
         return bin
 
-    def run(
-        self, max_recursion: int = 10, max_initializations: int | None = None, **kwargs
-    ) -> np.ndarray:
+    def run(self, max_recursion: int = 10, **kwargs) -> np.ndarray:
         # clear key attributes before running
         self.recursion_level = 0
         self.bins = []
@@ -97,9 +90,7 @@ class DynamicDefinition:
         logger.info(
             f"Calculating initial probabilities for qubit spec {initial_qubit_spec}"
         )
-        initial_probabilities = self.prob_fn(
-            initial_qubit_spec, max_initializations=max_initializations, **kwargs
-        )
+        initial_probabilities = self.prob_fn(initial_qubit_spec, **kwargs)
         initial_bin = Bin(initial_qubit_spec, initial_probabilities)
 
         self.push(initial_bin)
@@ -107,7 +98,6 @@ class DynamicDefinition:
             self._recurse(
                 recursion_level=1,
                 max_recursion=max_recursion,
-                max_initializations=max_initializations,
                 **kwargs,
             )
 
@@ -115,7 +105,6 @@ class DynamicDefinition:
         self,
         recursion_level: int,
         max_recursion: int = 10,
-        max_initializations: int | None = None,
         **kwargs,
     ):
         if not self.bins or (recursion_level > max_recursion):
@@ -134,29 +123,28 @@ class DynamicDefinition:
             return
 
         self.recursion_level = recursion_level
-        for j in range(2**self.capacity):
-            bin_qubit_spec = qubit_spec
 
-            # For this bin, mark `capacity` (possibly fewer) merged qubits as active
-            bin_qubit_spec = bin_qubit_spec.replace("M", "A", self.capacity)
+        # For this bin, mark `capacity` (possibly fewer) merged qubits as active
+        bin_qubit_spec = qubit_spec.replace("M", "A", self.capacity)
+        bin_num_active_qubits = bin_qubit_spec.count("A")
 
+        for j in range(2**bin_num_active_qubits):
+            j_bin_qubit_spec = bin_qubit_spec  # reset
             # Replace all active qubits with the binary representation
             # of j - these become the "zoomed-in" bits.
-            j_str = f"{j:0{self.capacity}b}"  # `capacity` length bit-string
+            j_str = f"{j:0{bin_num_active_qubits}b}"  # `bin_num_active_qubits` length bit-string
             for j_char in j_str:
-                bin_qubit_spec = bin_qubit_spec.replace("A", j_char, 1)
+                j_bin_qubit_spec = j_bin_qubit_spec.replace("A", j_char, 1)
 
-            bin_probabilities = self.prob_fn(
-                bin_qubit_spec, max_initializations=max_initializations, **kwargs
-            )
+            logger.debug(f"{j + 1}/{2**bin_num_active_qubits}, {j_bin_qubit_spec=}")
+            bin_probabilities = self.prob_fn(j_bin_qubit_spec, **kwargs)
             if np.sum(bin_probabilities) >= self.epsilon:
-                bin = Bin(bin_qubit_spec, bin_probabilities)
+                bin = Bin(j_bin_qubit_spec, bin_probabilities)
                 self.push(bin)
 
         self._recurse(
             recursion_level + 1,
             max_recursion,
-            max_initializations=max_initializations,
             **kwargs,
         )
 
@@ -174,7 +162,9 @@ class DynamicDefinition:
             )
         return probabilities
 
-    def plot(self, auto: bool = False, prob_mass_threshold: float = 0.9, max_bars: int = 20):
+    def plot(
+        self, auto: bool = False, prob_mass_threshold: float = 0.9, max_bars: int = 20
+    ):
         if auto:
             mass_sum = 0
             x = []

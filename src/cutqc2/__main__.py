@@ -1,9 +1,15 @@
 from mpi4py import MPI
 import click
+import logging
 from cutqc2.core.cut_circuit import CutCircuit
 
 
+logger = logging.getLogger("cutqc2")
+
+
 rank = MPI.COMM_WORLD.Get_rank()
+if rank != 0:
+    logger.setLevel(logging.ERROR)
 
 
 @click.group()
@@ -84,9 +90,7 @@ def cut(
 @click.option("--atol", default=1e-8, help="Absolute tolerance for verification.")
 def postprocess(file, capacity, max_recursion, verify, save, atol):
     cut_circuit = CutCircuit.from_file(file)
-    cut_circuit.postprocess(
-        capacity=capacity, max_recursion=max_recursion
-    )
+    cut_circuit.postprocess(capacity=capacity, max_recursion=max_recursion)
     if rank == 0:
         if verify:
             probabilties = cut_circuit.get_probabilities()
@@ -107,10 +111,12 @@ def verify(file, atol):
 @cli.command()
 @click.option("--file", required=True, help="Zarr file location.")
 @click.option("--output-file", required=True, help="Output png file location.")
-def plot(file, output_file):
+@click.option("--atol", default=1e-10, help="Absolute tolerance for verification.")
+def plot(file, output_file, atol):
     cut_circuit = CutCircuit.from_file(file)
     probabilities = cut_circuit.get_probabilities()
     cut_circuit.verify(probabilities, atol=atol, raise_error=True)
+
 
 if __name__ == "__main__":
     cli()
