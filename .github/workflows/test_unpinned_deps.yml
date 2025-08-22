@@ -11,11 +11,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
         python-version: ["3.12"]
 
-    name: Build and test on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: Build and test
+    runs-on: [self-hosted]
     environment: CI
 
     steps:
@@ -24,24 +23,27 @@ jobs:
     - name: Install uv
       uses: astral-sh/setup-uv@v5
 
-    - name: Create/activate venv
+    - name: Create venv
       run: |
         uv venv --python ${{ matrix.python-version }}
-        source .venv/bin/activate
 
     - name: Install cudaq
       # Due to a known issue with uv failing to install cudaq on first try,
       # we manually install it twice in a row
       # See https://github.com/astral-sh/uv/issues/12759
       run: |
-        uv pip install cudaq
-        uv pip install cudaq
+        uv pip install --python .venv/bin/python cudaq
+        uv pip install --python .venv/bin/python cudaq
 
     - name: Install package with dev deps
-      run: uv pip install -e .[dev]
+      run: |
+        uv pip install --python .venv/bin/python -e .[dev]
+        uv pip freeze --python .venv/bin/python
 
     - name: Pytest
-      run: uv run python -m pytest
+      run: |
+        module load openmpi/gcc/4.1.6
+        uv run python -m pytest
       env:
         GUROBI_WLSACCESSID: ${{ vars.GUROBI_WLSACCESSID }}
         GUROBI_LICENSEID: ${{ vars.GUROBI_LICENSEID }}

@@ -84,7 +84,9 @@ def cut_circuit_to_h5(
 
                     subcircuit_group.create_dataset(
                         "packed_probabilities",
-                        data=cp.asnumpy(cut_circuit.get_packed_probabilities(subcircuit_i)),
+                        data=cp.asnumpy(
+                            cut_circuit.get_packed_probabilities(subcircuit_i)
+                        ),
                     )
 
 
