@@ -22,7 +22,7 @@ if __name__ == "__main__":
         # (a string of 0/1/A/M characters), and returns the compressed quantum
         # probability vector by merging/conditioning on specific qubits.
         # The `merge_prob_vector` utility function from CutQC2 is used here.
-        prob_fn=lambda qubit_spec: merge_prob_vector(
+        prob_fn=lambda qubit_spec, **kwargs: merge_prob_vector(
             four_qubit_BV_probability_distribution, qubit_spec
         ),
     )
@@ -30,3 +30,8 @@ if __name__ == "__main__":
     for max_recursion in (1, 2, 3, 4):
         dynamic_definition.run(max_recursion=max_recursion)
         dynamic_definition.plot()
+
+    # For large state vectors, it is not recommended to plot *all* the
+    # results (e.g., for 38 qubits), but rather to plot only the
+    # largest bins that account for `prob_mass_threshold`.
+    dynamic_definition.plot(auto=True, prob_mass_threshold=0.9)

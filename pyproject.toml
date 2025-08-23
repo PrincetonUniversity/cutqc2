@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cutqc2"
-version = "0.0.4"
+version = "0.0.5"
 description = "Quantum Circuit Cutting and Reconstruction"
 license = "MIT"
 requires-python = ">=3.12"
@@ -15,7 +15,7 @@ classifiers = [
 dependencies = [
     "numpy",
     "qiskit",
-    "matplotlib",
+    "matplotlib<3.10",  # https://stackoverflow.com/questions/79366678/
     "pydot",
     "scipy",
     "tqdm",
@@ -26,10 +26,17 @@ dependencies = [
     "gurobipy<12",
     "psutil",
     "qiskit-aer",
-    "cudaq",
     "h5py",
-    "qiskit-qasm3-import"
+    "qiskit-qasm3-import",
+    "zarr",
+    "click",
+    "mpi4py",
+    "cupy-cuda12x",
+    "cudaq"
 ]
+
+[project.scripts]
+cutqc2 = "cutqc2.__main__:cli"
 
 [project.optional-dependencies]
 dev = [

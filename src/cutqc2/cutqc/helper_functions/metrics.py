@@ -32,8 +32,6 @@ def MSE(target, obs):
     """
     Mean Square Error
     """
-    target = copy.deepcopy(target)
-    obs = copy.deepcopy(obs)
     if isinstance(target, dict):
         se = 0
         for t_idx in target:
@@ -41,11 +39,8 @@ def MSE(target, obs):
             o = obs[t_idx]
             se += (t - o) ** 2
         mse = se / len(obs)
-    elif isinstance(target, np.ndarray) and isinstance(obs, np.ndarray):
-        target = target.reshape(-1, 1)
-        obs = obs.reshape(-1, 1)
+    elif isinstance(target, np.ndarray):
         squared_diff = (target - obs) ** 2
-        se = np.sum(squared_diff)
         mse = np.mean(squared_diff)
     elif isinstance(target, np.ndarray) and isinstance(obs, dict):
         se = 0

@@ -154,7 +154,8 @@ def test_cut_circuit_verify(simple_circuit):
 
     cut_circuit.run_subcircuits()
     cut_circuit.postprocess()
-    cut_circuit.verify()
+    probabilities = cut_circuit.get_probabilities()
+    cut_circuit.verify(probabilities)
 
 
 def test_cut_circuit_figure4_cut(figure_4_qiskit_circuit):
@@ -249,4 +250,5 @@ def test_cut_circuit_figure4_verify(figure_4_qiskit_circuit):
     cut_circuit.add_cuts_and_generate_subcircuits(cut_edge_pairs, subcircuits)
     cut_circuit.run_subcircuits()
     cut_circuit.postprocess()
-    cut_circuit.verify()
+    probabilities = cut_circuit.get_probabilities()
+    cut_circuit.verify(probabilities)

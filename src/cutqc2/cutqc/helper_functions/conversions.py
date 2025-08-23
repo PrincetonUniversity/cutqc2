@@ -1,4 +1,7 @@
+import logging
 import numpy as np
+
+logger = logging.getLogger(__name__)
 
 
 def reverseBits(num, bitSize):
@@ -79,34 +82,33 @@ def quasi_to_real(quasiprobability, mode):
 
 
 def nearest_probability_distribution(quasiprobability):
-    """Takes a quasiprobability distribution and maps
-    it to the closest probability distribution as defined by
-    the L2-norm.
-    Parameters:
-        return_distance (bool): Return the L2 distance between distributions.
-    Returns:
-        ProbDistribution: Nearest probability distribution.
-        float: Euclidean (L2) distance of distributions.
-    Notes:
-        Method from Smolin et al., Phys. Rev. Lett. 108, 070502 (2012).
     """
-    sorted_probs, states = zip(
-        *sorted(zip(quasiprobability, range(len(quasiprobability))))
-    )
-    num_elems = len(sorted_probs)
-    new_probs = np.zeros(num_elems)
-    beta = 0
-    diff = 0
-    for state, prob in zip(states, sorted_probs):
-        temp = prob + beta / num_elems
-        if temp < 0:
-            beta += prob
-            num_elems -= 1
-            diff += prob * prob
-        else:
-            diff += (beta / num_elems) * (beta / num_elems)
-            new_probs[state] = prob + beta / num_elems
-    return new_probs
+    Takes a quasiprobability distribution and computes the nearest probability distribution.
+
+    Parameters
+    ----------
+    quasiprobability: array-like
+        A quasiprobability distribution, which may contain negative values.
+
+    Returns
+    -------
+    p: np.ndarray
+        A valid probability distribution, where all values are non-negative and sum to 1.
+    """
+    logger.info("Computing nearest probability distribution")
+    q = np.asarray(quasiprobability)
+    n = len(q)
+
+    logger.info("Sorting")
+    u = np.sort(q)[::-1]
+
+    cssv = np.cumsum(u)
+    rho = np.nonzero(u * np.arange(1, n+1) > (cssv - 1))[0][-1]
+    theta = (cssv[rho] - 1) / (rho + 1)
+    p = np.maximum(q - theta, 0)
+
+    logger.info("Computed nearest probability distribution")
+    return p
 
 
 def naive_probability_distribution(quasiprobability):

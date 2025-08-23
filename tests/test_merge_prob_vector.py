@@ -1,5 +1,6 @@
 from itertools import product
 import numpy as np
+import cupy as cp
 from cutqc2.core.utils import merge_prob_vector, unmerge_prob_vector
 
 
@@ -7,12 +8,13 @@ def test_all_active_qubits_merge():
     # 2-qubit system, all active
     prob_vector = np.array([0.1, 0.2, 0.3, 0.4])
     result = merge_prob_vector(prob_vector, qubit_spec="AA")
-    np.testing.assert_array_almost_equal(result, prob_vector)
+    np.testing.assert_array_almost_equal(cp.asnumpy(result), prob_vector)
 
 
 def test_all_active_qubits_unmerge():
     # 2-qubit system, all active
     prob_vector = np.array([0.1, 0.2, 0.3, 0.4])
+    result = np.zeros_like(prob_vector)
     result = unmerge_prob_vector(prob_vector, qubit_spec="AA")
     np.testing.assert_array_almost_equal(result, prob_vector)
 
@@ -21,7 +23,7 @@ def test_all_merged_qubits_merge():
     # 2-qubit system, all merged
     prob_vector = np.array([0.1, 0.2, 0.3, 0.4])
     result = merge_prob_vector(prob_vector, qubit_spec="MM")
-    np.testing.assert_array_almost_equal(result, [1.0])
+    np.testing.assert_array_almost_equal(cp.asnumpy(result), [1.0])
 
 
 def test_all_merged_qubits_unmerge():
@@ -40,7 +42,7 @@ def test_merged_active_qubits_merge():
     # So qubit 0 is active, qubit 1 is merged
     # (00, 10) merge into 0 as (0.1 + 0.3)
     # (01, 11) merge into 1 as (0.2 + 0.4)
-    np.testing.assert_array_almost_equal(result, [0.4, 0.6])
+    np.testing.assert_array_almost_equal(cp.asnumpy(result), [0.4, 0.6])
 
 
 def test_merged_active_qubits_unmerge():
@@ -62,7 +64,7 @@ def test_active_merged_qubits_merge():
     # So qubit 0 is merged, qubit 1 is active
     # (00, 01) merge into 0 as (0.1 + 0.2)
     # (10, 11) merge into 1 as (0.3 + 0.4)
-    np.testing.assert_array_almost_equal(result, [0.3, 0.7])
+    np.testing.assert_array_almost_equal(cp.asnumpy(result), [0.3, 0.7])
 
 
 def test_active_merged_qubits_unmerge():
@@ -84,7 +86,7 @@ def test_mixed_active_merged0_merge():
     result = merge_prob_vector(prob_vector, qubit_spec)
     # (000, 001, 010, 011) merge into 0 as (0.1 + 0.2 + 0.3 + 0.4)
     # (100, 101, 110, 111) merge into 1 as (0.5 + 0.6 + 0.7 + 0.8)
-    np.testing.assert_array_almost_equal(result, [1.0, 2.6])
+    np.testing.assert_array_almost_equal(cp.asnumpy(result), [1.0, 2.6])
 
 
 def test_mixed_active_merged0_unmerge():
@@ -109,7 +111,7 @@ def test_mixed_active_merged1_merge():
     # (010, 011) merge into 01 as (0.3 + 0.4)
     # (100, 101) merge into 10 as (0.5 + 0.6)
     # (110, 111) merge into 11 as (0.7 + 0.8)
-    np.testing.assert_array_almost_equal(result, [0.3, 0.7, 1.1, 1.5])
+    np.testing.assert_array_almost_equal(cp.asnumpy(result), [0.3, 0.7, 1.1, 1.5])
 
 
 def test_mixed_active_merged1_unmerge():
@@ -151,7 +153,7 @@ def test_conditioning0_merge():
 
     result = merge_prob_vector(prob_vector, qubit_spec)
     # 0.1 + 0.2 + 0.5 + 0.6 = 1.4
-    np.testing.assert_array_almost_equal(result, [1.4])
+    np.testing.assert_array_almost_equal(cp.asnumpy(result), [1.4])
 
 
 def test_conditioning0_unmerge():
@@ -169,7 +171,7 @@ def test_conditioning1_merge():
 
     result = merge_prob_vector(prob_vector, qubit_spec)
     # 0.3 + 0.4 + 0.7 + 0.8 = 2.2
-    np.testing.assert_array_almost_equal(result, [2.2])
+    np.testing.assert_array_almost_equal(cp.asnumpy(result), [2.2])
 
 
 def test_conditioning1_unmerge():
@@ -187,7 +189,7 @@ def test_conditioning2_merge():
 
     # (001, 011) merge into 0 as (0.2 + 0.4)
     # (101, 111) merge into 1 as (0.6 + 0.8)
-    np.testing.assert_array_almost_equal(result, [0.6, 1.4])
+    np.testing.assert_array_almost_equal(cp.asnumpy(result), [0.6, 1.4])
 
 
 def test_conditioning2_unmerge():
@@ -197,3 +199,15 @@ def test_conditioning2_unmerge():
     # 0.6 unmerges into (001, 011) as (0.3, 0.3)
     # 1.4 unmerges into (101, 111) as (0.7, 0.7)
     np.testing.assert_array_almost_equal(result, [0, 0.3, 0, 0.3, 0, 0.7, 0, 0.7])
+
+
+def test_conditioning2_selected_unmerge():
+    # Most of the time, we only want to unmerge a few full states.
+    # This case is identical to `test_conditioning2_unmerge`, except that we
+    # only fill in selected full states.
+    prob_vector = np.array([0.6, 1.4])
+    result = unmerge_prob_vector(prob_vector, "AM1", full_states=np.array([1, 3, 5, 7]))
+
+    # 0.6 unmerges into (001, 011) as (0.3, 0.3)
+    # 1.4 unmerges into (101, 111) as (0.7, 0.7)
+    np.testing.assert_array_almost_equal(result, [0.3, 0.3, 0.7, 0.7])

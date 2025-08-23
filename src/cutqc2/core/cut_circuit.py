@@ -7,8 +7,11 @@ from typing import Self
 from dataclasses import dataclass
 import warnings
 from matplotlib import pyplot as plt
+import cupy as cp
+from mpi4py import MPI
 
 from qiskit import QuantumCircuit
+from qiskit.qasm3 import loads
 from qiskit.circuit.operation import Operation
 from qiskit.circuit.library import UnitaryGate
 from qiskit.circuit import Qubit, QuantumRegister, CircuitInstruction
@@ -21,14 +24,16 @@ from cutqc2.cutqc.helper_functions.non_ibmq_functions import evaluate_circ
 from cutqc2.cutqc.helper_functions.conversions import quasi_to_real
 from cutqc2.cutqc.helper_functions.metrics import MSE
 from cutqc2.core.dag import DagNode, DAGEdge
-from cutqc2.core.utils import (
-    merge_prob_vector,
-    permute_bits,
-)
+from cutqc2.core.utils import merge_prob_vector, permute_bits_vectorized, chunked
 from cutqc2.core.dynamic_definition import DynamicDefinition
+from cutqc2.cupy import vector_kron
 
 
 logger = logging.getLogger(__name__)
+
+mpi_comm = MPI.COMM_WORLD
+mpi_rank = mpi_comm.Get_rank()
+mpi_size = mpi_comm.Get_size()
 
 
 @dataclass
@@ -60,9 +65,13 @@ class WireCutGate(UnitaryGate):
 class CutCircuit:
     def __init__(
         self,
-        circuit: QuantumCircuit,
+        circuit: QuantumCircuit | None = None,
+        circuit_qasm3: str | None = None,
         add_labels: bool = True,
     ):
+        if circuit is None:
+            assert circuit_qasm3 is not None
+            circuit = loads(circuit_qasm3)
         self.check_valid(circuit)
 
         self.raw_circuit = circuit.copy()
@@ -87,7 +96,6 @@ class CutCircuit:
         self._reconstruction_qubit_order = None
 
         self.dynamic_definition: DynamicDefinition | None = None
-        self.probabilities: np.ndarray | None = None
 
     def __str__(self):
         return str(self.unlabeled_circuit.draw(output="text", fold=-1))
@@ -127,8 +135,9 @@ class CutCircuit:
 
         # Keep imports local to this function
         from cutqc2.io.h5 import h5_to_cut_circuit
+        from cutqc2.io.zarr import zarr_to_cut_circuit
 
-        supported_formats = {".h5": h5_to_cut_circuit}
+        supported_formats = {".h5": h5_to_cut_circuit, ".zarr": zarr_to_cut_circuit}
         assert filepath.suffix in supported_formats, "Unsupported format"
         return supported_formats[filepath.suffix](filepath, *args, **kwargs)
 
@@ -697,9 +706,10 @@ class CutCircuit:
             if qubit_spec is not None
             else self.compute_graph.nodes[subcircuit_i]["effective"]
         )
-        probs = np.zeros(((4,) * n_prob_vecs + (2**prob_vec_length,)), dtype="float32")
+        probs = cp.zeros(((4,) * n_prob_vecs + (2**prob_vec_length,)), dtype="float32")
 
         for k, v in self.subcircuit_entry_probs[subcircuit_i].items():
+            v = cp.asarray(v)
             # we store probabilities as the flat value of init/meas, without the unused locations,
             # with I=0, X=1, Y=2, Z=3.
             # So, for example, index (0, 1, 2, 0) might correspond to any of:
@@ -756,29 +766,26 @@ class CutCircuit:
             effective_qubits_dict[j] = qubit_spec[start:end]
         return effective_qubits_dict, active_qubits
 
-    def compute_probabilities(self, qubit_spec: str | None = None) -> np.array:
-        effective_qubits_dict, active_qubits = self.get_subcircuit_effective_qubits(
-            qubit_spec
-        )
-        subcircuit_packed_probs = self.get_all_subcircuit_packed_probs(
-            qubit_specs=effective_qubits_dict
-        )
+    def _compute_probabilities(
+        self,
+        active_qubits,
+        subcircuit_packed_probs,
+        initializations_list,
+        log_every: int | None = None,
+        total_work: int | None = None,
+    ) -> np.array:
+        result = cp.zeros(2**active_qubits, dtype="float32")
 
-        result = np.zeros(2**active_qubits, dtype=np.float32)
-        total_initializations = self.n_basis ** sum(self.in_degrees)
-
-        for j, initializations in enumerate(
-            itertools.product(range(self.n_basis), repeat=sum(self.in_degrees))
-        ):
-            if (j + 1) % 10_000 == 0:
-                logger.info(f"{j + 1}/{total_initializations}")
+        for j, initializations in enumerate(initializations_list):
+            if log_every is not None and j % log_every == 0:
+                logger.info(f"  Processed {j}/{total_work} initializations")
 
             # `itertools.product` causes the rightmost element to advance on
             # every iteration, to maintain lexical ordering. (00, 01, 10 ...)
             # We wish to 'count up', with the 0th index advancing fastest,
             # so we reverse the obtained tuple from `itertools.product`.
-            initializations = initializations[::-1]
-            measurements = np.array(initializations)[self.in_to_out_mask]
+            initializations = np.array(initializations)[::-1]
+            measurements = initializations[self.in_to_out_mask]
 
             initialization_probabilities = None
             for subcircuit in self.smart_order:
@@ -799,18 +806,109 @@ class CutCircuit:
                     subcircuit_index
                 ]
 
-                initialization_probabilities = (
-                    np.kron(initialization_probabilities, subcircuit_probabilities)
-                    if initialization_probabilities is not None
-                    else subcircuit_probabilities
-                )
+                if initialization_probabilities is not None:
+                    initialization_probabilities = vector_kron(
+                        initialization_probabilities, subcircuit_probabilities
+                    )
+                else:
+                    initialization_probabilities = subcircuit_probabilities
+
             result += initialization_probabilities
 
-        result /= 2**self.num_cuts
+        return result
+
+    def compute_probabilities(self, qubit_spec: str | None = None) -> np.array:
+        logger.info(f"Computing probabilities for qubit spec {qubit_spec}")
+
+        effective_qubits_dict, active_qubits = self.get_subcircuit_effective_qubits(
+            qubit_spec
+        )
+        subcircuit_packed_probs = self.get_all_subcircuit_packed_probs(
+            qubit_specs=effective_qubits_dict
+        )
+
+        total_work = self.n_basis ** sum(self.in_degrees)
+        gen = itertools.product(range(self.n_basis), repeat=sum(self.in_degrees))
+        num_workers = mpi_size - 1
+        active_workers = 0
+
+        MPI_WORK_TAG, MPI_DONE_TAG, MPI_RESULT_TAG = 1, 2, 3
+        if mpi_rank == 0:
+            if num_workers == 0:
+                # No workers, just do the work locally
+                result = self._compute_probabilities(
+                    active_qubits,
+                    subcircuit_packed_probs,
+                    gen,
+                    log_every=10_000,
+                    total_work=total_work,
+                )
+            else:
+                chunk_size = min(8192, total_work // num_workers)
+                logger.info(f"{num_workers=}, {chunk_size=}")
+
+                gen = chunked(gen, chunk_size=chunk_size)
+                result = cp.zeros(2**active_qubits, "float32")
+                processed_work = 0
+
+                # Initially send one work item to each worker
+                for worker_rank in range(1, mpi_size):
+                    try:
+                        work = next(gen)
+                        mpi_comm.send(
+                            [active_qubits, subcircuit_packed_probs, work],
+                            dest=worker_rank,
+                            tag=MPI_WORK_TAG,
+                        )
+                        active_workers += 1
+                    except StopIteration:
+                        break
+
+                while active_workers > 0:
+                    # Receive results from any worker
+                    status = MPI.Status()
+                    _result = mpi_comm.recv(
+                        source=MPI.ANY_SOURCE, tag=MPI_RESULT_TAG, status=status
+                    )
+                    processed_work += chunk_size
+                    logger.info(
+                        f"  Processed {processed_work}/{total_work} initializations"
+                    )
+                    result += _result
+
+                    worker_rank = status.Get_source()
+                    try:
+                        work = next(gen)
+                        mpi_comm.send(
+                            [active_qubits, subcircuit_packed_probs, work],
+                            dest=worker_rank,
+                            tag=MPI_WORK_TAG,
+                        )
+                    except StopIteration:
+                        # No more work; tell this worker to stop
+                        mpi_comm.send(None, dest=worker_rank, tag=MPI_DONE_TAG)
+                        active_workers -= 1
+        else:
+            # Worker process
+            while True:
+                status = MPI.Status()
+                work = mpi_comm.recv(source=0, tag=MPI.ANY_TAG, status=status)
+                if status.Get_tag() == MPI_DONE_TAG:
+                    break
+                result = self._compute_probabilities(*work)
+                mpi_comm.send(result, dest=0, tag=MPI_RESULT_TAG)
+
+        if mpi_rank == 0:
+            result /= 2**self.num_cuts
+        else:
+            result = None
+
+        result = mpi_comm.bcast(result, root=0)
+        mpi_comm.Barrier()
         return result
 
     def postprocess(
-        self, capacity: int | None = None, max_recursion: int = 1
+        self, capacity: int | None = None, max_recursion: int = 1, quasi: bool = False
     ) -> np.ndarray:
         logger.info("Postprocessing the cut circuit")
         if capacity is None:
@@ -820,10 +918,6 @@ class CutCircuit:
 
         self.n_basis: int = 4  # I/X/Y/Z
         n_subcircuits: int = len(self)
-
-        self.smart_order = np.argsort(
-            [node["effective"] for node in self.compute_graph.nodes.values()]
-        )
 
         incoming_to_outgoing_graph = self.compute_graph.incoming_to_outgoing_graph()
         self.in_degrees = [
@@ -860,37 +954,53 @@ class CutCircuit:
             capacity=capacity,
             prob_fn=self.compute_probabilities,
         )
-        unmerged_probabilities = self.dynamic_definition.run(
-            max_recursion=max_recursion
-        )
+        logger.info("Starting dynamic definition run")
+        self.dynamic_definition.run(max_recursion=max_recursion)
+
+    def get_probabilities(
+        self, full_states: np.ndarray | None = None, quasi: bool = False
+    ) -> np.ndarray:
+        if full_states is None:
+            warnings.warn(
+                "Generating all 2^num_qubits states. This may be memory intensive."
+            )
+            full_states = np.arange(2**self.circuit.num_qubits, dtype="int64")
 
         perm = self.reconstruction_flat_qubit_order()
-        reconstructed_probabilities = np.zeros_like(unmerged_probabilities)
-        for j, _prob in enumerate(unmerged_probabilities):
-            reconstructed_probabilities[permute_bits(j, perm)] = _prob
+        inverse_perm = np.zeros_like(perm)
+        for dest, src in enumerate(perm):
+            inverse_perm[src] = dest
 
-        reconstructed_probabilities = quasi_to_real(
-            quasiprobability=reconstructed_probabilities, mode="nearest"
+        inverse_permuted_indices = permute_bits_vectorized(
+            arr=full_states,
+            permutation=inverse_perm,
+            n_bits=self.circuit.num_qubits,
         )
-        self.probabilities = reconstructed_probabilities
+        reconstructed_probabilities = self.dynamic_definition.probabilities(
+            full_states=inverse_permuted_indices
+        )
+
+        if not quasi:
+            logger.info("Converting quasi to real probabilities")
+            reconstructed_probabilities = quasi_to_real(
+                quasiprobability=reconstructed_probabilities, mode="nearest"
+            )
         return reconstructed_probabilities
 
     def get_ground_truth(self, backend: str) -> np.ndarray:
+        logger.info(f"Evaluating ground truth using {backend}")
         return evaluate_circ(circuit=self.raw_circuit, backend=backend)
 
     def verify(
         self,
-        probabilities: np.ndarray | None = None,
+        probabilities: np.ndarray,
         capacity: int | None = None,
         max_recursion: int = 1,
         backend: str = "statevector_simulator",
         atol: float = 1e-10,
         raise_error: bool = True,
     ) -> float:
-        if probabilities is None:
-            probabilities = self.postprocess(
-                capacity=capacity, max_recursion=max_recursion
-            )
+        logger.info("Verifying cut circuit against original circuit")
         ground_truth = self.get_ground_truth(backend)
 
         approximation_error = (
@@ -899,10 +1009,13 @@ class CutCircuit:
             / np.linalg.norm(ground_truth) ** 2
         )
 
-        if approximation_error > atol and raise_error:
-            raise RuntimeError(
-                "Difference in cut circuit and uncut circuit is outside of floating point error tolerance"
-            )
+        if approximation_error > atol:
+            msg = "Difference in cut circuit and uncut circuit is outside of floating point error tolerance"
+            if raise_error:
+                raise RuntimeError(msg)
+            else:
+                logger.error(msg)
+
         return approximation_error
 
     def populate_compute_graph(self):
@@ -933,6 +1046,10 @@ class CutCircuit:
                         "rho_qubit": path[counter + 1]["subcircuit_qubit"],
                     },
                 )
+
+        self.smart_order = np.argsort(
+            [node["effective"] for node in self.compute_graph.nodes.values()]
+        )
 
     def populate_subcircuit_entries(self):
         compute_graph = self.compute_graph
@@ -1007,22 +1124,35 @@ class CutCircuit:
 
         # Keep imports local to this function
         from cutqc2.io.h5 import cut_circuit_to_h5
+        from cutqc2.io.zarr import cut_circuit_to_zarr
 
-        supported_formats = {".h5": cut_circuit_to_h5}
+        supported_formats = {".h5": cut_circuit_to_h5, ".zarr": cut_circuit_to_zarr}
         assert filepath.suffix in supported_formats, "Unsupported format"
         return supported_formats[filepath.suffix](self, filepath, *args, **kwargs)
 
-    def plot(self, plot_ground_truth: bool = True) -> None:
+    def plot(
+        self, plot_ground_truth: bool = True, full_states: np.ndarray | None = None
+    ) -> None:
+        if full_states is None:
+            warnings.warn(
+                "Generating all 2^num_qubits states. This may be memory intensive."
+            )
+            full_states = np.arange(2**self.circuit.num_qubits, dtype="int64")
+
         fig, ax = plt.subplots()
         if plot_ground_truth:
-            ground_truth = self.get_ground_truth(backend="statevector_simulator")
+            ground_truth = self.get_ground_truth(backend="statevector_simulator")[
+                full_states
+            ]
             ax.plot(range(len(ground_truth)), ground_truth, linestyle="--", color="r")
 
-        probabilities = self.probabilities
-        ax.bar(np.arange(len(probabilities)), probabilities)
-        ax.set_title(
-            f"Capacity {self.dynamic_definition.capacity}, Recursion {self.dynamic_definition.recursion_level}"
-        )
+        probabilities = self.get_probabilities(full_states=full_states)
+        ax.bar(np.arange(len(full_states)), probabilities)
+
+        if self.dynamic_definition is not None:
+            ax.set_title(
+                f"Capacity {self.dynamic_definition.capacity}, Recursion {self.dynamic_definition.recursion_level}"
+            )
 
         plt.tight_layout()
         plt.show()

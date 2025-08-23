@@ -1,4 +1,21 @@
+import logging
+import itertools
+import warnings
+import cupy as cp
 import numpy as np
+
+
+logger = logging.getLogger(__name__)
+
+
+def chunked(gen, chunk_size):
+    """Yield lists of length chunk_size from generator gen."""
+    gen = iter(gen)
+    while True:
+        chunk = list(itertools.islice(gen, chunk_size))
+        if not chunk:
+            break
+        yield chunk
 
 
 def permute_bits(n: int, permutation: list[int]) -> int:
@@ -7,6 +24,23 @@ def permute_bits(n: int, permutation: list[int]) -> int:
     # Get bit i from position permutation[i]
     binary_n_permuted = "".join(binary_n[permutation[i]] for i in range(n_bits))
     return int(binary_n_permuted, 2)
+
+
+def permute_bits_vectorized(
+    arr: np.ndarray, permutation: np.ndarray, n_bits: int
+) -> np.ndarray:
+    n_bits = len(permutation)
+    result = np.zeros_like(arr)
+
+    for dest_bit_msb, src_bit_msb in enumerate(permutation):
+        # Convert MSB index to LSB index for bit operations
+        src_bit_lsb = n_bits - 1 - src_bit_msb
+        dest_bit_lsb = n_bits - 1 - dest_bit_msb
+
+        # Extract source bit and place in destination position
+        result |= ((arr >> src_bit_lsb) & 1) << dest_bit_lsb
+
+    return result
 
 
 def distribute(n_qubits: int, probabilities: dict[str, np.array], capacity: int) -> str:
@@ -60,9 +94,9 @@ def merge_prob_vector(unmerged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
     num_active = len(active_qubit_indices)
 
     if num_active == num_qubits:
-        return np.copy(unmerged_prob_vector)
+        return cp.copy(cp.asarray(unmerged_prob_vector))
 
-    merged_prob_vector = np.zeros(2**num_active, dtype="float32")
+    merged_prob_vector = cp.zeros(2**num_active, dtype="float32")
 
     for state in range(len(unmerged_prob_vector)):
         match = True
@@ -91,7 +125,11 @@ def merge_prob_vector(unmerged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
     return merged_prob_vector
 
 
-def unmerge_prob_vector(merged_prob_vector: np.ndarray, qubit_spec: str) -> np.ndarray:
+def unmerge_prob_vector(
+    merged_prob_vector: np.ndarray,
+    qubit_spec: str,
+    full_states: np.ndarray | None = None,
+) -> None:
     """
     Expand a merged quantum probability vector back to a full vector
     by evenly distributing over merged qubits and conditioning on fixed ones.
@@ -105,13 +143,17 @@ def unmerge_prob_vector(merged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
         - "A": active (preserved)
         - "M": merged (marginalized out)
         - "0"/"1": fixed bits
-
-    Returns
-    -------
-    np.ndarray
-        Expanded full probability vector of shape (2^num_qubits,)
+    full_states : np.ndarray or None
+        Array of full states to fill in.
+        If None, all 2**|num_qubits| states are filled-in.
     """
     num_qubits = len(qubit_spec)
+    if full_states is None:
+        warnings.warn(
+            "Generating all 2^num_qubits states. This may be memory intensive."
+        )
+        full_states = np.arange(2**num_qubits, dtype=np.int64)
+
     active_qubit_indices = [i for i, q in enumerate(qubit_spec) if q == "A"]
     merged_qubit_indices = [i for i, q in enumerate(qubit_spec) if q == "M"]
     fixed_qubit_conditions = {
@@ -121,9 +163,8 @@ def unmerge_prob_vector(merged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
     num_active = len(active_qubit_indices)
     num_merged = len(merged_qubit_indices)
 
-    expanded = np.zeros(2**num_qubits, dtype=np.float32)
-
-    for full_state in range(2**num_qubits):
+    unmerged = np.zeros_like(full_states, dtype="float32")
+    for j, full_state in enumerate(full_states):
         match = True
         for i, val in fixed_qubit_conditions.items():
             bit_index = num_qubits - 1 - i  # MSB to LSB
@@ -145,6 +186,6 @@ def unmerge_prob_vector(merged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
         num_merge_combinations = 2**num_merged
 
         # Uniformly distribute merged prob
-        expanded[full_state] = merged_prob_vector[active_index] / num_merge_combinations
+        unmerged[j] += merged_prob_vector[active_index] / num_merge_combinations
 
-    return expanded
+    return unmerged

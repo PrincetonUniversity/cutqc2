@@ -3,7 +3,7 @@ from cutqc2.core.cut_circuit import CutCircuit
 
 
 def test_figure4_save(figure_4_qiskit_circuit, tmp_path):
-    save_path = tmp_path / "test_cut_circuit_figure4_to_file.h5"
+    save_path = tmp_path / "test_cut_circuit_figure4_to_file.zarr"
 
     # We should be able to save the cut circuit at arbitrary points of
     # the processing pipeline.
@@ -23,14 +23,15 @@ def test_figure4_save(figure_4_qiskit_circuit, tmp_path):
     cut_circuit.to_file(save_path)
 
     cut_circuit.postprocess()
+    probabilties = cut_circuit.get_probabilities()
     cut_circuit.to_file(save_path)
 
-    cut_circuit.verify()
+    cut_circuit.verify(probabilties)
     cut_circuit.to_file(save_path)
 
 
 def test_figure4_load_complete_path_map(figure_4_qiskit_circuit, tmp_path):
-    save_path = tmp_path / "test_cut_circuit_figure4_to_file.h5"
+    save_path = tmp_path / "test_cut_circuit_figure4_to_file.zarr"
 
     cut_circuit = CutCircuit(figure_4_qiskit_circuit)
     cut_circuit.cut(

@@ -1,4 +1,5 @@
 import numpy as np
+import cupy as cp
 from cutqc2.core.utils import merge_prob_vector
 from cutqc2.core.dynamic_definition import DynamicDefinition
 
@@ -6,7 +7,7 @@ from cutqc2.core.dynamic_definition import DynamicDefinition
 full_distribution = np.append(np.zeros(15), 1)
 
 
-def probability_distribution(qubit_spec: str) -> np.ndarray:
+def probability_distribution(qubit_spec: str, **kwargs) -> np.ndarray:
     return merge_prob_vector(full_distribution, qubit_spec)
 
 
@@ -20,5 +21,5 @@ def test_dynamic_definition():
     assert len(dynamic_definition.bins) == 1
     assert dynamic_definition.bins[0].qubit_spec == "1111"
     np.testing.assert_array_almost_equal(
-        dynamic_definition.bins[0].probabilities, np.array([1.0])
+        cp.asnumpy(dynamic_definition.bins[0].probabilities), np.array([1.0])
     )

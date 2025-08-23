@@ -1,6 +1,7 @@
 from pathlib import Path
 import h5py
 import numpy as np
+import cupy as cp
 from qiskit.qasm3 import dumps, loads
 from cutqc2 import __version__
 from cutqc2.core.cut_circuit import CutCircuit
@@ -83,12 +84,10 @@ def cut_circuit_to_h5(
 
                     subcircuit_group.create_dataset(
                         "packed_probabilities",
-                        data=cut_circuit.get_packed_probabilities(subcircuit_i),
+                        data=cp.asnumpy(
+                            cut_circuit.get_packed_probabilities(subcircuit_i)
+                        ),
                     )
-
-        # overall calculated probabilities - expensive to compute and store.
-        if cut_circuit.probabilities is not None:
-            f.create_dataset("probabilities", data=cut_circuit.probabilities)
 
 
 def h5_to_cut_circuit(filepath: str | Path, *args, **kwargs) -> CutCircuit:
@@ -145,10 +144,6 @@ def h5_to_cut_circuit(filepath: str | Path, *args, **kwargs) -> CutCircuit:
                 if "packed_probabilities" in subcircuit_group:
                     packed_probs = subcircuit_group["packed_probabilities"][()]
                     cut_circuit.subcircuit_packed_probs[subcircuit_i] = packed_probs
-
-        # overall calculated probabilities - expensive to compute and store.
-        if "probabilities" in f:
-            cut_circuit.probabilities = f["probabilities"][()]
 
         if reconstruction_qubit_order:
             cut_circuit.reconstruction_qubit_order = reconstruction_qubit_order
