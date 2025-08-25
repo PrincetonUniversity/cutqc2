@@ -38,11 +38,17 @@ jobs:
       run: |
           uvx pre-commit run --all-files
 
-    - name: Pytest
+    - name: Pytest with coverage
       run: |
         module load openmpi/gcc/4.1.6
-        uv run python -m pytest
+        uv run coverage run --source=src/cutqc2 -m pytest
       env:
         GUROBI_WLSACCESSID: ${{ vars.GUROBI_WLSACCESSID }}
         GUROBI_LICENSEID: ${{ vars.GUROBI_LICENSEID }}
         GUROBI_WLSSECRET: ${{ secrets.GUROBI_WLSSECRET }}
+
+    - name: Upload coverage to Coveralls
+      run: uv run coveralls
+      continue-on-error: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
