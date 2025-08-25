@@ -32,9 +32,7 @@ dependencies = [
     "click",
     "mpi4py",
     "cupy-cuda12x",
-    "cudaq",
-    "coverage",
-    "coveralls"
+    "cudaq"
 ]
 
 [project.scripts]
@@ -42,7 +40,9 @@ cutqc2 = "cutqc2.__main__:cli"
 
 [project.optional-dependencies]
 dev = [
-    "pytest>6"
+    "pytest>6",
+    "coverage",
+    "coveralls"
 ]
 docs = [
     "sphinx",
