@@ -48,7 +48,7 @@ jobs:
         GUROBI_WLSSECRET: ${{ secrets.GUROBI_WLSSECRET }}
 
     - name: Upload coverage to Coveralls
-      run: coveralls
+      run: uv run coveralls
       continue-on-error: true
       env:
         GITHUB_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
