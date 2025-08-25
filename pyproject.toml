@@ -32,7 +32,9 @@ dependencies = [
     "click",
     "mpi4py",
     "cupy-cuda12x",
-    "cudaq"
+    "cudaq",
+    "coverage",
+    "coveralls"
 ]
 
 [project.scripts]
