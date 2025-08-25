@@ -41,7 +41,7 @@ jobs:
     - name: Pytest with coverage
       run: |
         module load openmpi/gcc/4.1.6
-        uv run coverage run --source=src/cutqc2 -m pytest
+        uv run coverage run --source=src/cutqc2 --omit="src/cutqc2/legacy/*" -m pytest
       env:
         GUROBI_WLSACCESSID: ${{ vars.GUROBI_WLSACCESSID }}
         GUROBI_LICENSEID: ${{ vars.GUROBI_LICENSEID }}

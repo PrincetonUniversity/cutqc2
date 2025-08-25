@@ -1,5 +1,5 @@
 [![Test pinned dependencies](https://github.com/PrincetonUniversity/cutqc2/actions/workflows/test_pinned_deps.yml/badge.svg)](https://github.com/PrincetonUniversity/cutqc2/actions/workflows/test_pinned_deps.yml)
-[![Coverage Status](https://coveralls.io/repos/github/princetonuniversity/cutqc2/badge.svg?branch=main)](https://coveralls.io/github/princetonuniversity/cutqc2?branch=main)
+[![Coverage Status](https://coveralls.io/repos/github/PrincetonUniversity/cutqc2/badge.svg?branch=main)](https://coveralls.io/github/PrincetonUniversity/cutqc2?branch=main)
 [![Docs](https://github.com/PrincetonUniversity/cutqc2/actions/workflows/docs.yml/badge.svg)](https://princetonuniversity.github.io/cutqc2/)
 
 # CutQC2
