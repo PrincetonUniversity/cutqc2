@@ -1,0 +1,32 @@
+cutqc2 package
+==============
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cutqc2.core
+   cutqc2.cupy
+   cutqc2.io
+   cutqc2.legacy
+
+Submodules
+----------
+
+cutqc2.qiskit\_to\_cudaq module
+-------------------------------
+
+.. automodule:: cutqc2.qiskit_to_cudaq
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cutqc2
+   :members:
+   :undoc-members:
+   :show-inheritance:

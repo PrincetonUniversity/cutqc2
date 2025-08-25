@@ -1,0 +1,10 @@
+cutqc2.legacy package
+=====================
+
+Module contents
+---------------
+
+.. automodule:: cutqc2.legacy
+   :members:
+   :undoc-members:
+   :show-inheritance:

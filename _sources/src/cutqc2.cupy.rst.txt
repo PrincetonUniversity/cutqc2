@@ -1,0 +1,10 @@
+cutqc2.cupy package
+===================
+
+Module contents
+---------------
+
+.. automodule:: cutqc2.cupy
+   :members:
+   :undoc-members:
+   :show-inheritance:

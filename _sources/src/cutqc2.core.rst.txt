@@ -1,0 +1,45 @@
+cutqc2.core package
+===================
+
+Submodules
+----------
+
+cutqc2.core.cut\_circuit module
+-------------------------------
+
+.. automodule:: cutqc2.core.cut_circuit
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cutqc2.core.dag module
+----------------------
+
+.. automodule:: cutqc2.core.dag
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cutqc2.core.dynamic\_definition module
+--------------------------------------
+
+.. automodule:: cutqc2.core.dynamic_definition
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cutqc2.core.utils module
+------------------------
+
+.. automodule:: cutqc2.core.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cutqc2.core
+   :members:
+   :undoc-members:
+   :show-inheritance:
