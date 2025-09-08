@@ -4,14 +4,10 @@ import warnings
 import heapq
 import numpy as np
 from matplotlib import pyplot as plt
-from mpi4py import MPI
 from cutqc2.core.utils import unmerge_prob_vector
 
 
 logger = logging.getLogger(__name__)
-mpi_comm = MPI.COMM_WORLD
-mpi_rank = mpi_comm.Get_rank()
-mpi_size = mpi_comm.Get_size()
 
 
 class Bin:
