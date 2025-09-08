@@ -22,7 +22,7 @@ if __name__ == "__main__":
         # (a string of 0/1/A/M characters), and returns the compressed quantum
         # probability vector by merging/conditioning on specific qubits.
         # The `merge_prob_vector` utility function from CutQC2 is used here.
-        prob_fn=lambda qubit_spec, **kwargs: merge_prob_vector(
+        prob_fn=lambda qubit_spec: merge_prob_vector(
             four_qubit_BV_probability_distribution, qubit_spec
         ),
     )

@@ -660,7 +660,6 @@ class CutCircuit:
         num_subcircuits: list[int],
         max_subcircuit_cuts: int,
         subcircuit_size_imbalance: int,
-        generate_subcircuits: bool = True,
     ):
         cut_edges_pairs, subcircuits = self.find_cuts(
             max_subcircuit_width=max_subcircuit_width,
@@ -911,7 +910,7 @@ class CutCircuit:
         return result
 
     def postprocess(
-        self, capacity: int | None = None, max_recursion: int = 1, quasi: bool = False
+        self, capacity: int | None = None, max_recursion: int = 1
     ) -> np.ndarray:
         logger.info("Postprocessing the cut circuit")
         if capacity is None:
@@ -998,8 +997,6 @@ class CutCircuit:
     def verify(
         self,
         probabilities: np.ndarray,
-        capacity: int | None = None,
-        max_recursion: int = 1,
         backend: str = "statevector_simulator",
         atol: float = 1e-10,
         raise_error: bool = True,
@@ -1129,10 +1126,9 @@ class CutCircuit:
             filepath = Path(filepath)
 
         # Keep imports local to this function
-        from cutqc2.io.h5 import cut_circuit_to_h5
         from cutqc2.io.zarr import cut_circuit_to_zarr
 
-        supported_formats = {".h5": cut_circuit_to_h5, ".zarr": cut_circuit_to_zarr}
+        supported_formats = {".zarr": cut_circuit_to_zarr}
         assert filepath.suffix in supported_formats, "Unsupported format"
         return supported_formats[filepath.suffix](self, filepath, *args, **kwargs)
 

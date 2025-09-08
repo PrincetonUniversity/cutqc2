@@ -43,27 +43,6 @@ def permute_bits_vectorized(
     return result
 
 
-def distribute(n_qubits: int, probabilities: dict[str, np.array], capacity: int) -> str:
-    largest_bin_value = 0
-    largest_bin_index = 0
-    largest_bin_qubit_spec = ""
-    for _qubit_spec, prob in probabilities.items():
-        largest_bin_value_candidate = np.max(prob)
-        if largest_bin_value_candidate > largest_bin_value:
-            largest_bin_value = largest_bin_value_candidate
-            largest_bin_index = np.argmax(prob)
-            largest_bin_qubit_spec = _qubit_spec
-
-    largest_bin_str = f"{largest_bin_index:0{n_qubits}b}"
-    for j in range(n_qubits):
-        largest_bin_qubit_spec = largest_bin_qubit_spec.replace(
-            "A", largest_bin_str[j], 1
-        )
-    # qubit_spec = qubit_spec.replace("M", "A", capacity)
-
-    return largest_bin_qubit_spec
-
-
 def merge_prob_vector(unmerged_prob_vector: np.ndarray, qubit_spec: str) -> np.ndarray:
     """
     Compress quantum probability vector by merging specified qubits

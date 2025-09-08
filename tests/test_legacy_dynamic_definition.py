@@ -53,7 +53,7 @@ class ComputeGraph:
             )
         ]
 
-    def assign_bases_to_edges(self, edge_bases, edges):
+    def assign_bases_to_edges(self, edge_bases, edges):  # noqa: ARG002
         pauli = edge_bases[0]  # incoming edge_bases is a single char tuple
         # The next `get_init_meas` call expects us to remember the pauli
         self.current_pauli = pauli

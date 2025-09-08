@@ -73,4 +73,5 @@ exclude = ["src/cutqc2/cutqc/**"]
 extend-select = [
   "B",           # flake8-bugbear
   "I",           # isort
+  "ARG",         # flake8-unused-arguments
 ]

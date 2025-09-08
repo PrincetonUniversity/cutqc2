@@ -111,9 +111,8 @@ def verify(file, atol):
 
 @cli.command()
 @click.option("--file", required=True, help="Zarr file location.")
-@click.option("--output-file", required=True, help="Output png file location.")
 @click.option("--atol", default=1e-10, help="Absolute tolerance for verification.")
-def plot(file, output_file, atol):
+def plot(file, atol):
     cut_circuit = CutCircuit.from_file(file)
     probabilities = cut_circuit.get_probabilities()
     cut_circuit.verify(probabilities, atol=atol, raise_error=True)
