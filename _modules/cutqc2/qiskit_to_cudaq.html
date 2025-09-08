@@ -294,8 +294,8 @@
             <span class="n">instr_name</span> <span class="o">=</span> <span class="n">instr</span><span class="o">.</span><span class="n">name</span>
             <span class="k">if</span> <span class="n">instr_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"reset"</span><span class="p">,</span> <span class="s2">"measure"</span><span class="p">,</span> <span class="s2">"measure_all"</span><span class="p">,</span> <span class="s2">"barrier"</span><span class="p">):</span>
                 <span class="k">continue</span>  <span class="c1"># TODO: Handle these!</span>
-            <span class="k">else</span><span class="p">:</span>  <span class="c1"># assume gate</span>
-                <span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gate</span><span class="p">(</span><span class="n">qc</span><span class="p">,</span> <span class="n">instr_name</span><span class="p">,</span> <span class="n">instr</span><span class="p">))</span>
+            <span class="c1"># assume gate</span>
+            <span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gate</span><span class="p">(</span><span class="n">qc</span><span class="p">,</span> <span class="n">instr_name</span><span class="p">,</span> <span class="n">instr</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">ast</span><span class="o">.</span><span class="n">Module</span><span class="p">(</span>
             <span class="n">body</span><span class="o">=</span><span class="p">[</span>

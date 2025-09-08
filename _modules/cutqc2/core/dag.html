@@ -255,7 +255,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            str: The string in the format 'name[wire_index]gate_index'.</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="s2">"</span><span class="si">%s</span><span class="s2">[</span><span class="si">%d</span><span class="s2">]</span><span class="si">%d</span><span class="s2">"</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">wire_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gate_index</span><span class="p">)</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">wire_index</span><span class="si">}</span><span class="s2">]</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gate_index</span><span class="si">}</span><span class="s2">"</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">"DagNode"</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span>
@@ -276,7 +276,7 @@
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wire_index</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">wire_index</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">wire_index</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">wire_index</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">wire_index</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">wire_index</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">gate_index</span> <span class="o">&lt;</span> <span class="n">other</span><span class="o">.</span><span class="n">gate_index</span>
         <span class="k">return</span> <span class="kc">False</span>
 
