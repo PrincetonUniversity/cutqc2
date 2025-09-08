@@ -248,30 +248,6 @@
 
 
 
-<div class="viewcode-block" id="distribute">
-<a class="viewcode-back" href="../../../src/cutqc2.core.html#cutqc2.core.utils.distribute">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">distribute</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">probabilities</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">],</span> <span class="n">capacity</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="n">largest_bin_value</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">largest_bin_index</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">largest_bin_qubit_spec</span> <span class="o">=</span> <span class="s2">""</span>
-    <span class="k">for</span> <span class="n">_qubit_spec</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">probabilities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">largest_bin_value_candidate</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">largest_bin_value_candidate</span> <span class="o">&gt;</span> <span class="n">largest_bin_value</span><span class="p">:</span>
-            <span class="n">largest_bin_value</span> <span class="o">=</span> <span class="n">largest_bin_value_candidate</span>
-            <span class="n">largest_bin_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span>
-            <span class="n">largest_bin_qubit_spec</span> <span class="o">=</span> <span class="n">_qubit_spec</span>
-
-    <span class="n">largest_bin_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">largest_bin_index</span><span class="si">:</span><span class="s2">0</span><span class="si">{</span><span class="n">n_qubits</span><span class="si">}</span><span class="s2">b</span><span class="si">}</span><span class="s2">"</span>
-    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_qubits</span><span class="p">):</span>
-        <span class="n">largest_bin_qubit_spec</span> <span class="o">=</span> <span class="n">largest_bin_qubit_spec</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-            <span class="s2">"A"</span><span class="p">,</span> <span class="n">largest_bin_str</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="mi">1</span>
-        <span class="p">)</span>
-    <span class="c1"># qubit_spec = qubit_spec.replace("M", "A", capacity)</span>
-
-    <span class="k">return</span> <span class="n">largest_bin_qubit_spec</span></div>
-
-
-
 <div class="viewcode-block" id="merge_prob_vector">
 <a class="viewcode-back" href="../../../src/cutqc2.core.html#cutqc2.core.utils.merge_prob_vector">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">merge_prob_vector</span><span class="p">(</span><span class="n">unmerged_prob_vector</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">qubit_spec</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
