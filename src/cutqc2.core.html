@@ -221,7 +221,25 @@
         </li></ul>
             </nav>
         </li>
-        <li class="md-nav__item"><a href="#cutqc2-core-dynamic-definition-module" class="md-nav__link">cutqc2.core.dynamic_definition module</a>
+        <li class="md-nav__item"><a href="#module-cutqc2.core.dynamic_definition" class="md-nav__link">cutqc2.core.dynamic_definition module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cutqc2.core.dynamic_definition.Bin" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Bin</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.core.dynamic_definition.DynamicDefinition" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DynamicDefinition</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cutqc2.core.dynamic_definition.DynamicDefinition.plot" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DynamicDefinition.plot()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.core.dynamic_definition.DynamicDefinition.pop" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DynamicDefinition.pop()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.core.dynamic_definition.DynamicDefinition.probabilities" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DynamicDefinition.probabilities()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.core.dynamic_definition.DynamicDefinition.push" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DynamicDefinition.push()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.core.dynamic_definition.DynamicDefinition.run" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">DynamicDefinition.run()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
         </li>
         <li class="md-nav__item"><a href="#module-cutqc2.core.utils" class="md-nav__link">cutqc2.core.utils module</a><nav class="md-nav">
               <ul class="md-nav__list">
@@ -394,8 +412,59 @@ Note: <cite>gate_index</cite> assumes that only inter-wire gates are considered.
 </dd></dl>
 </dd></dl>
 </section>
-<section id="cutqc2-core-dynamic-definition-module">
-<h2 id="cutqc2-core-dynamic-definition-module">cutqc2.core.dynamic_definition module<a class="headerlink" href="#cutqc2-core-dynamic-definition-module" title="Link to this heading">¶</a></h2>
+<section id="module-cutqc2.core.dynamic_definition">
+<span id="cutqc2-core-dynamic-definition-module"></span><h2 id="module-cutqc2.core.dynamic_definition">cutqc2.core.dynamic_definition module<a class="headerlink" href="#module-cutqc2.core.dynamic_definition" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="cutqc2.core.dynamic_definition.Bin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cutqc2.core.dynamic_definition.</span></span><span class="sig-name descname"><span class="pre">Bin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubit_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">probabilities</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/dynamic_definition.html#Bin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.dynamic_definition.Bin" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A Bin represents a collection of qubits with a specific configuration
+(given by <cite>qubit_spec</cite>) and the associated probabilities.</p>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="cutqc2.core.dynamic_definition.DynamicDefinition">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cutqc2.core.dynamic_definition.</span></span><span class="sig-name descname"><span class="pre">DynamicDefinition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_qubits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prob_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/dynamic_definition.html#DynamicDefinition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.dynamic_definition.DynamicDefinition" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>DynamicDefinition is a class that implements the dynamic definition
+algorithm for quantum probability distribution reconstruction.
+It recursively zooms-in on qubits (initially “merged”) that have a high
+probability mass.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.core.dynamic_definition.DynamicDefinition.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">auto</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prob_mass_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_bars</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/dynamic_definition.html#DynamicDefinition.plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.dynamic_definition.DynamicDefinition.plot" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.core.dynamic_definition.DynamicDefinition.pop">
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/dynamic_definition.html#DynamicDefinition.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.dynamic_definition.DynamicDefinition.pop" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#cutqc2.core.dynamic_definition.Bin" title="cutqc2.core.dynamic_definition.Bin"><code class="xref py py-class docutils literal notranslate"><span class="pre">Bin</span></code></a></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.core.dynamic_definition.DynamicDefinition.probabilities">
+<span class="sig-name descname"><span class="pre">probabilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/dynamic_definition.html#DynamicDefinition.probabilities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.dynamic_definition.DynamicDefinition.probabilities" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.core.dynamic_definition.DynamicDefinition.push">
+<span class="sig-name descname"><span class="pre">push</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/dynamic_definition.html#DynamicDefinition.push"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.dynamic_definition.DynamicDefinition.push" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.core.dynamic_definition.DynamicDefinition.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_recursion</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/dynamic_definition.html#DynamicDefinition.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.dynamic_definition.DynamicDefinition.run" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
 </section>
 <section id="module-cutqc2.core.utils">
 <span id="cutqc2-core-utils-module"></span><h2 id="module-cutqc2.core.utils">cutqc2.core.utils module<a class="headerlink" href="#module-cutqc2.core.utils" title="Link to this heading">¶</a></h2>
