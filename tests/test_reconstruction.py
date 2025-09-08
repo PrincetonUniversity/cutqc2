@@ -23,10 +23,8 @@ def test_supremacy_reconstruction_with_increasing_capacity():
         num_subcircuits=[3],
     )
     cut_circuit.run_subcircuits()
-    cut_circuit.postprocess()
-    probabilities = cut_circuit.get_probabilities()
 
-    errors = [cut_circuit.verify(probabilities, raise_error=False)]
+    errors = []
     for capacity in (
         1,
         2,
@@ -35,10 +33,13 @@ def test_supremacy_reconstruction_with_increasing_capacity():
         5,
         6,
     ):
-        _error = cut_circuit.verify(probabilities, capacity=capacity, raise_error=False)
+        cut_circuit.postprocess(capacity=capacity)
+        probabilities = cut_circuit.get_probabilities()
+        error = cut_circuit.verify(probabilities, raise_error=False)
         # error should decrease with increasing capacity
-        assert _error <= errors[-1]
-        errors.append(_error)
+        if len(errors) > 0:
+            assert error <= errors[-1]
+        errors.append(error)
 
     # The final error with full capacity should be very small
-    assert _error < 1e-10
+    assert error < 1e-10

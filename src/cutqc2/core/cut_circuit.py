@@ -133,10 +133,9 @@ class CutCircuit:
             filepath = Path(filepath)
 
         # Keep imports local to this function
-        from cutqc2.io.h5 import h5_to_cut_circuit
         from cutqc2.io.zarr import zarr_to_cut_circuit
 
-        supported_formats = {".h5": h5_to_cut_circuit, ".zarr": zarr_to_cut_circuit}
+        supported_formats = {".zarr": zarr_to_cut_circuit}
         assert filepath.suffix in supported_formats, "Unsupported format"
         return supported_formats[filepath.suffix](filepath, *args, **kwargs)
 
