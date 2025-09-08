@@ -1,4 +1,5 @@
 import numpy as np
+
 from cutqc2.core.cut_circuit import CutCircuit
 
 

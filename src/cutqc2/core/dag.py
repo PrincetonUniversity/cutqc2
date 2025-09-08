@@ -1,4 +1,5 @@
 from itertools import product
+
 from qiskit.circuit import Qubit
 from qiskit.dagcircuit import DAGCircuit
 

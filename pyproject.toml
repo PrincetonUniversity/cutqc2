@@ -68,3 +68,8 @@ addopts = "-sv"
 
 [tool.ruff]
 exclude = ["src/cutqc2/cutqc/**"]
+
+[tool.ruff.lint]
+extend-select = [
+  "I",           # isort
+]

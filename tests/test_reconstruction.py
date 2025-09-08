@@ -1,6 +1,7 @@
 import math
-from cutqc2.cutqc.helper_functions.benchmarks import generate_circ
+
 from cutqc2.core.cut_circuit import CutCircuit
+from cutqc2.cutqc.helper_functions.benchmarks import generate_circ
 
 
 def test_supremacy_reconstruction_with_increasing_capacity():

@@ -1,33 +1,32 @@
-from pathlib import Path
-from copy import deepcopy
 import itertools
 import logging
-import numpy as np
-from typing import Self
-from dataclasses import dataclass
 import warnings
-from matplotlib import pyplot as plt
+from copy import deepcopy
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Self
+
 import cupy as cp
+import numpy as np
+from matplotlib import pyplot as plt
 from mpi4py import MPI
-
 from qiskit import QuantumCircuit
-from qiskit.qasm3 import loads
-from qiskit.circuit.operation import Operation
+from qiskit.circuit import CircuitInstruction, QuantumRegister, Qubit
 from qiskit.circuit.library import UnitaryGate
-from qiskit.circuit import Qubit, QuantumRegister, CircuitInstruction
+from qiskit.circuit.operation import Operation
 from qiskit.converters import circuit_to_dag
-from qiskit.dagcircuit import DAGOpNode, DAGCircuit
+from qiskit.dagcircuit import DAGCircuit, DAGOpNode
+from qiskit.qasm3 import loads
 
-from cutqc2.cutqc.cutqc.evaluator import run_subcircuit_instances, attribute_shots
+from cutqc2.core.dag import DAGEdge, DagNode
+from cutqc2.core.dynamic_definition import DynamicDefinition
+from cutqc2.core.utils import chunked, merge_prob_vector, permute_bits_vectorized
+from cutqc2.cupy import vector_kron
 from cutqc2.cutqc.cutqc.compute_graph import ComputeGraph
-from cutqc2.cutqc.helper_functions.non_ibmq_functions import evaluate_circ
+from cutqc2.cutqc.cutqc.evaluator import attribute_shots, run_subcircuit_instances
 from cutqc2.cutqc.helper_functions.conversions import quasi_to_real
 from cutqc2.cutqc.helper_functions.metrics import MSE
-from cutqc2.core.dag import DagNode, DAGEdge
-from cutqc2.core.utils import merge_prob_vector, permute_bits_vectorized, chunked
-from cutqc2.core.dynamic_definition import DynamicDefinition
-from cutqc2.cupy import vector_kron
-
+from cutqc2.cutqc.helper_functions.non_ibmq_functions import evaluate_circ
 
 logger = logging.getLogger(__name__)
 
@@ -256,8 +255,8 @@ class CutCircuit:
 
         if legacy:
             from cutqc2.legacy.cutqc.cutqc.post_process_helper import (
-                get_instance_init_meas,
                 convert_to_physical_init,
+                get_instance_init_meas,
             )
 
             initializations = paulis
@@ -759,10 +758,13 @@ class CutCircuit:
         starts = [0]
         for length in effective_qubits[:-1]:
             starts.append(starts[-1] + length)
-        ends = [start + length for start, length in zip(starts, effective_qubits)]
+        ends = [
+            start + length
+            for start, length in zip(starts, effective_qubits, strict=False)
+        ]
 
         effective_qubits_dict = {}
-        for j, start, end in zip(self.smart_order, starts, ends):
+        for j, start, end in zip(self.smart_order, starts, ends, strict=False):
             effective_qubits_dict[j] = qubit_spec[start:end]
         return effective_qubits_dict, active_qubits
 
@@ -1069,7 +1071,9 @@ class CutCircuit:
             ):
                 subcircuit_entry_init = ["zero"] * bare_subcircuit.num_qubits
                 subcircuit_entry_meas = ["comp"] * bare_subcircuit.num_qubits
-                for edge_basis, edge in zip(subcircuit_edge_bases, subcircuit_edges):
+                for edge_basis, edge in zip(
+                    subcircuit_edge_bases, subcircuit_edges, strict=False
+                ):
                     (
                         upstream_subcircuit_idx,
                         downstream_subcircuit_idx,

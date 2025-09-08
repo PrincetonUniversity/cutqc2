@@ -1,6 +1,7 @@
 from math import pi
-from qiskit import QuantumCircuit
+
 import pytest
+from qiskit import QuantumCircuit
 
 
 @pytest.fixture(scope="function")

@@ -1,6 +1,5 @@
 import logging.config
 
-
 __version__ = "0.0.5"
 
 logging.config.dictConfig(

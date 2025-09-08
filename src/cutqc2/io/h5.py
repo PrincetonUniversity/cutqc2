@@ -1,8 +1,10 @@
 from pathlib import Path
+
+import cupy as cp
 import h5py
 import numpy as np
-import cupy as cp
 from qiskit.qasm3 import dumps, loads
+
 from cutqc2 import __version__
 from cutqc2.core.cut_circuit import CutCircuit
 from cutqc2.core.dag import DAGEdge

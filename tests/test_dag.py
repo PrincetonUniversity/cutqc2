@@ -1,5 +1,6 @@
 import pytest
-from cutqc2.core.dag import DagNode, DAGEdge
+
+from cutqc2.core.dag import DAGEdge, DagNode
 
 
 def test_dag_node_from_str():

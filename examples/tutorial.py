@@ -1,5 +1,7 @@
 from math import pi
+
 import qiskit
+
 from cutqc2.core.cut_circuit import CutCircuit
 
 

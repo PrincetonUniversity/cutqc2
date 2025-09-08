@@ -1,9 +1,9 @@
-import logging
 import itertools
+import logging
 import warnings
+
 import cupy as cp
 import numpy as np
-
 
 logger = logging.getLogger(__name__)
 

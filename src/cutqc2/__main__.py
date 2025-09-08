@@ -1,8 +1,9 @@
-from mpi4py import MPI
-import click
 import logging
-from cutqc2.core.cut_circuit import CutCircuit
 
+import click
+from mpi4py import MPI
+
+from cutqc2.core.cut_circuit import CutCircuit
 
 logger = logging.getLogger("cutqc2")
 

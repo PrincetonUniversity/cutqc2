@@ -1,13 +1,15 @@
 import heapq
-import zarr
-import numpy as np
-import cupy as cp
 from pathlib import Path
+
+import cupy as cp
+import numpy as np
+import zarr
 from qiskit.qasm3 import dumps, loads
+
 from cutqc2 import __version__
 from cutqc2.core.cut_circuit import CutCircuit
 from cutqc2.core.dag import DAGEdge
-from cutqc2.core.dynamic_definition import DynamicDefinition, Bin
+from cutqc2.core.dynamic_definition import Bin, DynamicDefinition
 
 
 def cut_circuit_to_zarr(

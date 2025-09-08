@@ -1,7 +1,7 @@
 import ast
-import qiskit
-from cudaq import kernel, draw
 
+import qiskit
+from cudaq import draw, kernel
 
 """
 Mapping of Qiskit gates to CUDAq gates.

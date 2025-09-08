@@ -1,11 +1,12 @@
-from typing import Callable
+import heapq
 import logging
 import warnings
-import heapq
+from typing import Callable
+
 import numpy as np
 from matplotlib import pyplot as plt
-from cutqc2.core.utils import unmerge_prob_vector
 
+from cutqc2.core.utils import unmerge_prob_vector
 
 logger = logging.getLogger(__name__)
 

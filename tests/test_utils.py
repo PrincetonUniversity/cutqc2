@@ -1,4 +1,5 @@
 import numpy as np
+
 from cutqc2.core.utils import permute_bits, permute_bits_vectorized
 
 
