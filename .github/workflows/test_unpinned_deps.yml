@@ -37,7 +37,7 @@ jobs:
 
     - name: Install package with dev deps
       run: |
-        uv pip install --python .venv/bin/python -e .[dev]
+        uv pip install --python .venv/bin/python -e .[dev,gpu]
         uv pip freeze --python .venv/bin/python
 
     - name: Pytest

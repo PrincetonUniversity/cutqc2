@@ -1,7 +1,6 @@
 import heapq
 from pathlib import Path
 
-import cupy as cp
 import numpy as np
 import zarr
 from qiskit.qasm3 import dumps, loads
@@ -10,6 +9,7 @@ from cutqc2 import __version__
 from cutqc2.core.cut_circuit import CutCircuit
 from cutqc2.core.dag import DAGEdge
 from cutqc2.core.dynamic_definition import Bin, DynamicDefinition
+from cutqc2.numeric import xp
 
 
 def cut_circuit_to_zarr(cut_circuit, filepath: str | Path) -> None:
@@ -86,7 +86,7 @@ def cut_circuit_to_zarr(cut_circuit, filepath: str | Path) -> None:
 
                 subcircuit_group.create_array(
                     "packed_probabilities",
-                    data=cp.asnumpy(cut_circuit.get_packed_probabilities(subcircuit_i)),
+                    data=xp.asnumpy(cut_circuit.get_packed_probabilities(subcircuit_i)),
                 )
 
         # Dynamic Definition
@@ -108,7 +108,7 @@ def cut_circuit_to_zarr(cut_circuit, filepath: str | Path) -> None:
                     }
                 )
                 bin_group.create_array(
-                    "probabilities", data=cp.asnumpy(bin.probabilities)
+                    "probabilities", data=xp.asnumpy(bin.probabilities)
                 )
 
 

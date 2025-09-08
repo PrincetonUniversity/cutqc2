@@ -135,6 +135,7 @@ pylatexenc==2.10
 pyparsing==3.2.3
 pytest==8.4.1
 python-dateutil==2.9.0.post0
+python-dotenv==1.1.1
 python-json-logger==3.3.0
 python-slugify==8.0.4
 pyyaml==6.0.2

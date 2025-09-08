@@ -2,8 +2,9 @@ import itertools
 import logging
 import warnings
 
-import cupy as cp
 import numpy as np
+
+from cutqc2.numeric import xp
 
 logger = logging.getLogger(__name__)
 
@@ -73,9 +74,9 @@ def merge_prob_vector(unmerged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
     num_active = len(active_qubit_indices)
 
     if num_active == num_qubits:
-        return cp.copy(cp.asarray(unmerged_prob_vector))
+        return xp.copy(xp.asarray(unmerged_prob_vector))
 
-    merged_prob_vector = cp.zeros(2**num_active, dtype="float32")
+    merged_prob_vector = xp.zeros(2**num_active, dtype="float32")
 
     for state in range(len(unmerged_prob_vector)):
         match = True

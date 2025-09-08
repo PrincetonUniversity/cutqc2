@@ -1,0 +1,20 @@
+# A section for testing purposes
+pytest:
+  astring: foo
+  atrue: true
+  afalse: false
+  nested:
+    aint: 42
+  # A variable that is obtained from an environment variable
+  # If no environment variable exists, then no value is substituted.
+  adynamic: "{CUTQC2_PYTEST_ENV_VAR}"
+  # A special variable __dir__that points to the directory of this config
+  # file. It has a leading slash but no trailing slash
+  # A prefix and suffix are added below for illustrative purposes
+  aspecial: foo__dir__/bar  # foo/path/to/this/dir/bar
+  anull: ~
+
+
+core:
+  numeric: cupy
+

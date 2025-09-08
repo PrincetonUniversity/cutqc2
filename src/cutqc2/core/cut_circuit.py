@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Self
 
-import cupy as cp
 import numpy as np
 from matplotlib import pyplot as plt
 from mpi4py import MPI
@@ -27,6 +26,7 @@ from cutqc2.cutqc.cutqc.evaluator import attribute_shots, run_subcircuit_instanc
 from cutqc2.cutqc.helper_functions.conversions import quasi_to_real
 from cutqc2.cutqc.helper_functions.metrics import MSE
 from cutqc2.cutqc.helper_functions.non_ibmq_functions import evaluate_circ
+from cutqc2.numeric import xp
 
 logger = logging.getLogger(__name__)
 
@@ -700,10 +700,10 @@ class CutCircuit:
             if qubit_spec is not None
             else self.compute_graph.nodes[subcircuit_i]["effective"]
         )
-        probs = cp.zeros(((4,) * n_prob_vecs + (2**prob_vec_length,)), dtype="float32")
+        probs = xp.zeros(((4,) * n_prob_vecs + (2**prob_vec_length,)), dtype="float32")
 
         for k, value in self.subcircuit_entry_probs[subcircuit_i].items():
-            value_cp = cp.asarray(value)
+            value_cp = xp.asarray(value)
             # we store probabilities as the flat value of init/meas, without the unused locations,
             # with I=0, X=1, Y=2, Z=3.
             # So, for example, index (0, 1, 2, 0) might correspond to any of:
@@ -768,7 +768,7 @@ class CutCircuit:
         log_every: int | None = None,
         total_work: int | None = None,
     ) -> np.array:
-        result = cp.zeros(2**active_qubits, dtype="float32")
+        result = xp.zeros(2**active_qubits, dtype="float32")
 
         for j, initializations in enumerate(initializations_list):
             if log_every is not None and j % log_every == 0:
@@ -842,7 +842,7 @@ class CutCircuit:
                 logger.info(f"{num_workers=}, {chunk_size=}")
 
                 gen = chunked(gen, chunk_size=chunk_size)
-                result = cp.zeros(2**active_qubits, "float32")
+                result = xp.zeros(2**active_qubits, "float32")
                 processed_work = 0
 
                 # Initially send one work item to each worker
