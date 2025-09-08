@@ -6,7 +6,7 @@ import cupy as cp
 def get_module():
     # This operation is expensive - call it as few times as possible.
     # We declare a global variable `cp_module` to store the compiled module.
-    with open(Path(__file__).parent / "cutqc.cu") as f:
+    with Path.open(Path(__file__).parent / "cutqc.cu") as f:
         code = f.read()
     return cp.RawModule(code=code, options=("-std=c++11",))
 
@@ -15,7 +15,8 @@ cp_module = get_module()
 
 
 def vector_kron(a: cp.array, b: cp.array):
-    assert a.ndim == 1 and b.ndim == 1
+    assert a.ndim == 1
+    assert b.ndim == 1
     p, q = a.shape[0], b.shape[0]
 
     vector_kron_kernel = cp_module.get_function("vectorKron")

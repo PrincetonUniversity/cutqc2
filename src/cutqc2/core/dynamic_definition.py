@@ -1,7 +1,7 @@
 import heapq
 import logging
 import warnings
-from typing import Callable
+from collections.abc import Callable
 
 import numpy as np
 from matplotlib import pyplot as plt

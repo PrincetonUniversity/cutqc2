@@ -112,7 +112,7 @@ def cut_circuit_to_zarr(cut_circuit, filepath: str | Path) -> None:
                 )
 
 
-def zarr_to_cut_circuit(filepath: str | Path) -> CutCircuit:
+def zarr_to_cut_circuit(filepath: str | Path) -> CutCircuit:  # noqa: PLR0912
     if isinstance(filepath, str):
         filepath = Path(filepath)
 

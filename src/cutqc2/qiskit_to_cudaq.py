@@ -94,8 +94,8 @@ class Kernel:
             instr_name = instr.name
             if instr_name in ("reset", "measure", "measure_all", "barrier"):
                 continue  # TODO: Handle these!
-            else:  # assume gate
-                body.append(gate(qc, instr_name, instr))
+            # assume gate
+            body.append(gate(qc, instr_name, instr))
 
         return ast.Module(
             body=[

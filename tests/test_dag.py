@@ -72,7 +72,7 @@ def test_dage_edges_common_wire_error():
         DagNode(wire_index=3, gate_index=4), DagNode(wire_index=2, gate_index=2)
     )
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError):  # noqa: PT011
         edge1 | edge2
 
 

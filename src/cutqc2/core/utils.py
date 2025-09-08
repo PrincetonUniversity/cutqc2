@@ -85,7 +85,7 @@ def merge_prob_vector(unmerged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
             if spec == "0" and bit_val != 0:
                 match = False
                 break
-            elif spec == "1" and bit_val != 1:
+            if spec == "1" and bit_val != 1:
                 match = False
                 break
         if not match:
