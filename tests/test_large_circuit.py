@@ -3,8 +3,8 @@ Tests for end-end verification of large circuits.
 Both correctness and performance can/should be tested here.
 """
 
-from cutqc2.cutqc.helper_functions.benchmarks import construct_random
 from cutqc2.core.cut_circuit import CutCircuit
+from cutqc2.cutqc.helper_functions.benchmarks import construct_random
 
 
 def test_verify():

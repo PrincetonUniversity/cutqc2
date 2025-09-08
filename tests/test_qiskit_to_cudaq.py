@@ -1,6 +1,8 @@
 import textwrap
+
 import cudaq
 from qiskit.primitives import StatevectorSampler
+
 from cutqc2.qiskit_to_cudaq import Kernel
 
 

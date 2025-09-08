@@ -1,8 +1,9 @@
-from mpi4py import MPI
-import click
 import logging
-from cutqc2.core.cut_circuit import CutCircuit
 
+import click
+from mpi4py import MPI
+
+from cutqc2.core.cut_circuit import CutCircuit
 
 logger = logging.getLogger("cutqc2")
 
@@ -18,7 +19,9 @@ def cli():
 
 
 @cli.command()
-@click.option("--file", required=True, help="qasm3 file location.")
+@click.option(
+    "--file", type=click.File("r"), required=True, help="qasm3 file location."
+)
 @click.option(
     "--max-subcircuit-width", help="Max subcircuit width.", type=int, default=6
 )
@@ -44,7 +47,7 @@ def cli():
     type=str,
     help="Output file to save the cut circuit in Zarr format.",
 )
-def cut(
+def cut(  # noqa: PLR0913
     file,
     max_subcircuit_width,
     max_subcircuit_cuts,
@@ -53,8 +56,7 @@ def cut(
     num_subcircuits,
     output_file,
 ):
-    with open(file, "r") as f:
-        circuit_qasm3 = f.read()
+    circuit_qasm3 = file.read()
     cut_circuit = CutCircuit(circuit_qasm3=circuit_qasm3)
     cut_circuit.cut(
         max_subcircuit_width=max_subcircuit_width,
@@ -88,7 +90,7 @@ def cut(
     help="Save results to Zarr file after postprocessing.",
 )
 @click.option("--atol", default=1e-8, help="Absolute tolerance for verification.")
-def postprocess(file, capacity, max_recursion, verify, save, atol):
+def postprocess(file, capacity, max_recursion, verify, save, atol):  # noqa: PLR0913
     cut_circuit = CutCircuit.from_file(file)
     cut_circuit.postprocess(capacity=capacity, max_recursion=max_recursion)
     if rank == 0:
@@ -110,9 +112,8 @@ def verify(file, atol):
 
 @cli.command()
 @click.option("--file", required=True, help="Zarr file location.")
-@click.option("--output-file", required=True, help="Output png file location.")
 @click.option("--atol", default=1e-10, help="Absolute tolerance for verification.")
-def plot(file, output_file, atol):
+def plot(file, atol):
     cut_circuit = CutCircuit.from_file(file)
     probabilities = cut_circuit.get_probabilities()
     cut_circuit.verify(probabilities, atol=atol, raise_error=True)

@@ -1,17 +1,14 @@
-from typing import Callable
+import heapq
 import logging
 import warnings
-import heapq
+from collections.abc import Callable
+
 import numpy as np
 from matplotlib import pyplot as plt
-from mpi4py import MPI
+
 from cutqc2.core.utils import unmerge_prob_vector
 
-
 logger = logging.getLogger(__name__)
-mpi_comm = MPI.COMM_WORLD
-mpi_rank = mpi_comm.Get_rank()
-mpi_size = mpi_comm.Get_size()
 
 
 class Bin:
@@ -151,7 +148,8 @@ class DynamicDefinition:
     def probabilities(self, full_states: np.ndarray | None = None) -> np.ndarray:
         if full_states is None:
             warnings.warn(
-                "Generating all 2^num_qubits states. This may be memory intensive."
+                "Generating all 2^num_qubits states. This may be memory intensive.",
+                stacklevel=2,
             )
             full_states = np.arange(2**self.num_qubits, dtype="int64")
 

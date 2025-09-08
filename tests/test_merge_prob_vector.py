@@ -1,6 +1,8 @@
 from itertools import product
-import numpy as np
+
 import cupy as cp
+import numpy as np
+
 from cutqc2.core.utils import merge_prob_vector, unmerge_prob_vector
 
 

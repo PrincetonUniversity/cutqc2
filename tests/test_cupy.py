@@ -1,5 +1,6 @@
-from cutqc2.cupy import vector_kron
 import cupy as cp
+
+from cutqc2.cupy import vector_kron
 
 
 def test_vector_kron():

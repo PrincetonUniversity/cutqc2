@@ -1,9 +1,10 @@
 from math import pi
-from qiskit import QuantumCircuit
+
 import pytest
+from qiskit import QuantumCircuit
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture
 def figure_4_qiskit_circuit():
     qc = QuantumCircuit(5)
     qc.reset(0)

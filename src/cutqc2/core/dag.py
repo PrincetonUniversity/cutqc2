@@ -1,4 +1,5 @@
 from itertools import product
+
 from qiskit.circuit import Qubit
 from qiskit.dagcircuit import DAGCircuit
 
@@ -53,7 +54,7 @@ class DagNode:
         Returns:
             str: The string in the format 'name[wire_index]gate_index'.
         """
-        return "%s[%d]%d" % (self.name, self.wire_index, self.gate_index)
+        return f"{self.name}[{self.wire_index}]{self.gate_index}"
 
     def __eq__(self, other: "DagNode"):
         return (
@@ -74,7 +75,7 @@ class DagNode:
         """
         if self.wire_index < other.wire_index:
             return True
-        elif self.wire_index == other.wire_index:
+        if self.wire_index == other.wire_index:
             return self.gate_index < other.gate_index
         return False
 

@@ -1,8 +1,10 @@
 import textwrap
+
 import pytest
 from qiskit import QuantumCircuit
+
 from cutqc2.core.cut_circuit import CutCircuit
-from cutqc2.core.dag import DagNode, DAGEdge
+from cutqc2.core.dag import DAGEdge, DagNode
 
 
 @pytest.fixture(scope="module")

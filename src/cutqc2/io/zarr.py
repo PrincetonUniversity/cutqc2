@@ -1,20 +1,18 @@
 import heapq
-import zarr
-import numpy as np
-import cupy as cp
 from pathlib import Path
+
+import cupy as cp
+import numpy as np
+import zarr
 from qiskit.qasm3 import dumps, loads
+
 from cutqc2 import __version__
 from cutqc2.core.cut_circuit import CutCircuit
 from cutqc2.core.dag import DAGEdge
-from cutqc2.core.dynamic_definition import DynamicDefinition, Bin
+from cutqc2.core.dynamic_definition import Bin, DynamicDefinition
 
 
-def cut_circuit_to_zarr(
-    cut_circuit,
-    filepath: str | Path,
-    chunk_size: int = 1024 * 1024,  # 1M entries = 4GB for float32
-) -> None:
+def cut_circuit_to_zarr(cut_circuit, filepath: str | Path) -> None:
     if isinstance(filepath, str):
         filepath = Path(filepath)
 
@@ -114,7 +112,7 @@ def cut_circuit_to_zarr(
                 )
 
 
-def zarr_to_cut_circuit(filepath: str | Path, *args, **kwargs) -> CutCircuit:
+def zarr_to_cut_circuit(filepath: str | Path) -> CutCircuit:  # noqa: PLR0912
     if isinstance(filepath, str):
         filepath = Path(filepath)
 

@@ -1,33 +1,32 @@
-from pathlib import Path
-from copy import deepcopy
 import itertools
 import logging
-import numpy as np
-from typing import Self
-from dataclasses import dataclass
 import warnings
-from matplotlib import pyplot as plt
+from copy import deepcopy
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Self
+
 import cupy as cp
+import numpy as np
+from matplotlib import pyplot as plt
 from mpi4py import MPI
-
 from qiskit import QuantumCircuit
-from qiskit.qasm3 import loads
-from qiskit.circuit.operation import Operation
+from qiskit.circuit import CircuitInstruction, QuantumRegister, Qubit
 from qiskit.circuit.library import UnitaryGate
-from qiskit.circuit import Qubit, QuantumRegister, CircuitInstruction
+from qiskit.circuit.operation import Operation
 from qiskit.converters import circuit_to_dag
-from qiskit.dagcircuit import DAGOpNode, DAGCircuit
+from qiskit.dagcircuit import DAGCircuit, DAGOpNode
+from qiskit.qasm3 import loads
 
-from cutqc2.cutqc.cutqc.evaluator import run_subcircuit_instances, attribute_shots
+from cutqc2.core.dag import DAGEdge, DagNode
+from cutqc2.core.dynamic_definition import DynamicDefinition
+from cutqc2.core.utils import chunked, merge_prob_vector, permute_bits_vectorized
+from cutqc2.cupy import vector_kron
 from cutqc2.cutqc.cutqc.compute_graph import ComputeGraph
-from cutqc2.cutqc.helper_functions.non_ibmq_functions import evaluate_circ
+from cutqc2.cutqc.cutqc.evaluator import attribute_shots, run_subcircuit_instances
 from cutqc2.cutqc.helper_functions.conversions import quasi_to_real
 from cutqc2.cutqc.helper_functions.metrics import MSE
-from cutqc2.core.dag import DagNode, DAGEdge
-from cutqc2.core.utils import merge_prob_vector, permute_bits_vectorized, chunked
-from cutqc2.core.dynamic_definition import DynamicDefinition
-from cutqc2.cupy import vector_kron
-
+from cutqc2.cutqc.helper_functions.non_ibmq_functions import evaluate_circ
 
 logger = logging.getLogger(__name__)
 
@@ -121,7 +120,7 @@ class CutCircuit:
         )
         dag = circuit_to_dag(circuit)
         for op_node in dag.topological_op_nodes():
-            assert len(op_node.qargs) <= 2, (
+            assert len(op_node.qargs) <= 2, (  # noqa: PLR2004
                 "CutQC currently does not support >2-qubit gates"
             )
             assert op_node.op.name != "barrier", (
@@ -134,10 +133,9 @@ class CutCircuit:
             filepath = Path(filepath)
 
         # Keep imports local to this function
-        from cutqc2.io.h5 import h5_to_cut_circuit
         from cutqc2.io.zarr import zarr_to_cut_circuit
 
-        supported_formats = {".h5": h5_to_cut_circuit, ".zarr": zarr_to_cut_circuit}
+        supported_formats = {".zarr": zarr_to_cut_circuit}
         assert filepath.suffix in supported_formats, "Unsupported format"
         return supported_formats[filepath.suffix](filepath, *args, **kwargs)
 
@@ -151,10 +149,10 @@ class CutCircuit:
             label = f"{i:04d}"
             new_op = instr.operation.copy().to_mutable()
             new_op.label = label
-            instr = CircuitInstruction(
+            new_instr = CircuitInstruction(
                 operation=new_op, qubits=instr.qubits, clbits=instr.clbits
             )
-            labeled_instructions.append(instr)
+            labeled_instructions.append(new_instr)
 
         labeled_circuit = QuantumCircuit.from_instructions(
             labeled_instructions, qubits=circuit.qubits, clbits=circuit.clbits
@@ -174,7 +172,7 @@ class CutCircuit:
             dag.add_qreg(qreg)
 
         for vertex in circuit_to_dag(circuit).topological_op_nodes():
-            if len(vertex.qargs) == 2 and vertex.op.name != "barrier":
+            if len(vertex.qargs) == 2 and vertex.op.name != "barrier":  # noqa: PLR2004
                 dag.apply_operation_back(op=vertex.op, qargs=vertex.qargs)
         return dag
 
@@ -192,7 +190,7 @@ class CutCircuit:
             qubit_gate_counter[qubit] = 0
 
         for vertex in dag.topological_op_nodes():
-            if len(vertex.qargs) != 2:
+            if len(vertex.qargs) != 2:  # noqa: PLR2004
                 raise Exception("vertex does not have 2 qargs!")
 
             arg0, arg1 = vertex.qargs
@@ -256,15 +254,14 @@ class CutCircuit:
 
         if legacy:
             from cutqc2.legacy.cutqc.cutqc.post_process_helper import (
-                get_instance_init_meas,
                 convert_to_physical_init,
+                get_instance_init_meas,
             )
 
             initializations = paulis
             measurements = []  # not used
             results = get_instance_init_meas(initializations, measurements)
-            coeffs_kets = [convert_to_physical_init(result[0]) for result in results]
-            return coeffs_kets
+            return [convert_to_physical_init(result[0]) for result in results]
         terms = {
             "zero": {"zero": 1},
             "I": {"zero": 1, "one": 1},
@@ -358,8 +355,7 @@ class CutCircuit:
 
             if mip_model.solve():
                 return mip_model.cut_edges_pairs, mip_model.subcircuits
-            else:
-                continue
+            continue
         raise RuntimeError("No viable cuts found")
 
     def add_cut_at_position(self, wire_index: int, gate_index: int):
@@ -391,7 +387,8 @@ class CutCircuit:
             wire_index: The index of the wire where the cut should be made.
         """
         warnings.warn(
-            "Method `add_cut` is deprecated. Use `add_cut_at_position` instead."
+            "Method `add_cut` is deprecated. Use `add_cut_at_position` instead.",
+            stacklevel=2,
         )
         cut_qubit = self.circuit.qubits[wire_index]
         gate_counter = {qubit: 0 for qubit in self.circuit.qubits}
@@ -407,9 +404,8 @@ class CutCircuit:
                 self.unlabeled_circuit.data.insert(i + 1, cut_instr)
                 found = True
                 break
-            else:
-                for qubit in instr.qubits:
-                    gate_counter[qubit] += 1
+            for qubit in instr.qubits:
+                gate_counter[qubit] += 1
 
         if found:
             gate_index = gate_counter[cut_qubit]
@@ -430,7 +426,7 @@ class CutCircuit:
             self.cut_dagedgepairs.append(cut_edge)
             self.add_cut_at_position(p.wire_index, p.gate_index)
 
-    def add_cuts_and_generate_subcircuits(
+    def add_cuts_and_generate_subcircuits(  # noqa: PLR0912, PLR0915
         self, cut_edges: list[tuple[DAGEdge, DAGEdge]], subcircuits: list[list[DAGEdge]]
     ):
         self.add_cuts(cut_edges=cut_edges)
@@ -480,7 +476,7 @@ class CutCircuit:
 
             if op_node.label in node_label_to_subcircuits:
                 # We're looking at a 2-qubit gate, for which we have a subcircuit index
-                assert len(op_node.qargs) == 2
+                assert len(op_node.qargs) == 2  # noqa: PLR2004
                 wire_index0, wire_index1 = (
                     op_node.qargs[0]._index,
                     op_node.qargs[1]._index,
@@ -580,7 +576,7 @@ class CutCircuit:
                     subcircuit_instructions[subcircuit_i].append(instr)
 
         # Create actual subcircuit from `subcircuit_instructions`
-        for subcircuit_i, instrs in subcircuit_instructions.items():
+        for instrs in subcircuit_instructions.values():
             subcircuit_size = max(instr.max_qarg() for instr in instrs) + 1
             subcircuit = QuantumCircuit(subcircuit_size, name="q")
             qreg = QuantumRegister(subcircuit_size, "q")
@@ -629,7 +625,7 @@ class CutCircuit:
                     self.circuit.qubits.index(input_qubit),
                 )
             )
-        for subcircuit_idx in subcircuit_out_qubits:
+        for subcircuit_idx in subcircuit_out_qubits:  # noqa: PLC0206
             subcircuit_out_qubits[subcircuit_idx] = sorted(
                 subcircuit_out_qubits[subcircuit_idx],
                 key=lambda x: self[subcircuit_idx].qubits.index(x[0]),
@@ -650,8 +646,7 @@ class CutCircuit:
         for subcircuit in self.smart_order:
             _result = reconstruction_qubit_order[subcircuit]
             result.extend(_result)
-        perm = np.argsort(result)[::-1]
-        return perm
+        return np.argsort(result)[::-1]
 
     def cut(
         self,
@@ -660,7 +655,6 @@ class CutCircuit:
         num_subcircuits: list[int],
         max_subcircuit_cuts: int,
         subcircuit_size_imbalance: int,
-        generate_subcircuits: bool = True,
     ):
         cut_edges_pairs, subcircuits = self.find_cuts(
             max_subcircuit_width=max_subcircuit_width,
@@ -708,8 +702,8 @@ class CutCircuit:
         )
         probs = cp.zeros(((4,) * n_prob_vecs + (2**prob_vec_length,)), dtype="float32")
 
-        for k, v in self.subcircuit_entry_probs[subcircuit_i].items():
-            v = cp.asarray(v)
+        for k, value in self.subcircuit_entry_probs[subcircuit_i].items():
+            value_cp = cp.asarray(value)
             # we store probabilities as the flat value of init/meas, without the unused locations,
             # with I=0, X=1, Y=2, Z=3.
             # So, for example, index (0, 1, 2, 0) might correspond to any of:
@@ -721,18 +715,15 @@ class CutCircuit:
             # The exact form can be determined by the number of in-degrees and out-degrees
             # of the subcircuit 'node' in the computation graph, as well as the O- and rho- qubits
             # in the 'edges' of the computation graph.
-            index = tuple(
-                [
-                    "IXYZ".index(x)
-                    for x in list(k[0]) + list(k[1])
-                    if x not in ("zero", "comp")
-                ]
-            ) + (Ellipsis,)
+            index = (
+                *("IXYZ".index(x) for x in [*k[0], *k[1]] if x not in ("zero", "comp")),
+                Ellipsis,
+            )
 
             if qubit_spec is None:
-                probs[index] = v
+                probs[index] = value_cp
             else:
-                probs[index] = merge_prob_vector(v, qubit_spec)
+                probs[index] = merge_prob_vector(value_cp, qubit_spec)
         return probs
 
     def get_all_subcircuit_packed_probs(
@@ -759,10 +750,13 @@ class CutCircuit:
         starts = [0]
         for length in effective_qubits[:-1]:
             starts.append(starts[-1] + length)
-        ends = [start + length for start, length in zip(starts, effective_qubits)]
+        ends = [
+            start + length
+            for start, length in zip(starts, effective_qubits, strict=False)
+        ]
 
         effective_qubits_dict = {}
-        for j, start, end in zip(self.smart_order, starts, ends):
+        for j, start, end in zip(self.smart_order, starts, ends, strict=False):
             effective_qubits_dict[j] = qubit_spec[start:end]
         return effective_qubits_dict, active_qubits
 
@@ -784,7 +778,7 @@ class CutCircuit:
             # every iteration, to maintain lexical ordering. (00, 01, 10 ...)
             # We wish to 'count up', with the 0th index advancing fastest,
             # so we reverse the obtained tuple from `itertools.product`.
-            initializations = np.array(initializations)[::-1]
+            initializations = np.array(initializations)[::-1]  # noqa: PLW2901
             measurements = initializations[self.in_to_out_mask]
 
             initialization_probabilities = None
@@ -908,7 +902,7 @@ class CutCircuit:
         return result
 
     def postprocess(
-        self, capacity: int | None = None, max_recursion: int = 1, quasi: bool = False
+        self, capacity: int | None = None, max_recursion: int = 1
     ) -> np.ndarray:
         logger.info("Postprocessing the cut circuit")
         if capacity is None:
@@ -962,7 +956,8 @@ class CutCircuit:
     ) -> np.ndarray:
         if full_states is None:
             warnings.warn(
-                "Generating all 2^num_qubits states. This may be memory intensive."
+                "Generating all 2^num_qubits states. This may be memory intensive.",
+                stacklevel=2,
             )
             full_states = np.arange(2**self.circuit.num_qubits, dtype="int64")
 
@@ -994,8 +989,6 @@ class CutCircuit:
     def verify(
         self,
         probabilities: np.ndarray,
-        capacity: int | None = None,
-        max_recursion: int = 1,
         backend: str = "statevector_simulator",
         atol: float = 1e-10,
         raise_error: bool = True,
@@ -1013,8 +1006,7 @@ class CutCircuit:
             msg = "Difference in cut circuit and uncut circuit is outside of floating point error tolerance"
             if raise_error:
                 raise RuntimeError(msg)
-            else:
-                logger.error(msg)
+            logger.error(msg)
 
         return approximation_error
 
@@ -1027,10 +1019,10 @@ class CutCircuit:
         self.compute_graph = ComputeGraph()
         counter = self.get_counter()
         for subcircuit_idx, subcircuit_attributes in counter.items():
-            subcircuit_attributes = deepcopy(subcircuit_attributes)
-            subcircuit_attributes["subcircuit"] = subcircuits[subcircuit_idx]
+            subcircuit_attributes_copy = deepcopy(subcircuit_attributes)
+            subcircuit_attributes_copy["subcircuit"] = subcircuits[subcircuit_idx]
             self.compute_graph.add_node(
-                subcircuit_idx=subcircuit_idx, attributes=subcircuit_attributes
+                subcircuit_idx=subcircuit_idx, attributes=subcircuit_attributes_copy
             )
 
         for circuit_qubit in self.complete_path_map:
@@ -1069,7 +1061,9 @@ class CutCircuit:
             ):
                 subcircuit_entry_init = ["zero"] * bare_subcircuit.num_qubits
                 subcircuit_entry_meas = ["comp"] * bare_subcircuit.num_qubits
-                for edge_basis, edge in zip(subcircuit_edge_bases, subcircuit_edges):
+                for edge_basis, edge in zip(
+                    subcircuit_edge_bases, subcircuit_edges, strict=False
+                ):
                     (
                         upstream_subcircuit_idx,
                         downstream_subcircuit_idx,
@@ -1123,10 +1117,9 @@ class CutCircuit:
             filepath = Path(filepath)
 
         # Keep imports local to this function
-        from cutqc2.io.h5 import cut_circuit_to_h5
         from cutqc2.io.zarr import cut_circuit_to_zarr
 
-        supported_formats = {".h5": cut_circuit_to_h5, ".zarr": cut_circuit_to_zarr}
+        supported_formats = {".zarr": cut_circuit_to_zarr}
         assert filepath.suffix in supported_formats, "Unsupported format"
         return supported_formats[filepath.suffix](self, filepath, *args, **kwargs)
 
@@ -1135,7 +1128,8 @@ class CutCircuit:
     ) -> None:
         if full_states is None:
             warnings.warn(
-                "Generating all 2^num_qubits states. This may be memory intensive."
+                "Generating all 2^num_qubits states. This may be memory intensive.",
+                stacklevel=2,
             )
             full_states = np.arange(2**self.circuit.num_qubits, dtype="int64")
 

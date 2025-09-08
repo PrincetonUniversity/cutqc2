@@ -1,7 +1,7 @@
 import ast
-import qiskit
-from cudaq import kernel, draw
 
+import qiskit
+from cudaq import draw, kernel
 
 """
 Mapping of Qiskit gates to CUDAq gates.
@@ -94,8 +94,8 @@ class Kernel:
             instr_name = instr.name
             if instr_name in ("reset", "measure", "measure_all", "barrier"):
                 continue  # TODO: Handle these!
-            else:  # assume gate
-                body.append(gate(qc, instr_name, instr))
+            # assume gate
+            body.append(gate(qc, instr_name, instr))
 
         return ast.Module(
             body=[

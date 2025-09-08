@@ -1,9 +1,9 @@
-import logging
 import itertools
+import logging
 import warnings
+
 import cupy as cp
 import numpy as np
-
 
 logger = logging.getLogger(__name__)
 
@@ -41,27 +41,6 @@ def permute_bits_vectorized(
         result |= ((arr >> src_bit_lsb) & 1) << dest_bit_lsb
 
     return result
-
-
-def distribute(n_qubits: int, probabilities: dict[str, np.array], capacity: int) -> str:
-    largest_bin_value = 0
-    largest_bin_index = 0
-    largest_bin_qubit_spec = ""
-    for _qubit_spec, prob in probabilities.items():
-        largest_bin_value_candidate = np.max(prob)
-        if largest_bin_value_candidate > largest_bin_value:
-            largest_bin_value = largest_bin_value_candidate
-            largest_bin_index = np.argmax(prob)
-            largest_bin_qubit_spec = _qubit_spec
-
-    largest_bin_str = f"{largest_bin_index:0{n_qubits}b}"
-    for j in range(n_qubits):
-        largest_bin_qubit_spec = largest_bin_qubit_spec.replace(
-            "A", largest_bin_str[j], 1
-        )
-    # qubit_spec = qubit_spec.replace("M", "A", capacity)
-
-    return largest_bin_qubit_spec
 
 
 def merge_prob_vector(unmerged_prob_vector: np.ndarray, qubit_spec: str) -> np.ndarray:
@@ -106,7 +85,7 @@ def merge_prob_vector(unmerged_prob_vector: np.ndarray, qubit_spec: str) -> np.n
             if spec == "0" and bit_val != 0:
                 match = False
                 break
-            elif spec == "1" and bit_val != 1:
+            if spec == "1" and bit_val != 1:
                 match = False
                 break
         if not match:
@@ -150,7 +129,8 @@ def unmerge_prob_vector(
     num_qubits = len(qubit_spec)
     if full_states is None:
         warnings.warn(
-            "Generating all 2^num_qubits states. This may be memory intensive."
+            "Generating all 2^num_qubits states. This may be memory intensive.",
+            stacklevel=2,
         )
         full_states = np.arange(2**num_qubits, dtype=np.int64)
 

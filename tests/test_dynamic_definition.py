@@ -1,13 +1,13 @@
-import numpy as np
 import cupy as cp
-from cutqc2.core.utils import merge_prob_vector
-from cutqc2.core.dynamic_definition import DynamicDefinition
+import numpy as np
 
+from cutqc2.core.dynamic_definition import DynamicDefinition
+from cutqc2.core.utils import merge_prob_vector
 
 full_distribution = np.append(np.zeros(15), 1)
 
 
-def probability_distribution(qubit_spec: str, **kwargs) -> np.ndarray:
+def probability_distribution(qubit_spec: str) -> np.ndarray:
     return merge_prob_vector(full_distribution, qubit_spec)
 
 

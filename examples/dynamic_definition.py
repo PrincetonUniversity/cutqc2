@@ -4,9 +4,9 @@ varying recursion levels on reconstruction of a 4-qubit BV Circuit.
 """
 
 import numpy as np
-from cutqc2.core.utils import merge_prob_vector
-from cutqc2.core.dynamic_definition import DynamicDefinition
 
+from cutqc2.core.dynamic_definition import DynamicDefinition
+from cutqc2.core.utils import merge_prob_vector
 
 # Emulate the probability distribution for a 4-qubit Bernstein-Vazirani problem
 four_qubit_BV_probability_distribution = np.append(np.zeros(15), 1)
@@ -22,7 +22,7 @@ if __name__ == "__main__":
         # (a string of 0/1/A/M characters), and returns the compressed quantum
         # probability vector by merging/conditioning on specific qubits.
         # The `merge_prob_vector` utility function from CutQC2 is used here.
-        prob_fn=lambda qubit_spec, **kwargs: merge_prob_vector(
+        prob_fn=lambda qubit_spec: merge_prob_vector(
             four_qubit_BV_probability_distribution, qubit_spec
         ),
     )
