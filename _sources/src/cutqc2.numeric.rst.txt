@@ -1,0 +1,29 @@
+cutqc2.numeric package
+======================
+
+Submodules
+----------
+
+cutqc2.numeric.cupy module
+--------------------------
+
+.. automodule:: cutqc2.numeric.cupy
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cutqc2.numeric.numpy module
+---------------------------
+
+.. automodule:: cutqc2.numeric.numpy
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cutqc2.numeric
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -11,9 +11,18 @@ Subpackages
    cutqc2.cupy
    cutqc2.io
    cutqc2.legacy
+   cutqc2.numeric
 
 Submodules
 ----------
+
+cutqc2.configuration module
+---------------------------
+
+.. automodule:: cutqc2.configuration
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 cutqc2.qiskit\_to\_cudaq module
 -------------------------------
