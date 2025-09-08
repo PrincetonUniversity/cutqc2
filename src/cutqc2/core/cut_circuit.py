@@ -390,7 +390,8 @@ class CutCircuit:
             wire_index: The index of the wire where the cut should be made.
         """
         warnings.warn(
-            "Method `add_cut` is deprecated. Use `add_cut_at_position` instead."
+            "Method `add_cut` is deprecated. Use `add_cut_at_position` instead.",
+            stacklevel=2,
         )
         cut_qubit = self.circuit.qubits[wire_index]
         gate_counter = {qubit: 0 for qubit in self.circuit.qubits}
@@ -579,7 +580,7 @@ class CutCircuit:
                     subcircuit_instructions[subcircuit_i].append(instr)
 
         # Create actual subcircuit from `subcircuit_instructions`
-        for subcircuit_i, instrs in subcircuit_instructions.items():
+        for instrs in subcircuit_instructions.values():
             subcircuit_size = max(instr.max_qarg() for instr in instrs) + 1
             subcircuit = QuantumCircuit(subcircuit_size, name="q")
             qreg = QuantumRegister(subcircuit_size, "q")
@@ -964,7 +965,8 @@ class CutCircuit:
     ) -> np.ndarray:
         if full_states is None:
             warnings.warn(
-                "Generating all 2^num_qubits states. This may be memory intensive."
+                "Generating all 2^num_qubits states. This may be memory intensive.",
+                stacklevel=2,
             )
             full_states = np.arange(2**self.circuit.num_qubits, dtype="int64")
 
@@ -1139,7 +1141,8 @@ class CutCircuit:
     ) -> None:
         if full_states is None:
             warnings.warn(
-                "Generating all 2^num_qubits states. This may be memory intensive."
+                "Generating all 2^num_qubits states. This may be memory intensive.",
+                stacklevel=2,
             )
             full_states = np.arange(2**self.circuit.num_qubits, dtype="int64")
 

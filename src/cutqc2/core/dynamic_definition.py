@@ -148,7 +148,8 @@ class DynamicDefinition:
     def probabilities(self, full_states: np.ndarray | None = None) -> np.ndarray:
         if full_states is None:
             warnings.warn(
-                "Generating all 2^num_qubits states. This may be memory intensive."
+                "Generating all 2^num_qubits states. This may be memory intensive.",
+                stacklevel=2,
             )
             full_states = np.arange(2**self.num_qubits, dtype="int64")
 
