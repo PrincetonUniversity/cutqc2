@@ -194,14 +194,15 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-cutqc2-core-dynamic-definition--page-root">Source code for cutqc2.core.dynamic_definition</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">heapq</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">heapq</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">cutqc2.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">unmerge_prob_vector</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">cutqc2.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">unmerge_prob_vector</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
