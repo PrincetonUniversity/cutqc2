@@ -11,10 +11,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: [macos-latest, self-hosted]
         python-version: ["3.12"]
 
-    name: Build and test
-    runs-on: [macos-latest, self-hosted]
+    name: Build and test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     environment: CI
 
     steps:

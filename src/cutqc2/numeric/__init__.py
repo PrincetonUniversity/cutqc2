@@ -11,4 +11,9 @@ def numeric_object(which):
     return NumericClass()
 
 
-xp = numeric_object(config.core.numeric)
+try:
+    import cupy  # noqa: F401
+except ImportError:
+    xp = numeric_object("numpy")
+else:
+    xp = numeric_object(config.core.numeric)
