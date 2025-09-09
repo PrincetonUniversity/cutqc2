@@ -42,19 +42,19 @@ jobs:
         brew install open-mpi
 
     - name: Install package with dev/gpu deps
-      if: contains(runner.labels, 'self-hosted')
+      if: ${{ matrix.os == 'self-hosted' }}
       run: |
         uv pip install --python .venv/bin/python -e .[dev,gpu]
         uv pip freeze --python .venv/bin/python
 
     - name: Install package with dev deps
-      if:  ${{ !contains(runner.labels, 'self-hosted') }}
+      if: ${{ matrix.os != 'self-hosted' }}
       run: |
         uv pip install --python .venv/bin/python -e .[dev]
         uv pip freeze --python .venv/bin/python
 
     - name: Pytest
-      if: contains(runner.labels, 'self-hosted')
+      if: ${{ matrix.os == 'self-hosted' }}
       run: |
         module load openmpi/gcc/4.1.6
         uv run python -m pytest
@@ -64,7 +64,7 @@ jobs:
         GUROBI_WLSSECRET: ${{ secrets.GUROBI_WLSSECRET }}
 
     - name: Pytest
-      if:  ${{ !contains(runner.labels, 'self-hosted') }}
+      if: ${{ matrix.os != 'self-hosted' }}
       run: |
         uv run python -m pytest
       env:
