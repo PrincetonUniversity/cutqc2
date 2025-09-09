@@ -56,7 +56,7 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Modules" href="src/modules.html" />
+    <link rel="next" title="Contributing to the code" href="contributing.html" />
     <link rel="prev" title="CutQC2" href="index.html" />
   
    
@@ -185,11 +185,17 @@
   <ul class="md-nav__list" data-md-scrollfix="">
         <li class="md-nav__item"><a href="#installation--page-root" class="md-nav__link">Installation</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#creating-a-cutqc2-environment" class="md-nav__link">Creating a cutqc2 environment</a>
+        <li class="md-nav__item"><a href="#creating-a-cutqc2-environment" class="md-nav__link">Creating a cutqc2 environment</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cutqc2-environment-using-conda" class="md-nav__link">cutqc2 environment using conda</a>
         </li>
         <li class="md-nav__item"><a href="#using-a-different-python-version-than-the-system-default" class="md-nav__link">Using a different Python version than the system default</a>
         </li>
-        <li class="md-nav__item"><a href="#cutqc2-environment-using-conda" class="md-nav__link">cutqc2 environment using conda</a>
+        <li class="md-nav__item"><a href="#using-proven-dependency-versions" class="md-nav__link">Using “proven” dependency versions</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#test-the-package" class="md-nav__link">Test the package</a>
         </li></ul>
             </nav>
         </li>
@@ -215,7 +221,7 @@
 <li><p>Pip package manager</p></li>
 </ul>
 <p>Clone the repository and enter it:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">vineetbansal</span><span class="o">/</span><span class="n">cutqc2</span><span class="o">.</span><span class="n">git</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">PrincetonUniversity</span><span class="o">/</span><span class="n">cutqc2</span><span class="o">.</span><span class="n">git</span>
 <span class="n">cd</span> <span class="n">cutqc2</span>
 </pre></div>
 </div>
@@ -239,36 +245,19 @@ You can create a new virtual environment using <code class="docutils literal not
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="p">[</span><span class="n">dev</span><span class="p">,</span><span class="n">docs</span><span class="p">]</span>
 </pre></div>
 </div>
-</li>
-</ol>
-</section>
-<section id="using-a-different-python-version-than-the-system-default">
-<h2 id="using-a-different-python-version-than-the-system-default">Using a different Python version than the system default<a class="headerlink" href="#using-a-different-python-version-than-the-system-default" title="Link to this heading">¶</a></h2>
-<p>If your Python version is not 3.12 or later, or if you’re getting errors when using a non-tested Python version, we recommend using the <a class="reference external" href="https://github.com/astral-sh/uv">uv</a> tool to create a virtual environment with the correct Python version.
-<code class="docutils literal notranslate"><span class="pre">uv</span></code> is quick to <a class="reference external" href="https://github.com/astral-sh/uv?tab=readme-ov-file#installation">install</a> and easy to use, both locally as well as on research clusters.</p>
-<p>Once <code class="docutils literal notranslate"><span class="pre">uv</span></code> is installed:</p>
-<ol class="arabic">
-<li><p>Create a new environment with Python 3.12 and activate it.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">venv</span> <span class="o">--</span><span class="n">python</span> <span class="mf">3.12</span>
-<span class="n">source</span> <span class="o">.</span><span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
-</pre></div>
-</div>
-</li>
-<li><p>In the activated environment, install the package in editable mode, along with its <code class="docutils literal notranslate"><span class="pre">dev</span></code> and <code class="docutils literal notranslate"><span class="pre">docs</span></code> extras:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="p">[</span><span class="n">dev</span><span class="p">,</span><span class="n">docs</span><span class="p">]</span>
+<p>If you’re on Linux with an NVIDIA GPU and want to use GPU acceleration, you can install the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> extra as well:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="p">[</span><span class="n">dev</span><span class="p">,</span><span class="n">docs</span><span class="p">,</span><span class="n">gpu</span><span class="p">]</span>
 </pre></div>
 </div>
 </li>
 </ol>
-</section>
 <section id="cutqc2-environment-using-conda">
-<h2 id="cutqc2-environment-using-conda">cutqc2 environment using conda<a class="headerlink" href="#cutqc2-environment-using-conda" title="Link to this heading">¶</a></h2>
+<h3 id="cutqc2-environment-using-conda">cutqc2 environment using conda<a class="headerlink" href="#cutqc2-environment-using-conda" title="Link to this heading">¶</a></h3>
 <p>If you prefer using <code class="docutils literal notranslate"><span class="pre">conda</span></code>, you can use the provided <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> file to create a new conda environment with all the necessary dependencies pinned to versions that have worked for us in the past.</p>
 <blockquote>
 <div><p><strong>Note</strong></p>
 <p><code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> can get all its dependencies from <code class="docutils literal notranslate"><span class="pre">pypi</span></code> using <code class="docutils literal notranslate"><span class="pre">pip</span></code> and does not need <a class="reference external" href="https://docs.anaconda.com/miniconda/">conda</a> for environment management.
-Nevertheless, this might be the easiest option for most users who already have access to the <code class="docutils literal notranslate"><span class="pre">conda</span></code> executable locally or through a research cluster. The provided <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> file
-has the defaults channel disabled, and can be used to create a new conda environment with all the necessary dependencies.
+Nevertheless, this might be the easiest option for most users who already have access to the <code class="docutils literal notranslate"><span class="pre">conda</span></code> executable locally or through a research cluster.
 <strong>It can therefore be used without getting a business or enterprise license from Anaconda. (See <a class="reference external" href="https://www.anaconda.com/pricing/terms-of-service-faqs">Anaconda FAQs</a>)</strong></p>
 </div></blockquote>
 <ol class="arabic">
@@ -283,17 +272,60 @@ has the defaults channel disabled, and can be used to create a new conda environ
 </div>
 <p>The command prompt will change to indicate the new conda environment by prepending <code class="docutils literal notranslate"><span class="pre">(cutqc2)</span></code>.</p>
 </li>
-<li><p>In the activated environment, install the dependencies provided in <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">env</span> <span class="n">update</span> <span class="o">--</span><span class="n">file</span> <span class="n">environment</span><span class="o">.</span><span class="n">yml</span>
+</ol>
+</section>
+<section id="using-a-different-python-version-than-the-system-default">
+<h3 id="using-a-different-python-version-than-the-system-default">Using a different Python version than the system default<a class="headerlink" href="#using-a-different-python-version-than-the-system-default" title="Link to this heading">¶</a></h3>
+<p>If your Python version is not 3.12 or later, or if you’re getting errors when using a non-tested Python version, we recommend using the <a class="reference external" href="https://github.com/astral-sh/uv">uv</a> tool to create a virtual environment with the correct Python version.
+<code class="docutils literal notranslate"><span class="pre">uv</span></code> is quick to <a class="reference external" href="https://github.com/astral-sh/uv?tab=readme-ov-file#installation">install</a> and easy to use, both locally as well as on research clusters.</p>
+<p>Once <code class="docutils literal notranslate"><span class="pre">uv</span></code> is installed:</p>
+<ol class="arabic">
+<li><p>Create a new environment with Python 3.12 and activate it.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">venv</span> <span class="o">--</span><span class="n">python</span> <span class="mf">3.12</span>
+<span class="n">source</span> <span class="o">.</span><span class="n">venv</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">activate</span>
 </pre></div>
 </div>
 </li>
-<li><p>In the activated environment, install the package in editable mode <em>without dependencies</em>.</p>
+<li><p>In the activated environment, install the package in editable mode, along with its <code class="docutils literal notranslate"><span class="pre">dev</span></code> and <code class="docutils literal notranslate"><span class="pre">docs</span></code> extras:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="p">[</span><span class="n">dev</span><span class="p">,</span><span class="n">docs</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>If you’re on Linux with an NVIDIA GPU and want to use GPU acceleration, you can install the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> extra as well:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span> <span class="n">uv</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="p">[</span><span class="n">dev</span><span class="p">,</span><span class="n">docs</span><span class="p">,</span><span class="n">gpu</span><span class="p">]</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="using-proven-dependency-versions">
+<h3 id="using-proven-dependency-versions">Using “proven” dependency versions<a class="headerlink" href="#using-proven-dependency-versions" title="Link to this heading">¶</a></h3>
+<p>Regardless of whether you use <code class="docutils literal notranslate"><span class="pre">uv</span></code>, python <code class="docutils literal notranslate"><span class="pre">venv</span></code>, or <code class="docutils literal notranslate"><span class="pre">conda</span></code>, if you’re having trouble with installation of <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> and simply want to get it to work,
+you will want to use the exact dependency versions that we have previously tested <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> with. You can install them using the provided <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file.</p>
+<ol class="arabic">
+<li><p>If you’re <em>not</em> on a Mac, in the activated environment, install the dependencies provided in <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<p>If you’re on a Mac, in the activated environment, install the dependencies provided in  <code class="docutils literal notranslate"><span class="pre">requirements-macos.txt</span></code> file instead:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">-</span><span class="n">macos</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+</li>
+<li><p>In the activated environment, install the package in editable mode <strong>without dependencies</strong>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">deps</span>
 </pre></div>
 </div>
 </li>
 </ol>
+</section>
+</section>
+<section id="test-the-package">
+<h2 id="test-the-package">Test the package<a class="headerlink" href="#test-the-package" title="Link to this heading">¶</a></h2>
+<p>To verify that the installation was successful, you should now run the test suite using <code class="docutils literal notranslate"><span class="pre">pytest</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pytest</span>
+</pre></div>
+</div>
+<p>Tests should take ~2 minutes to run. If any of the tests fail, <strong>do not continue</strong>, but open an issue on the <a class="reference external" href="https://github.com/PrincetonUniversity/cutqc2/issues">issues page</a> instead, and we will try to help you out.</p>
 </section>
 </section>
 
@@ -321,12 +353,12 @@ has the defaults channel disabled, and can be used to create a new conda environ
             </a>
           
           
-            <a href="src/modules.html" title="Modules"
+            <a href="contributing.html" title="Contributing to the code"
                class="md-flex md-footer-nav__link md-footer-nav__link--next"
                rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
                 class="md-flex__ellipsis"> <span
-                class="md-footer-nav__direction"> "Next" </span> Modules </span>
+                class="md-footer-nav__direction"> "Next" </span> Contributing to the code </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink"><i
                 class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>

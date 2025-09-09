@@ -46,7 +46,7 @@
   
   
   
-    <title>CutQC2 &#8212; CutQC2  documentation</title>
+    <title>FAQs &#8212; CutQC2  documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
     <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
@@ -56,7 +56,8 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="next" title="Modules" href="src/modules.html" />
+    <link rel="prev" title="Contributing to the code" href="contributing.html" />
   
    
 
@@ -75,12 +76,12 @@
   <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
   <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
   <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
-  <a href="#index" tabindex="1" class="md-skip"> Skip to content </a>
+  <a href="#faqs" tabindex="1" class="md-skip"> Skip to content </a>
   <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="#" title="CutQC2  documentation"
+        <a href="index.html" title="CutQC2  documentation"
            class="md-header-nav__button md-logo">
           
             &nbsp;
@@ -93,7 +94,7 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           <span class="md-header-nav__topic">CutQC2  documentation</span>
-          <span class="md-header-nav__topic"> CutQC2 </span>
+          <span class="md-header-nav__topic"> FAQs </span>
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
@@ -149,7 +150,7 @@
   <nav class="md-tabs" data-md-component="tabs">
     <div class="md-tabs__inner md-grid">
       <ul class="md-tabs__list">
-          <li class="md-tabs__item"><a href="#" class="md-tabs__link">CutQC2  documentation</a></li>
+          <li class="md-tabs__item"><a href="index.html" class="md-tabs__link">CutQC2  documentation</a></li>
       </ul>
     </div>
   </nav>
@@ -161,12 +162,12 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="#" title="CutQC2 documentation" class="md-nav__button md-logo">
+    <a href="index.html" title="CutQC2 documentation" class="md-nav__button md-logo">
       
         <img src="_static/" alt=" logo" width="48" height="48">
       
     </a>
-    <a href="#"
+    <a href="index.html"
        title="CutQC2 documentation">CutQC2  documentation</a>
   </label>
   
@@ -180,9 +181,30 @@
               <div class="md-sidebar__inner">
                 
 <nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
   <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#faqs--page-root" class="md-nav__link">FAQs</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#installation" class="md-nav__link">Installation</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#how-do-i-use-cutqc2-with-gpu-support" class="md-nav__link">How do I use cutqc2 with GPU support?</a>
+        </li>
+        <li class="md-nav__item"><a href="#i-don-t-have-a-gpu-can-i-still-use-cutqc2" class="md-nav__link">I don’t have a GPU. Can I still use cutqc2?</a>
+        </li>
+        <li class="md-nav__item"><a href="#how-do-i-run-cutqc2-with-mpi" class="md-nav__link">How do I run cutqc2 with MPI?</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#development" class="md-nav__link">Development</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#i-don-t-know-much-about-mpi-or-mpi4py-any-pointers" class="md-nav__link">I don’t know much about MPI (or mpi4py). Any pointers?</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
     
-<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/index.rst.txt">Show Source</a> </li>
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/faqs.md.txt">Show Source</a> </li>
 
 <li id="searchbox" class="md-nav__item"></li>
 
@@ -195,36 +217,53 @@
         <div class="md-content">
           <article class="md-content__inner md-typeset" role="main">
             
-  <section id="cutqc2">
-<h1 id="index--page-root">CutQC2<a class="headerlink" href="#index--page-root" title="Link to this heading">¶</a></h1>
-<p>CutQC2 is a re-implementation (in progress) of the <a class="reference external" href="https://github.com/weiT1993/CutQC">CutQC</a> algorithm
-for the paper <a class="reference external" href="https://dl.acm.org/doi/10.1145/3445814.3446758">CutQC: using small quantum computers for large quantum circuit evaluations</a>.</p>
-<p>CutQC2 cuts a large quantum circuit into smaller subcircuits to run on smaller quantum computers.
-By combining classical and quantum computation, CutQC2 significantly expands the computational reach beyond either platform alone.</p>
-<div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#creating-a-cutqc2-environment">Creating a cutqc2 environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#test-the-package">Test the package</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing to the code</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#running-the-code-without-a-gpu">Running the code without a GPU</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contributing.html#a-note-on-our-self-hosted-runner">A note on our self-hosted runner</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="faqs.html">FAQs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="faqs.html#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faqs.html#development">Development</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="src/modules.html">Modules</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="src/cutqc2.html">cutqc2 package</a></li>
-</ul>
-</li>
-</ul>
+  <section id="faqs">
+<h1 id="faqs--page-root">FAQs<a class="headerlink" href="#faqs--page-root" title="Link to this heading">¶</a></h1>
+<section id="installation">
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<section id="how-do-i-use-cutqc2-with-gpu-support">
+<h3 id="how-do-i-use-cutqc2-with-gpu-support">How do I use cutqc2 with GPU support?<a class="headerlink" href="#how-do-i-use-cutqc2-with-gpu-support" title="Link to this heading">¶</a></h3>
+<p>Install the package with the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> extra, in addition to any others you want (you will typically want the <code class="docutils literal notranslate"><span class="pre">dev</span></code> extra too):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="p">[</span><span class="n">dev</span><span class="p">,</span><span class="n">gpu</span><span class="p">]</span>
+</pre></div>
 </div>
+</section>
+<section id="i-don-t-have-a-gpu-can-i-still-use-cutqc2">
+<h3 id="i-don-t-have-a-gpu-can-i-still-use-cutqc2">I don’t have a GPU. Can I still use cutqc2?<a class="headerlink" href="#i-don-t-have-a-gpu-can-i-still-use-cutqc2" title="Link to this heading">¶</a></h3>
+<p>Yes. <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> can run on systems without a GPU. However, performance will be slower, so it should only be used for testing and development purposes.
+Install the package without the <code class="docutils literal notranslate"><span class="pre">gpu</span></code> extra:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="p">[</span><span class="n">dev</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>If you have already installed the package but want to run it without a GPU, you can set the <code class="docutils literal notranslate"><span class="pre">CUTQC2_CORE_NUMERIC</span></code> environment variable to <code class="docutils literal notranslate"><span class="pre">numpy</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">export</span> <span class="n">CUTQC2_CORE_NUMERIC</span><span class="o">=</span><span class="n">numpy</span>
+</pre></div>
+</div>
+<p>This will make <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> use <code class="docutils literal notranslate"><span class="pre">numpy</span></code> instead of <code class="docutils literal notranslate"><span class="pre">cupy</span></code> for numerical computations.</p>
+</section>
+<section id="how-do-i-run-cutqc2-with-mpi">
+<h3 id="how-do-i-run-cutqc2-with-mpi">How do I run cutqc2 with MPI?<a class="headerlink" href="#how-do-i-run-cutqc2-with-mpi" title="Link to this heading">¶</a></h3>
+<p>Currently the <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">postprocess</span></code> step can benefit from MPI support. If you’ve read the <a class="reference internal" href="getting_started.html"><span class="std std-doc">Getting Started</span></a> guide, you will know that normally you run this command as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cutqc2</span> <span class="n">postprocess</span> \
+  <span class="o">--</span><span class="n">file</span> <span class="n">supremacy_6qubit</span><span class="o">.</span><span class="n">zarr</span> \
+  <span class="o">--</span><span class="n">save</span>
+</pre></div>
+</div>
+<p>To run it with MPI support, use <code class="docutils literal notranslate"><span class="pre">mpirun</span></code> or <code class="docutils literal notranslate"><span class="pre">mpiexec</span></code> to launch multiple processes. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mpirun</span> <span class="o">-</span><span class="n">n</span> <span class="mi">4</span> <span class="n">cutqc2</span> <span class="n">postprocess</span> \
+  <span class="o">--</span><span class="n">file</span> <span class="n">supremacy_6qubit</span><span class="o">.</span><span class="n">zarr</span> \
+  <span class="o">--</span><span class="n">save</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="development">
+<h2 id="development">Development<a class="headerlink" href="#development" title="Link to this heading">¶</a></h2>
+<section id="i-don-t-know-much-about-mpi-or-mpi4py-any-pointers">
+<h3 id="i-don-t-know-much-about-mpi-or-mpi4py-any-pointers">I don’t know much about MPI (or mpi4py). Any pointers?<a class="headerlink" href="#i-don-t-know-much-about-mpi-or-mpi4py-any-pointers" title="Link to this heading">¶</a></h3>
+<p>For some helpful links on MPI, see <a class="reference external" href="https://researchcomputing.princeton.edu/education/external-online-resources/mpi">Learning resources: MPI</a>. For a quick introduction to <code class="docutils literal notranslate"><span class="pre">mpi4py</span></code>, especially its correct usage on the Princeton clusters, visit <a class="reference external" href="https://researchcomputing.princeton.edu/support/knowledge-base/mpi4py">this page</a>.</p>
+</section>
+</section>
 </section>
 
 
@@ -237,13 +276,26 @@ By combining classical and quantum computation, CutQC2 significantly expands the
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
           
+            <a href="contributing.html" title="Contributing to the code"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> Contributing to the code </span>
+              </div>
+            </a>
           
-            <a href="installation.html" title="Installation"
+          
+            <a href="src/modules.html" title="Modules"
                class="md-flex md-footer-nav__link md-footer-nav__link--next"
                rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
                 class="md-flex__ellipsis"> <span
-                class="md-footer-nav__direction"> "Next" </span> Installation </span>
+                class="md-footer-nav__direction"> "Next" </span> Modules </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink"><i
                 class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
