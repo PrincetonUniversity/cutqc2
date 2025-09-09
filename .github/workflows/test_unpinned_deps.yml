@@ -11,10 +11,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: [macos-latest, self-hosted]
         python-version: ["3.12"]
 
-    name: Build and test
-    runs-on: [self-hosted]
+    name: Build and test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     environment: CI
 
     steps:
@@ -35,14 +36,36 @@ jobs:
         uv pip install --python .venv/bin/python cudaq
         uv pip install --python .venv/bin/python cudaq
 
+    - name: Setup (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew install open-mpi
+
+    - name: Install package with dev/gpu deps
+      if: ${{ matrix.os == 'self-hosted' }}
+      run: |
+        uv pip install --python .venv/bin/python -e .[dev,gpu]
+        uv pip freeze --python .venv/bin/python
+
     - name: Install package with dev deps
+      if: ${{ matrix.os != 'self-hosted' }}
       run: |
         uv pip install --python .venv/bin/python -e .[dev]
         uv pip freeze --python .venv/bin/python
 
     - name: Pytest
+      if: ${{ matrix.os == 'self-hosted' }}
       run: |
         module load openmpi/gcc/4.1.6
+        uv run python -m pytest
+      env:
+        GUROBI_WLSACCESSID: ${{ vars.GUROBI_WLSACCESSID }}
+        GUROBI_LICENSEID: ${{ vars.GUROBI_LICENSEID }}
+        GUROBI_WLSSECRET: ${{ secrets.GUROBI_WLSSECRET }}
+
+    - name: Pytest
+      if: ${{ matrix.os != 'self-hosted' }}
+      run: |
         uv run python -m pytest
       env:
         GUROBI_WLSACCESSID: ${{ vars.GUROBI_WLSACCESSID }}

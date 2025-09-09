@@ -7,7 +7,7 @@ Before you can use the `cutqc2` package, ensure that your system meets the follo
 
 Clone the repository and enter it:
    ```
-   git clone https://github.com/vineetbansal/cutqc2.git
+   git clone https://github.com/PrincetonUniversity/cutqc2.git
    cd cutqc2
    ```
 
@@ -31,8 +31,34 @@ You can create a new virtual environment using `venv`, and install dependencies 
     ```
     pip install -e .[dev,docs]
     ```
+   
+   If you're on Linux with an NVIDIA GPU and want to use GPU acceleration, you can install the `gpu` extra as well:
+    ```
+    pip install -e .[dev,docs,gpu]
+    ```
 
-## Using a different Python version than the system default
+### cutqc2 environment using conda
+
+If you prefer using `conda`, you can use the provided `environment.yml` file to create a new conda environment with all the necessary dependencies pinned to versions that have worked for us in the past.
+> **Note**
+>
+> `cutqc2` can get all its dependencies from `pypi` using `pip` and does not need [conda](https://docs.anaconda.com/miniconda/) for environment management.
+Nevertheless, this might be the easiest option for most users who already have access to the `conda` executable locally or through a research cluster.
+**It can therefore be used without getting a business or enterprise license from Anaconda. (See [Anaconda FAQs](https://www.anaconda.com/pricing/terms-of-service-faqs))**
+
+1. Create a new conda environment named `cutqc2` with Python version 3.12.
+   ```
+   conda create --name cutqc2 python=3.12 pip
+   ```
+
+2. Activate the environment.
+   ```
+   conda activate cutqc2
+   ```
+   The command prompt will change to indicate the new conda environment by prepending `(cutqc2)`.
+
+
+### Using a different Python version than the system default
 
 If your Python version is not 3.12 or later, or if you're getting errors when using a non-tested Python version, we recommend using the [uv](https://github.com/astral-sh/uv) tool to create a virtual environment with the correct Python version.
 `uv` is quick to [install](https://github.com/astral-sh/uv?tab=readme-ov-file#installation) and easy to use, both locally as well as on research clusters.
@@ -50,33 +76,36 @@ Once `uv` is installed:
     uv pip install -e .[dev,docs]
     ```
 
-## cutqc2 environment using conda
-
-If you prefer using `conda`, you can use the provided `environment.yml` file to create a new conda environment with all the necessary dependencies pinned to versions that have worked for us in the past.
-> **Note**
->
-> `cutqc2` can get all its dependencies from `pypi` using `pip` and does not need [conda](https://docs.anaconda.com/miniconda/) for environment management.
-Nevertheless, this might be the easiest option for most users who already have access to the `conda` executable locally or through a research cluster. The provided `environment.yml` file
-has the defaults channel disabled, and can be used to create a new conda environment with all the necessary dependencies.
-**It can therefore be used without getting a business or enterprise license from Anaconda. (See [Anaconda FAQs](https://www.anaconda.com/pricing/terms-of-service-faqs))**
-
-1. Create a new conda environment named `cutqc2` with Python version 3.12.
+    If you're on Linux with an NVIDIA GPU and want to use GPU acceleration, you can install the `gpu` extra as well:
    ```
-   conda create --name cutqc2 python=3.12 pip
-   ```
-
-2. Activate the environment.
-   ```
-   conda activate cutqc2
-   ```
-   The command prompt will change to indicate the new conda environment by prepending `(cutqc2)`.
-
-3. In the activated environment, install the dependencies provided in `environment.yml`:
-    ```
-    conda env update --file environment.yml
+    uv pip install -e .[dev,docs,gpu]
     ```
 
-4. In the activated environment, install the package in editable mode *without dependencies*.
+### Using "proven" dependency versions
+
+Regardless of whether you use `uv`, python `venv`, or `conda`, if you're having trouble with installation of `cutqc2` and simply want to get it to work, 
+you will want to use the exact dependency versions that we have previously tested `cutqc2` with. You can install them using the provided `requirements.txt` file.
+
+1. If you're *not* on a Mac, in the activated environment, install the dependencies provided in `requirements.txt`:
+    ```
+    pip install -r requirements.txt
+    ```
+   
+   If you're on a Mac, in the activated environment, install the dependencies provided in  `requirements-macos.txt` file instead:
+    ```
+    pip install -r requirements-macos.txt
+    ```
+   
+2. In the activated environment, install the package in editable mode **without dependencies**.
     ```
     pip install -e . --no-deps
     ```
+
+## Test the package
+
+To verify that the installation was successful, you should now run the test suite using `pytest`.
+   ```
+   pytest
+   ```
+
+   Tests should take ~2 minutes to run. If any of the tests fail, **do not continue**, but open an issue on the [issues page](https://github.com/PrincetonUniversity/cutqc2/issues) instead, and we will try to help you out.

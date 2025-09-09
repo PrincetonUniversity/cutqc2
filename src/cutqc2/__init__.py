@@ -1,4 +1,10 @@
 import logging.config
+from importlib.resources import files
+
+import dotenv
+
+import cutqc2
+from cutqc2.configuration import Config
 
 __version__ = "0.0.5"
 
@@ -22,3 +28,6 @@ logging.config.dictConfig(
         "loggers": {"": {"handlers": ["default"], "level": "INFO"}},
     }
 )
+
+dotenv.load_dotenv()
+config = Config(files(cutqc2) / "config.yaml")

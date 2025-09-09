@@ -31,14 +31,17 @@ dependencies = [
     "zarr",
     "click",
     "mpi4py",
-    "cupy-cuda12x",
-    "cudaq"
+    "cudaq",
+    "python-dotenv"
 ]
 
 [project.scripts]
 cutqc2 = "cutqc2.__main__:cli"
 
 [project.optional-dependencies]
+gpu = [
+    "cupy-cuda12x"
+]
 dev = [
     "pytest>6",
     "coverage",

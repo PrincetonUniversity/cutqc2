@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [self-hosted]
+        os: [macos-latest, self-hosted]
         python-version: ["3.12"]
 
     name: Build and test on ${{ matrix.os }}
@@ -28,8 +28,18 @@ jobs:
       run: |
         uv venv --python ${{ matrix.python-version }}
 
+    - name: Setup (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew install open-mpi
+
     - name: Install requirements
+      if: ${{ matrix.os == 'self-hosted' }}
       run: uv pip install --python .venv/bin/python -r requirements.txt
+
+    - name: Install requirements
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: uv pip install --python .venv/bin/python -r requirements-macos.txt
 
     - name: Install package with no deps
       run: uv pip install --python .venv/bin/python -e . --no-deps
@@ -39,6 +49,7 @@ jobs:
           uvx pre-commit run --all-files
 
     - name: Pytest with coverage
+      if: ${{ matrix.os == 'self-hosted' }}
       run: |
         module load openmpi/gcc/4.1.6
         uv run coverage run --source=src/cutqc2 --omit="src/cutqc2/legacy/*" -m pytest
@@ -47,7 +58,17 @@ jobs:
         GUROBI_LICENSEID: ${{ vars.GUROBI_LICENSEID }}
         GUROBI_WLSSECRET: ${{ secrets.GUROBI_WLSSECRET }}
 
+    - name: Pytest
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: |
+        uv run -m pytest
+      env:
+        GUROBI_WLSACCESSID: ${{ vars.GUROBI_WLSACCESSID }}
+        GUROBI_LICENSEID: ${{ vars.GUROBI_LICENSEID }}
+        GUROBI_WLSSECRET: ${{ secrets.GUROBI_WLSSECRET }}
+
     - name: Upload coverage to Coveralls
+      if: ${{ matrix.os == 'self-hosted' }}
       run: uv run coveralls
       continue-on-error: true
       env:

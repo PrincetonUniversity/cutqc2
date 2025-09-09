@@ -1,6 +1,6 @@
 from pathlib import Path
 
-import cupy as cp
+from cutqc2.numeric import xp
 
 
 def get_module():
@@ -8,15 +8,18 @@ def get_module():
     # We declare a global variable `cp_module` to store the compiled module.
     with Path.open(Path(__file__).parent / "cutqc.cu") as f:
         code = f.read()
-    return cp.RawModule(code=code, options=("-std=c++11",))
+    return xp.RawModule(code=code, options=("-std=c++11",))
 
 
-cp_module = get_module()
+cp_module = get_module() if xp.name == "cupy" else None
 
 
-def vector_kron(a: cp.array, b: cp.array):
+def vector_kron(a, b):
     assert a.ndim == 1
     assert b.ndim == 1
+    if cp_module is None:
+        return xp.kron(a, b)
+
     p, q = a.shape[0], b.shape[0]
 
     vector_kron_kernel = cp_module.get_function("vectorKron")
@@ -24,7 +27,7 @@ def vector_kron(a: cp.array, b: cp.array):
     threads_per_block = 256
     blocks_per_grid = (p * q + threads_per_block - 1) // threads_per_block
 
-    result = cp.empty((p * q,), dtype=cp.float32)
+    result = xp.empty((p * q,), dtype=xp.float32)
 
     vector_kron_kernel(
         (blocks_per_grid,),
