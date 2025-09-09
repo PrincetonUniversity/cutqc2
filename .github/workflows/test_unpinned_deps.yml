@@ -36,6 +36,11 @@ jobs:
         uv pip install --python .venv/bin/python cudaq
         uv pip install --python .venv/bin/python cudaq
 
+    - name: Setup (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew install open-mpi
+
     - name: Install package with dev/gpu deps
       if: contains(runner.labels, 'self-hosted')
       run: |
