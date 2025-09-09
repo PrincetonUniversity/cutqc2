@@ -1149,4 +1149,4 @@ class CutCircuit:
             )
 
         plt.tight_layout()
-        plt.show()
+        plt.show(block=False)

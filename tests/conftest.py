@@ -1,3 +1,4 @@
+import sys
 from math import pi
 
 import pytest
@@ -43,3 +44,7 @@ def figure_4_qiskit_circuit():
     qc.h(4)
 
     return qc
+
+
+if sys.platform == "darwin":
+    collect_ignore = ["test_cudaq.py", "test_qiskit_to_cudaq.py"]
