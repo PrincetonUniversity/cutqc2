@@ -20,23 +20,6 @@ def simple_circuit() -> QuantumCircuit:
     return qc
 
 
-def test_cut_circuit_add_cut(simple_circuit):
-    cut_circuit = CutCircuit(simple_circuit)
-    cut_circuit.add_cut("0004", 0, 0)
-    got_str = str(cut_circuit)
-    expected_str = textwrap.dedent("""
-                  ┌───┐     ┌────┐     
-        q_0: ─|0>─┤ H ├──■──┤ // ├──■──
-                  └───┘┌─┴─┐└────┘  │  
-        q_1: ─|0>──────┤ X ├────────┼──
-                       └───┘      ┌─┴─┐
-        q_2: ─|0>─────────────────┤ X ├
-                                  └───┘
-    """).strip("\n")
-    assert got_str == expected_str
-    assert cut_circuit.cuts == [(0, 2)]
-
-
 def test_cut_circuit_add_cut_at_position(simple_circuit):
     cut_circuit = CutCircuit(simple_circuit)
     cut_circuit.add_cut_at_position(wire_index=0, gate_index=2)
@@ -59,26 +42,26 @@ def test_cut_circuit_generate_subcircuits(simple_circuit):
     cut_edge_pairs = [
         (
             DAGEdge(
-                DagNode(wire_index=0, gate_index=0, name="0004"),
-                DagNode(wire_index=1, gate_index=0, name="0004"),
+                DagNode(wire_index=0, gate_index=0),
+                DagNode(wire_index=1, gate_index=0),
             ),
             DAGEdge(
-                DagNode(wire_index=0, gate_index=1, name="0005"),
-                DagNode(wire_index=2, gate_index=0, name="0005"),
+                DagNode(wire_index=0, gate_index=1),
+                DagNode(wire_index=2, gate_index=0),
             ),
         )
     ]
     subcircuits = [
         [
             DAGEdge(
-                DagNode(wire_index=0, gate_index=0, name="0004"),
-                DagNode(wire_index=1, gate_index=0, name="0004"),
+                DagNode(wire_index=0, gate_index=0),
+                DagNode(wire_index=1, gate_index=0),
             )
         ],
         [
             DAGEdge(
-                DagNode(wire_index=2, gate_index=0, name="0005"),
-                DagNode(wire_index=0, gate_index=1, name="0005"),
+                DagNode(wire_index=2, gate_index=0),
+                DagNode(wire_index=0, gate_index=1),
             )
         ],
     ]
@@ -119,8 +102,8 @@ def test_cut_circuit_find_cuts(simple_circuit):
 
     assert len(cut_edges_pairs) == 1
     cut_edge0, cut_edge1 = cut_edges_pairs[0]
-    assert str(cut_edge0) == "0004[0]0 0004[1]0"
-    assert str(cut_edge1) == "0005[0]1 0005[2]0"
+    assert str(cut_edge0) == "[0]0 [1]0"
+    assert str(cut_edge1) == "[0]1 [2]0"
 
 
 def test_cut_circuit_verify(simple_circuit):
@@ -128,26 +111,26 @@ def test_cut_circuit_verify(simple_circuit):
     cut_edge_pairs = [
         (
             DAGEdge(
-                DagNode(wire_index=0, gate_index=0, name="0004"),
-                DagNode(wire_index=1, gate_index=0, name="0004"),
+                DagNode(wire_index=0, gate_index=0),
+                DagNode(wire_index=1, gate_index=0),
             ),
             DAGEdge(
-                DagNode(wire_index=0, gate_index=1, name="0005"),
-                DagNode(wire_index=2, gate_index=0, name="0005"),
+                DagNode(wire_index=0, gate_index=1),
+                DagNode(wire_index=2, gate_index=0),
             ),
         )
     ]
     subcircuits = [
         [
             DAGEdge(
-                DagNode(wire_index=0, gate_index=0, name="0004"),
-                DagNode(wire_index=1, gate_index=0, name="0004"),
+                DagNode(wire_index=0, gate_index=0),
+                DagNode(wire_index=1, gate_index=0),
             )
         ],
         [
             DAGEdge(
-                DagNode(wire_index=2, gate_index=0, name="0005"),
-                DagNode(wire_index=0, gate_index=1, name="0005"),
+                DagNode(wire_index=2, gate_index=0),
+                DagNode(wire_index=0, gate_index=1),
             )
         ],
     ]
@@ -178,34 +161,34 @@ def test_cut_circuit_figure4_reconstruction_order(figure_4_qiskit_circuit):
     cut_edge_pairs = [
         (
             DAGEdge(
-                DagNode(wire_index=0, gate_index=1, name="0014"),
-                DagNode(wire_index=2, gate_index=0, name="0014"),
+                DagNode(wire_index=0, gate_index=1),
+                DagNode(wire_index=2, gate_index=0),
             ),
             DAGEdge(
-                DagNode(wire_index=2, gate_index=1, name="0018"),
-                DagNode(wire_index=4, gate_index=0, name="0018"),
+                DagNode(wire_index=2, gate_index=1),
+                DagNode(wire_index=4, gate_index=0),
             ),
         )
     ]
     subcircuits = [
         [
             DAGEdge(
-                DagNode(wire_index=0, gate_index=0, name="0010"),
-                DagNode(wire_index=1, gate_index=0, name="0010"),
+                DagNode(wire_index=0, gate_index=0),
+                DagNode(wire_index=1, gate_index=0),
             ),
             DAGEdge(
-                DagNode(wire_index=0, gate_index=1, name="0014"),
-                DagNode(wire_index=2, gate_index=0, name="0014"),
+                DagNode(wire_index=0, gate_index=1),
+                DagNode(wire_index=2, gate_index=0),
             ),
         ],
         [
             DAGEdge(
-                DagNode(wire_index=2, gate_index=1, name="0018"),
-                DagNode(wire_index=4, gate_index=0, name="0018"),
+                DagNode(wire_index=2, gate_index=1),
+                DagNode(wire_index=4, gate_index=0),
             ),
             DAGEdge(
-                DagNode(wire_index=3, gate_index=0, name="0021"),
-                DagNode(wire_index=2, gate_index=2, name="0021"),
+                DagNode(wire_index=3, gate_index=0),
+                DagNode(wire_index=2, gate_index=2),
             ),
         ],
     ]
@@ -218,34 +201,34 @@ def test_cut_circuit_figure4_verify(figure_4_qiskit_circuit):
     cut_edge_pairs = [
         (
             DAGEdge(
-                DagNode(wire_index=0, gate_index=1, name="0014"),
-                DagNode(wire_index=2, gate_index=0, name="0014"),
+                DagNode(wire_index=0, gate_index=1),
+                DagNode(wire_index=2, gate_index=0),
             ),
             DAGEdge(
-                DagNode(wire_index=2, gate_index=1, name="0018"),
-                DagNode(wire_index=4, gate_index=0, name="0018"),
+                DagNode(wire_index=2, gate_index=1),
+                DagNode(wire_index=4, gate_index=0),
             ),
         )
     ]
     subcircuits = [
         [
             DAGEdge(
-                DagNode(wire_index=0, gate_index=0, name="0010"),
-                DagNode(wire_index=1, gate_index=0, name="0010"),
+                DagNode(wire_index=0, gate_index=0),
+                DagNode(wire_index=1, gate_index=0),
             ),
             DAGEdge(
-                DagNode(wire_index=0, gate_index=1, name="0014"),
-                DagNode(wire_index=2, gate_index=0, name="0014"),
+                DagNode(wire_index=0, gate_index=1),
+                DagNode(wire_index=2, gate_index=0),
             ),
         ],
         [
             DAGEdge(
-                DagNode(wire_index=2, gate_index=1, name="0018"),
-                DagNode(wire_index=4, gate_index=0, name="0018"),
+                DagNode(wire_index=2, gate_index=1),
+                DagNode(wire_index=4, gate_index=0),
             ),
             DAGEdge(
-                DagNode(wire_index=3, gate_index=0, name="0021"),
-                DagNode(wire_index=2, gate_index=2, name="0021"),
+                DagNode(wire_index=3, gate_index=0),
+                DagNode(wire_index=2, gate_index=2),
             ),
         ],
     ]

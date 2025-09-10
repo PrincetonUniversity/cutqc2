@@ -52,7 +52,7 @@ jobs:
       if: ${{ matrix.os == 'self-hosted' }}
       run: |
         module load openmpi/gcc/4.1.6
-        uv run coverage run --source=src/cutqc2 --omit="src/cutqc2/legacy/*" -m pytest
+        uv run --no-project coverage run --source=src/cutqc2 --omit="src/cutqc2/legacy/*" -m pytest
       env:
         GUROBI_WLSACCESSID: ${{ vars.GUROBI_WLSACCESSID }}
         GUROBI_LICENSEID: ${{ vars.GUROBI_LICENSEID }}
@@ -61,7 +61,7 @@ jobs:
     - name: Pytest
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        uv run -m pytest
+        uv run --no-project -m pytest
       env:
         GUROBI_WLSACCESSID: ${{ vars.GUROBI_WLSACCESSID }}
         GUROBI_LICENSEID: ${{ vars.GUROBI_LICENSEID }}
@@ -69,7 +69,7 @@ jobs:
 
     - name: Upload coverage to Coveralls
       if: ${{ matrix.os == 'self-hosted' }}
-      run: uv run coveralls
+      run: uv run --no-project coveralls
       continue-on-error: true
       env:
         GITHUB_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}

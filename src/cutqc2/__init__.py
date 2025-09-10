@@ -6,7 +6,7 @@ import dotenv
 import cutqc2
 from cutqc2.configuration import Config
 
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 
 logging.config.dictConfig(
     {

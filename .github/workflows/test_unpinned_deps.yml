@@ -29,6 +29,7 @@ jobs:
         uv venv --python ${{ matrix.python-version }}
 
     - name: Install cudaq
+      if: ${{ matrix.os == 'self-hosted' }}
       # Due to a known issue with uv failing to install cudaq on first try,
       # we manually install it twice in a row
       # See https://github.com/astral-sh/uv/issues/12759
@@ -57,7 +58,7 @@ jobs:
       if: ${{ matrix.os == 'self-hosted' }}
       run: |
         module load openmpi/gcc/4.1.6
-        uv run python -m pytest
+        uv run --no-project python -m pytest
       env:
         GUROBI_WLSACCESSID: ${{ vars.GUROBI_WLSACCESSID }}
         GUROBI_LICENSEID: ${{ vars.GUROBI_LICENSEID }}
@@ -66,7 +67,7 @@ jobs:
     - name: Pytest
       if: ${{ matrix.os != 'self-hosted' }}
       run: |
-        uv run python -m pytest
+        uv run --no-project python -m pytest
       env:
         GUROBI_WLSACCESSID: ${{ vars.GUROBI_WLSACCESSID }}
         GUROBI_LICENSEID: ${{ vars.GUROBI_LICENSEID }}

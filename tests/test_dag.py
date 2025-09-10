@@ -4,8 +4,7 @@ from cutqc2.core.dag import DAGEdge, DagNode
 
 
 def test_dag_node_from_str():
-    node = DagNode.from_string("004[5]3")
-    assert node.name == "004"
+    node = DagNode.from_string("[5]3")
     assert node.wire_index == 5
     assert node.gate_index == 3
 
@@ -25,9 +24,9 @@ def test_dag_node_order2():
 
 
 def test_dag_edge_from_str():
-    edge = DAGEdge.from_string("0006[5]3 0052[2]4")
-    assert edge.source == DagNode(wire_index=2, gate_index=4, name="0052")
-    assert edge.dest == DagNode(wire_index=5, gate_index=3, name="0006")
+    edge = DAGEdge.from_string("[5]3 [2]4")
+    assert edge.source == DagNode(wire_index=2, gate_index=4)
+    assert edge.dest == DagNode(wire_index=5, gate_index=3)
 
 
 def test_dage_edge():
