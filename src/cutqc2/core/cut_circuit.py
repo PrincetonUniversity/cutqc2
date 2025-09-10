@@ -63,22 +63,15 @@ class WireCutGate(UnitaryGate):
 
 class CutCircuit:
     def __init__(
-        self,
-        circuit: QuantumCircuit | None = None,
-        circuit_qasm3: str | None = None,
-        add_labels: bool = True,
+        self, circuit: QuantumCircuit | None = None, circuit_qasm3: str | None = None
     ):
         if circuit is None:
             assert circuit_qasm3 is not None
             circuit = loads(circuit_qasm3)
         self.check_valid(circuit)
 
-        self.raw_circuit = circuit.copy()
-        self.unlabeled_circuit = circuit.copy()
-        if add_labels:
-            self.circuit = self.get_labeled_circuit(circuit.copy())
-        else:
-            self.circuit = circuit.copy()
+        self.circuit = circuit.copy()
+        self.circuit_with_cut_gates = circuit.copy()
 
         self.inter_wire_dag = self.get_inter_wire_dag(self.circuit)
         self.inter_wire_dag_metadata = self.get_dag_metadata(self.inter_wire_dag)
@@ -97,7 +90,7 @@ class CutCircuit:
         self.dynamic_definition: DynamicDefinition | None = None
 
     def __str__(self):
-        return str(self.unlabeled_circuit.draw(output="text", fold=-1))
+        return str(self.circuit_with_cut_gates.draw(output="text", fold=-1))
 
     def __len__(self):
         return len(self.subcircuits)
@@ -138,28 +131,6 @@ class CutCircuit:
         supported_formats = {".zarr": zarr_to_cut_circuit}
         assert filepath.suffix in supported_formats, "Unsupported format"
         return supported_formats[filepath.suffix](filepath, *args, **kwargs)
-
-    @staticmethod
-    def get_labeled_circuit(circuit: QuantumCircuit) -> QuantumCircuit:
-        """
-        Get a labeled version of the circuit where each instruction is labeled
-        """
-        labeled_instructions = []
-        for i, instr in enumerate(list(circuit.data)):
-            label = f"{i:04d}"
-            new_op = instr.operation.copy().to_mutable()
-            new_op.label = label
-            new_instr = CircuitInstruction(
-                operation=new_op, qubits=instr.qubits, clbits=instr.clbits
-            )
-            labeled_instructions.append(new_instr)
-
-        labeled_circuit = QuantumCircuit.from_instructions(
-            labeled_instructions, qubits=circuit.qubits, clbits=circuit.clbits
-        )
-        labeled_circuit.qregs = circuit.qregs
-
-        return labeled_circuit
 
     @staticmethod
     def get_inter_wire_dag(circuit: QuantumCircuit) -> DAGCircuit:
@@ -365,7 +336,7 @@ class CutCircuit:
             if cut_qubit in instr.qubits:  # we're on the right wire
                 if cut_wire_position == gate_index:
                     cut_instr = CircuitInstruction(WireCutGate(), qubits=(cut_qubit,))
-                    self.unlabeled_circuit.data.insert(i + 1, cut_instr)
+                    self.circuit_with_cut_gates.data.insert(i + 1, cut_instr)
                     found = True
                     break
                 cut_wire_position += 1
@@ -446,7 +417,6 @@ class CutCircuit:
         for op_node in dag.topological_op_nodes():
             # The new operation that we're constructing
             op = deepcopy(op_node.op)
-            op.label = ""
 
             if len(op_node.qargs) == 2:  # noqa: PLR2004
                 wire_index0 = op_node.qargs[0]._index
@@ -966,7 +936,7 @@ class CutCircuit:
 
     def get_ground_truth(self, backend: str) -> np.ndarray:
         logger.info(f"Evaluating ground truth using {backend}")
-        return evaluate_circ(circuit=self.raw_circuit, backend=backend)
+        return evaluate_circ(circuit=self.circuit, backend=backend)
 
     def verify(
         self,

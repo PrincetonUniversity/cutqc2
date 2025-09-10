@@ -22,7 +22,7 @@ def cut_circuit_to_zarr(cut_circuit, filepath: str | Path) -> None:
     root.attrs.put(
         {
             "version": __version__,
-            "circuit_qasm": dumps(cut_circuit.raw_circuit),
+            "circuit_qasm": dumps(cut_circuit.circuit),
         }
     )
 
