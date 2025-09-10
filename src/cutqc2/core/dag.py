@@ -16,7 +16,6 @@ class DagNode:
         wire_index (int): The index of the wire (qubit/register).
         gate_index (int): The index of the gate on the wire.
           Note: `gate_index` assumes that only inter-wire gates are considered.
-        name (str): The name of the node (default 'q').
     """
 
     @classmethod
@@ -25,42 +24,38 @@ class DagNode:
         Create a DagNode from a string representation.
 
         Args:
-            s (str): The string representation of the node in the format 'name[wire_index]gate_index'.
+            s (str): The string representation of the node in the format '[wire_index]gate_index'.
 
         Returns:
             DagNode: The created DagNode instance.
         """
-        name, rest = s.split("[")
+        _, rest = s.split("[")
         wire_index, gate_index = map(int, rest.split("]"))
-        return cls(wire_index, gate_index, name)
+        return cls(wire_index, gate_index)
 
-    def __init__(self, wire_index: int, gate_index: int, name: str = "q"):
+    def __init__(self, wire_index: int, gate_index: int):
         """
         Initialize a DagNode.
 
         Args:
             wire_index (int): The index of the wire (qubit/register).
             gate_index (int): The index of the gate on the wire.
-            name (str, optional): The name of the node. Defaults to 'q'.
         """
         self.wire_index = wire_index
         self.gate_index = gate_index
-        self.name = name
 
     def __str__(self):
         """
         Return a string representation of the DagNode.
 
         Returns:
-            str: The string in the format 'name[wire_index]gate_index'.
+            str: The string in the format '[wire_index]gate_index'.
         """
-        return f"{self.name}[{self.wire_index}]{self.gate_index}"
+        return f"[{self.wire_index}]{self.gate_index}"
 
     def __eq__(self, other: "DagNode"):
         return (
-            self.wire_index == other.wire_index
-            and self.gate_index == other.gate_index
-            and self.name == other.name
+            self.wire_index == other.wire_index and self.gate_index == other.gate_index
         )
 
     def __lt__(self, other: "DagNode"):

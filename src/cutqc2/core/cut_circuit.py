@@ -197,12 +197,10 @@ class CutCircuit:
 
             dag_edge = DAGEdge(
                 DagNode(
-                    name=vertex.label,
                     wire_index=arg0._index,
                     gate_index=qubit_gate_counter[arg0],
                 ),
                 DagNode(
-                    name=vertex.label,
                     wire_index=arg1._index,
                     gate_index=qubit_gate_counter[arg1],
                 ),
@@ -396,56 +394,71 @@ class CutCircuit:
         self.add_cuts(cut_edges=cut_edges)
         self.subcircuit_dagedges = subcircuits
 
-        node_label_to_subcircuits: dict[str, int] = {}
+        wire_and_gate_to_subcircuit: dict[tuple[int, int], int] = {}
         for subcircuit_i, dag_edges in enumerate(subcircuits):
             for dag_edge in dag_edges:
-                # Both `source` and `dest` of dag_edge have the same `name`.
-                # We arbirarily use `source` here.
-                node_label_to_subcircuits[dag_edge.source.name] = subcircuit_i
+                wire_and_gate_to_subcircuit[
+                    dag_edge.source.wire_index, dag_edge.source.gate_index
+                ] = subcircuit_i
+                wire_and_gate_to_subcircuit[
+                    dag_edge.dest.wire_index, dag_edge.dest.gate_index
+                ] = subcircuit_i
 
         n_subcircuits = len(subcircuits)
 
-        subcircuit_instructions: dict[int, Instruction] = {
+        # --------------------------------------------------
+        # Useful data structures for parsing the circuit
+        # --------------------------------------------------
+
+        # mapping from subcircuit index to list of Instructions
+        subcircuit_instructions: dict[int, list[Instruction]] = {
             j: [] for j in range(n_subcircuits)
         }
+        # next available wire index for each subcircuit
         next_subcircuit_wire_index: dict[int, int] = {
             j: 0 for j in range(n_subcircuits)
         }
-
-        # subcircuit_i: {wire_index: list of qubit indices}
+        # mapping from subcircuit index to {uncut circuit wire index: subcircuit wire index} mapping
         subcircuit_map: dict[int, dict[int, list[int]]] = {
             j: {} for j in range(n_subcircuits)
         }
-
-        # wire_index: list of <subcircuit_i, subcircuit_qubit_index> tuples
+        # mapping from uncut circuit wire index to a list of (subcircuit index, subcircuit wire index) tuples
         complete_path_map: dict[int, list[tuple[int, int]]] = {
             q: [] for q in range(self.circuit.num_qubits)
         }
-
-        # What is the last subcircuit index we saw on a given wire?
+        # mapping from uncut circuit wire index to subcircuit index we last saw on that wire
         current_subciruit_on_wire: dict[int, int] = {
             q: None for q in range(self.circuit.num_qubits)
         }
-
-        # Instructions on a qubit wire for which we haven't assigned a
-        # subcircuit yet.
+        # mapping from uncut circuit wire index to list of Instructions that
+        # haven't been assigned to a subcircuit (yet)
         pending_instructions_on_wire: dict[int, list[Instruction]] = {
             q: [] for q in range(self.circuit.num_qubits)
         }
+        # mapping from uncut circuit wire index to number of 2-qubit gates
+        # we've seen on that wire so far
+        two_qubit_gate_index_on_wire: dict[int, int] = {
+            q: 0 for q in range(self.circuit.num_qubits)
+        }
+        # --------------------------------------------------
 
         dag = circuit_to_dag(self.circuit)
         for op_node in dag.topological_op_nodes():
+            # The new operation that we're constructing
             op = deepcopy(op_node.op)
             op.label = ""
 
-            if op_node.label in node_label_to_subcircuits:
-                # We're looking at a 2-qubit gate, for which we have a subcircuit index
-                assert len(op_node.qargs) == 2  # noqa: PLR2004
-                wire_index0, wire_index1 = (
-                    op_node.qargs[0]._index,
-                    op_node.qargs[1]._index,
-                )
-                subcircuit_i = node_label_to_subcircuits[op_node.label]
+            if len(op_node.qargs) == 2:  # noqa: PLR2004
+                wire_index0 = op_node.qargs[0]._index
+                gate_index0 = two_qubit_gate_index_on_wire[wire_index0]
+                wire_index1 = op_node.qargs[1]._index
+                gate_index1 = two_qubit_gate_index_on_wire[wire_index1]
+                if (wire_index0, gate_index0) in wire_and_gate_to_subcircuit:
+                    subcircuit_i = wire_and_gate_to_subcircuit[wire_index0, gate_index0]
+                elif (wire_index1, gate_index1) in wire_and_gate_to_subcircuit:
+                    subcircuit_i = wire_and_gate_to_subcircuit[wire_index1, gate_index1]
+                else:
+                    raise ValueError("2-qubit gate is not part of any subcircuit")
 
                 subcircuit_wire_indices = []
                 for wire_index in (wire_index0, wire_index1):
@@ -539,6 +552,11 @@ class CutCircuit:
                     )
                     subcircuit_instructions[subcircuit_i].append(instr)
 
+            if len(op_node.qargs) == 2:  # noqa: PLR2004
+                two_qubit_gate_index_on_wire[op_node.qargs[0]._index] += 1
+                two_qubit_gate_index_on_wire[op_node.qargs[1]._index] += 1
+
+        # We're done parsing all Instructions
         # Create actual subcircuit from `subcircuit_instructions`
         for instrs in subcircuit_instructions.values():
             subcircuit_size = max(instr.max_qarg() for instr in instrs) + 1
