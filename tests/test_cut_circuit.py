@@ -20,23 +20,6 @@ def simple_circuit() -> QuantumCircuit:
     return qc
 
 
-def test_cut_circuit_add_cut(simple_circuit):
-    cut_circuit = CutCircuit(simple_circuit)
-    cut_circuit.add_cut("0004", 0, 0)
-    got_str = str(cut_circuit)
-    expected_str = textwrap.dedent("""
-                  ┌───┐     ┌────┐     
-        q_0: ─|0>─┤ H ├──■──┤ // ├──■──
-                  └───┘┌─┴─┐└────┘  │  
-        q_1: ─|0>──────┤ X ├────────┼──
-                       └───┘      ┌─┴─┐
-        q_2: ─|0>─────────────────┤ X ├
-                                  └───┘
-    """).strip("\n")
-    assert got_str == expected_str
-    assert cut_circuit.cuts == [(0, 2)]
-
-
 def test_cut_circuit_add_cut_at_position(simple_circuit):
     cut_circuit = CutCircuit(simple_circuit)
     cut_circuit.add_cut_at_position(wire_index=0, gate_index=2)

@@ -379,42 +379,6 @@ class CutCircuit:
                 f"Gate index '{gate_index}' or wire {wire_index} not found in the circuit. Cannot add cut."
             )
 
-    def add_cut(self, label: str, wire_index: int, gate_index: int):
-        """
-        Add a cut to the circuit at the position of the instruction with the specified label.
-        Args:
-            label: The label of the instruction after which the cut should be made.
-            wire_index: The index of the wire where the cut should be made.
-        """
-        warnings.warn(
-            "Method `add_cut` is deprecated. Use `add_cut_at_position` instead.",
-            stacklevel=2,
-        )
-        cut_qubit = self.circuit.qubits[wire_index]
-        gate_counter = {qubit: 0 for qubit in self.circuit.qubits}
-
-        found = False
-        for i, instr in enumerate(self.circuit.data):
-            if instr.operation.label == label:
-                cut_qubit = self.circuit.qubits[wire_index]
-                cut_instr = CircuitInstruction(WireCutGate(), qubits=(cut_qubit,))
-                # insert the cut instruction right after the current instruction
-                self.circuit.data.insert(i + 1, cut_instr)
-                # Also add to unlabeled circuit (for visualization purposes)
-                self.unlabeled_circuit.data.insert(i + 1, cut_instr)
-                found = True
-                break
-            for qubit in instr.qubits:
-                gate_counter[qubit] += 1
-
-        if found:
-            gate_index = gate_counter[cut_qubit]
-            self.cuts.append((wire_index, gate_index))
-        else:
-            raise ValueError(
-                f"Label '{label}' or wire {wire_index} not found in the circuit. Cannot add cut."
-            )
-
     def add_cuts(self, cut_edges: list[tuple[DAGEdge, DAGEdge]]):
         # validate cut_edges
         for cut_edge in cut_edges:
@@ -470,7 +434,7 @@ class CutCircuit:
         }
 
         dag = circuit_to_dag(self.circuit)
-        for j, op_node in enumerate(dag.topological_op_nodes()):
+        for op_node in dag.topological_op_nodes():
             op = deepcopy(op_node.op)
             op.label = ""
 

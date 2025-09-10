@@ -19,9 +19,7 @@ def cut_circuit_to_zarr(cut_circuit, filepath: str | Path) -> None:
     store = zarr.storage.LocalStore(str(filepath))
     root = zarr.group(store=store, overwrite=True)
 
-    meta_group = root.create_group("metadata", overwrite=True)
-
-    meta_group.attrs.put(
+    root.attrs.put(
         {
             "version": __version__,
             "circuit_qasm": dumps(cut_circuit.raw_circuit),
@@ -52,6 +50,13 @@ def cut_circuit_to_zarr(cut_circuit, filepath: str | Path) -> None:
 
         # Get expensive properties once
         reconstruction_qubit_order = cut_circuit.reconstruction_qubit_order
+
+        subcircuits_group = root.create_group("subcircuits")
+        subcircuits_group.attrs.put(
+            {
+                "n": len(cut_circuit),
+            }
+        )
 
         for subcircuit_i in range(len(cut_circuit)):
             subcircuit_group = root.create_group(f"subcircuits/{subcircuit_i}")
@@ -118,7 +123,7 @@ def zarr_to_cut_circuit(filepath: str | Path) -> CutCircuit:  # noqa: PLR0912
 
     root = zarr.open(str(filepath))
 
-    qasm_str = root["metadata"].attrs["circuit_qasm"]
+    qasm_str = root.attrs["circuit_qasm"]
     cut_circuit = CutCircuit(loads(qasm_str))
 
     # Load cuts and subcircuits
