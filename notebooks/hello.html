@@ -46,7 +46,7 @@
   
   
   
-    <title>&lt;no title&gt; &#8212; CutQC2  documentation</title>
+    <title>Computation Graph &#8212; CutQC2  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
@@ -59,7 +59,7 @@
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="FAQs" href="../faqs.html" />
+    <link rel="next" title="CutQC2 zarr file format" href="../zarr.html" />
     <link rel="prev" title="Tutorials" href="../tutorials.html" />
   
    
@@ -97,7 +97,7 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           <span class="md-header-nav__topic">CutQC2  documentation</span>
-          <span class="md-header-nav__topic"> &lt;no title&gt; </span>
+          <span class="md-header-nav__topic"> Computation Graph </span>
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
@@ -185,7 +185,18 @@
               <div class="md-sidebar__inner">
                 
 <nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
   <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#notebooks-hello--page-root" class="md-nav__link">Computation Graph</a>
+        </li>
+        <li class="md-nav__item"><a href="#Original-uncut-circuit" class="md-nav__link">Original uncut circuit</a>
+        </li>
+        <li class="md-nav__item"><a href="#Original-circuit-with-cut-locations" class="md-nav__link">Original circuit with cut locations</a>
+        </li>
+        <li class="md-nav__item"><a href="#Subcircuits-after-cutting" class="md-nav__link">Subcircuits after cutting</a>
+        </li>
+        <li class="md-nav__item"><a href="#id1" class="md-nav__link">Computation Graph</a>
+        </li>
     
 <li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/notebooks/hello.ipynb.txt">Show Source</a> </li>
 
@@ -200,8 +211,11 @@
         <div class="md-content">
           <article class="md-content__inner md-typeset" role="main">
             
-  <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+  <section id="Computation-Graph">
+<h1 id="notebooks-hello--page-root">Computation Graph<a class="headerlink" href="#notebooks-hello--page-root" title="Link to this heading">¶</a></h1>
+<p>TODO: This notebook explains the concept of the “Computation Graph” - a DAG of small quantum subcircuits, and the process of</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
@@ -215,12 +229,12 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(INFO) (base_tasks.py) (10-Sep-25 10:14:37) Pass: UnrollCustomDefinitions - 0.10896 (ms)
-(INFO) (base_tasks.py) (10-Sep-25 10:14:37) Pass: BasisTranslator - 0.03839 (ms)
+(INFO) (base_tasks.py) (11-Sep-25 10:44:06) Pass: UnrollCustomDefinitions - 0.11349 (ms)
+(INFO) (base_tasks.py) (11-Sep-25 10:44:06) Pass: BasisTranslator - 0.03839 (ms)
 </pre></div></div>
 </div>
 <div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">qasm_file</span> <span class="o">=</span> <span class="s2">"../../../examples/scripts/supremacy_6qubit.qasm3"</span>
@@ -230,7 +244,7 @@
 </div>
 </div>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cut_circuit</span> <span class="o">=</span> <span class="n">CutCircuit</span><span class="p">(</span><span class="n">circuit_qasm3</span><span class="o">=</span><span class="n">circuit_qasm3</span><span class="p">)</span>
@@ -251,20 +265,127 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(INFO) (cut_circuit.py) (10-Sep-25 10:17:44) Trying with 3 subcircuits
+(INFO) (cut_circuit.py) (11-Sep-25 10:44:06) Trying with 3 subcircuits
 Set parameter Username
-(INFO) (cutter.py) (10-Sep-25 10:17:44) Set parameter Username
+(INFO) (cutter.py) (11-Sep-25 10:44:06) Set parameter Username
 Set parameter LicenseID to value 2646086
-(INFO) (cutter.py) (10-Sep-25 10:17:44) Set parameter LicenseID to value 2646086
+(INFO) (cutter.py) (11-Sep-25 10:44:06) Set parameter LicenseID to value 2646086
 Academic license - for non-commercial use only - expires 2026-04-01
-(INFO) (cutter.py) (10-Sep-25 10:17:44) Academic license - for non-commercial use only - expires 2026-04-01
-(INFO) (cut_circuit.py) (10-Sep-25 10:17:44) Running subcircuit 0 on backend: statevector_simulator
-(INFO) (cut_circuit.py) (10-Sep-25 10:17:44) Running subcircuit 1 on backend: statevector_simulator
-(INFO) (cut_circuit.py) (10-Sep-25 10:17:44) Running subcircuit 2 on backend: statevector_simulator
+(INFO) (cutter.py) (11-Sep-25 10:44:06) Academic license - for non-commercial use only - expires 2026-04-01
+(INFO) (cut_circuit.py) (11-Sep-25 10:44:06) Running subcircuit 0 on backend: statevector_simulator
+(INFO) (cut_circuit.py) (11-Sep-25 10:44:07) Running subcircuit 1 on backend: statevector_simulator
+(INFO) (cut_circuit.py) (11-Sep-25 10:44:07) Running subcircuit 2 on backend: statevector_simulator
 </pre></div></div>
 </div>
+</section>
+<section id="Original-uncut-circuit">
+<h1 id="Original-uncut-circuit">Original uncut circuit<a class="headerlink" href="#Original-uncut-circuit" title="Link to this heading">¶</a></h1>
 <div class="nbinput docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">cut_circuit</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">fold</span><span class="o">=-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+     ┌───┐     ┌─────────┐   ┌───┐        ┌─────────┐   ┌───┐      ┌───┐
+q_0: ┤ H ├──■──┤ Ry(π/2) ├───┤ T ├─────■──┤ Rx(π/2) ├───┤ T ├──────┤ H ├─────────────
+     ├───┤  │  ├─────────┤   ├───┤     │  └─────────┘   └───┘      └───┘        ┌───┐
+q_1: ┤ H ├──■──┤ Ry(π/2) ├───┤ T ├─────┼─────────────────────────────────────■──┤ H ├
+     ├───┤┌───┐└─────────┘┌──┴───┴──┐  │             ┌─────────┐   ┌───┐     │  ├───┤
+q_2: ┤ H ├┤ T ├─────■─────┤ Ry(π/2) ├──■───────■─────┤ Rx(π/2) ├───┤ T ├─────┼──┤ H ├
+     ├───┤├───┤     │     └─────────┘          │     └─────────┘┌──┴───┴──┐  │  ├───┤
+q_3: ┤ H ├┤ T ├─────┼──────────────────────────■──────────■─────┤ Ry(π/2) ├──■──┤ H ├
+     ├───┤└───┘     │     ┌─────────┐┌───┐   ┌───┐        │     └─────────┘     └───┘
+q_4: ┤ H ├──■───────■─────┤ Ry(π/2) ├┤ T ├───┤ H ├────────┼──────────────────────────
+     ├───┤  │  ┌─────────┐└──┬───┬──┘└───┘   └───┘        │     ┌─────────┐┌───┐┌───┐
+q_5: ┤ H ├──■──┤ Ry(π/2) ├───┤ T ├────────────────────────■─────┤ Ry(π/2) ├┤ T ├┤ H ├
+     └───┘     └─────────┘   └───┘                              └─────────┘└───┘└───┘
+</pre></div></div>
+</div>
+</section>
+<section id="Original-circuit-with-cut-locations">
+<h1 id="Original-circuit-with-cut-locations">Original circuit with cut locations<a class="headerlink" href="#Original-circuit-with-cut-locations" title="Link to this heading">¶</a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">cut_circuit</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+     ┌───┐     ┌─────────┐   ┌───┐                   ┌─────────┐┌───┐   ┌───┐
+q_0: ┤ H ├──■──┤ Ry(π/2) ├───┤ T ├────────────────■──┤ Rx(π/2) ├┤ T ├───┤ H ├───────────────────────────────────
+     ├───┤  │  ├─────────┤   ├───┤                │  └─────────┘└───┘   └───┘                              ┌───┐
+q_1: ┤ H ├──■──┤ Ry(π/2) ├───┤ T ├────────────────┼─────────────────────────────────────────────────────■──┤ H ├
+     ├───┤┌───┐└─────────┘   ├───┴┐  ┌─────────┐  │     ┌────┐       ┌─────────┐   ┌───┐      ┌───┐     │  └───┘
+q_2: ┤ H ├┤ T ├─────■────────┤ // ├──┤ Ry(π/2) ├──■─────┤ // ├────■──┤ Rx(π/2) ├───┤ T ├──────┤ H ├─────┼───────
+     ├───┤├───┤     │        └────┘  └─────────┘        └────┘    │  └─────────┘   ├───┴┐  ┌──┴───┴──┐  │  ┌───┐
+q_3: ┤ H ├┤ T ├─────┼─────────────────────────────────────────────■───────■────────┤ // ├──┤ Ry(π/2) ├──■──┤ H ├
+     ├───┤└───┘     │     ┌─────────┐   ┌───┐   ┌───┐                     │        └────┘  └─────────┘     └───┘
+q_4: ┤ H ├──■───────■─────┤ Ry(π/2) ├───┤ T ├───┤ H ├─────────────────────┼─────────────────────────────────────
+     ├───┤  │     ┌────┐  ├─────────┤   ├───┤   └───┘                     │     ┌─────────┐   ┌───┐   ┌───┐
+q_5: ┤ H ├──■─────┤ // ├──┤ Ry(π/2) ├───┤ T ├─────────────────────────────■─────┤ Ry(π/2) ├───┤ T ├───┤ H ├─────
+     └───┘        └────┘  └─────────┘   └───┘                                   └─────────┘   └───┘   └───┘
+</pre></div></div>
+</div>
+</section>
+<section id="Subcircuits-after-cutting">
+<h1 id="Subcircuits-after-cutting">Subcircuits after cutting<a class="headerlink" href="#Subcircuits-after-cutting" title="Link to this heading">¶</a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">subcircuit</span> <span class="ow">in</span> <span class="n">cut_circuit</span><span class="o">.</span><span class="n">subcircuits</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">subcircuit</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+     ┌───┐   ┌─────────┐┌───┐   ┌─────────┐┌───┐┌───┐
+q_0: ┤ H ├─■─┤ Ry(π/2) ├┤ T ├─■─┤ Rx(π/2) ├┤ T ├┤ H ├
+     ├───┤ │ ├─────────┤├───┤ │ └─────────┘├───┤└───┘
+q_1: ┤ H ├─■─┤ Ry(π/2) ├┤ T ├─┼──────■─────┤ H ├─────
+     └───┘   └─────────┘└───┘ │      │     └───┘
+q_2: ─────────────────────────■──────┼───────────────
+                                     │     ┌───┐
+q_3: ────────────────────────────────■─────┤ H ├─────
+                                           └───┘
+     ┌───┐        ┌─────────┐┌───┐┌───┐
+q_0: ┤ H ├──■───■─┤ Ry(π/2) ├┤ T ├┤ H ├
+     ├───┤  │   │ ├─────────┤├───┤└───┘
+q_1: ┤ H ├──■───┼─┤ Ry(π/2) ├┤ T ├─────
+     ├───┤┌───┐ │ ├─────────┤└───┘
+q_2: ┤ H ├┤ T ├─■─┤ Ry(π/2) ├──────────
+     └───┘└───┘   └─────────┘
+                  ┌─────────┐   ┌───┐   ┌───┐
+q_0: ───────────■─┤ Rx(π/2) ├───┤ T ├───┤ H ├─────
+     ┌───┐┌───┐ │ └─────────┘┌──┴───┴──┐└───┘
+q_1: ┤ H ├┤ T ├─■──────■─────┤ Ry(π/2) ├──────────
+     └───┘└───┘        │     ├─────────┤┌───┐┌───┐
+q_2: ──────────────────■─────┤ Ry(π/2) ├┤ T ├┤ H ├
+                             └─────────┘└───┘└───┘
+</pre></div></div>
+</div>
+</section>
+<section id="id1">
+<h1 id="id1">Computation Graph<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h1>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cut_circuit</span><span class="o">.</span><span class="n">compute_graph</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
@@ -275,17 +396,10 @@ Academic license - for non-commercial use only - expires 2026-04-01
 <div class="prompt empty docutils container">
 </div>
 <div class="output_area docutils container">
-<img alt="../_images/notebooks_hello_3_0.png" src="../_images/notebooks_hello_3_0.png"/>
+<img alt="../_images/notebooks_hello_11_0.png" src="../_images/notebooks_hello_11_0.png"/>
 </div>
 </div>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span>
-</pre></div>
-</div>
-</div>
+</section>
 
 
           </article>
@@ -311,12 +425,12 @@ Academic license - for non-commercial use only - expires 2026-04-01
             </a>
           
           
-            <a href="../faqs.html" title="FAQs"
+            <a href="../zarr.html" title="CutQC2 zarr file format"
                class="md-flex md-footer-nav__link md-footer-nav__link--next"
                rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
                 class="md-flex__ellipsis"> <span
-                class="md-footer-nav__direction"> "Next" </span> FAQs </span>
+                class="md-footer-nav__direction"> "Next" </span> CutQC2 zarr file format </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink"><i
                 class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
