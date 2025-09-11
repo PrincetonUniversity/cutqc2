@@ -334,12 +334,13 @@ class CutCircuit:
         found = False
         for i, instr in enumerate(self.circuit.data):
             if cut_qubit in instr.qubits:  # we're on the right wire
-                if cut_wire_position == gate_index:
+                if cut_wire_position >= gate_index:
                     cut_instr = CircuitInstruction(WireCutGate(), qubits=(cut_qubit,))
-                    self.circuit_with_cut_gates.data.insert(i + 1, cut_instr)
+                    self.circuit_with_cut_gates.data.insert(i, cut_instr)
                     found = True
                     break
-                cut_wire_position += 1
+                if len(instr.qubits) == 2:  # noqa: PLR2004
+                    cut_wire_position += 1
 
         if found:
             self.cuts.append((wire_index, gate_index))
@@ -398,7 +399,7 @@ class CutCircuit:
             q: [] for q in range(self.circuit.num_qubits)
         }
         # mapping from uncut circuit wire index to subcircuit index we last saw on that wire
-        current_subciruit_on_wire: dict[int, int] = {
+        current_subciruit_on_wire: dict[int, int | None] = {
             q: None for q in range(self.circuit.num_qubits)
         }
         # mapping from uncut circuit wire index to list of Instructions that
@@ -413,7 +414,7 @@ class CutCircuit:
         }
         # --------------------------------------------------
 
-        dag = circuit_to_dag(self.circuit)
+        dag = circuit_to_dag(self.circuit_with_cut_gates)
         for op_node in dag.topological_op_nodes():
             # The new operation that we're constructing
             op = deepcopy(op_node.op)

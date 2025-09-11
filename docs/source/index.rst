@@ -12,7 +12,9 @@ By combining classical and quantum computation, CutQC2 significantly expands the
    :caption: Contents:
 
    installation
+   getting_started
    tutorials
+   zarr
    faqs
    contributing
 
