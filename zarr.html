@@ -294,7 +294,7 @@ qubit<span class="o">[</span><span class="m">4</span><span class="o">]</span><sp
 </section>
 <section id="subcircuit-probabilities">
 <h4 id="subcircuit-probabilities">Subcircuit probabilities<a class="headerlink" href="#subcircuit-probabilities" title="Link to this heading">¶</a></h4>
-<p>The probabilities for each subcircuit are stored in the <code class="docutils literal notranslate"><span class="pre">packed_probabilities</span></code> group in its numbered folder. Let’s inspect it’s shape.</p>
+<p>The probabilities for each subcircuit are stored in the <code class="docutils literal notranslate"><span class="pre">packed_probabilities</span></code> group in its numbered folder. Let’s inspect its shape.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">".shape"</span><span class="w"> </span>supremacy_6qubit.zarr/subcircuits/0/packed_probabilities/zarr.json
 <span class="o">[</span>
 <span class="w">  </span><span class="m">4</span>,
