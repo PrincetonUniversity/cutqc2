@@ -81,7 +81,7 @@ qubit[4] q;
 
 #### Subcircuit probabilities
 
-The probabilities for each subcircuit are stored in the `packed_probabilities` group in its numbered folder. Let's inspect it's shape.
+The probabilities for each subcircuit are stored in the `packed_probabilities` group in its numbered folder. Let's inspect its shape.
 
 ```shell
 $ jq -r ".shape" supremacy_6qubit.zarr/subcircuits/0/packed_probabilities/zarr.json

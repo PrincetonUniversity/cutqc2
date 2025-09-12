@@ -96,3 +96,4 @@ extend-select = [
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["PLR2004"]  # Magic values used in pytests
 "examples/*" = ["T201"]  # print statements
+"*.ipynb" = ["T201"]  # print statements
