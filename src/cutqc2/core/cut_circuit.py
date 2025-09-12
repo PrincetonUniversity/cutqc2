@@ -332,7 +332,7 @@ class CutCircuit:
 
         cut_wire_position = 0
         found = False
-        for i, instr in enumerate(self.circuit.data):
+        for i, instr in enumerate(self.circuit_with_cut_gates.data):
             if cut_qubit in instr.qubits:  # we're on the right wire
                 if cut_wire_position >= gate_index:
                     cut_instr = CircuitInstruction(WireCutGate(), qubits=(cut_qubit,))
