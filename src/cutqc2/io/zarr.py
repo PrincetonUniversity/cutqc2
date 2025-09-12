@@ -27,12 +27,6 @@ def cut_circuit_to_zarr(cut_circuit, filepath: str | Path) -> None:
     )
 
     if cut_circuit.num_cuts > 0:
-        cuts_arr = np.array(
-            [(str(src), str(dest)) for src, dest in cut_circuit.cut_dagedgepairs],
-            dtype=[("src", "U20"), ("dest", "U20")],
-        )
-        root.create_array("cuts", data=cuts_arr)
-
         if cut_circuit.complete_path_map:
             complete_path_map = [{}] * cut_circuit.circuit.num_qubits
             for qubit, path in cut_circuit.complete_path_map.items():
@@ -126,17 +120,8 @@ def zarr_to_cut_circuit(filepath: str | Path) -> CutCircuit:  # noqa: PLR0912
     qasm_str = root.attrs["circuit_qasm"]
     cut_circuit = CutCircuit(loads(qasm_str))
 
-    # Load cuts and subcircuits
-    if "cuts" in root and "subcircuits" in root:
-        cuts = root["cuts"][()]
-        cut_edge_pairs = [
-            (
-                DAGEdge.from_string(src),
-                DAGEdge.from_string(dest),
-            )
-            for (src, dest) in cuts
-        ]
-
+    # Load subcircuits
+    if "subcircuits" in root:
         subcircuit_dagedges = [None] * len(root["subcircuits"])
         for subcircuit_i in root["subcircuits"]:
             subcircuit_group = root[f"subcircuits/{subcircuit_i}"]
@@ -147,9 +132,7 @@ def zarr_to_cut_circuit(filepath: str | Path) -> CutCircuit:  # noqa: PLR0912
             ]
             subcircuit_dagedges[subcircuit_idx] = subcircuit_n_dagedges
 
-        cut_circuit.add_cuts_and_generate_subcircuits(
-            cut_edge_pairs, subcircuit_dagedges
-        )
+        cut_circuit.add_cuts_and_generate_subcircuits(subcircuit_dagedges)
 
     # Reconstruction qubit order & subcircuit probabilities
     reconstruction_qubit_order = {}
