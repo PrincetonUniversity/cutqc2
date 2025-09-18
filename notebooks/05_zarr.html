@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>CutQC2 zarr file format &#8212; CutQC2  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="FAQs" href="../faqs.html" />
+    <link rel="prev" title="Circuit-Cutting Implementation Details" href="04_circuit_cutting_internals.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue-grey data-md-color-accent=blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#notebooks/05_zarr" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../index.html" title="CutQC2  documentation"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">CutQC2  documentation</span>
+          <span class="md-header-nav__topic"> CutQC2 zarr file format </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+      
+  
+  <script src="../_static/javascripts/version_dropdown.js"></script>
+  <script>
+    var json_loc = "../"versions.json"",
+        target_loc = "../../",
+        text = "Versions";
+    $( document ).ready( add_version_dropdown(json_loc, target_loc, text));
+  </script>
+  
+
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="../index.html" class="md-tabs__link">CutQC2  documentation</a></li>
+          <li class="md-tabs__item"><a href="../tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../index.html" title="CutQC2 documentation" class="md-nav__button md-logo">
+      
+        <img src="../_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../index.html"
+       title="CutQC2 documentation">CutQC2  documentation</a>
+  </label>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#notebooks-05-zarr--page-root" class="md-nav__link">CutQC2 zarr file format</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#Creating-the-zarr-file" class="md-nav__link">Creating the zarr file</a>
+        </li>
+        <li class="md-nav__item"><a href="#Inspecting-the-zarr-file" class="md-nav__link">Inspecting the zarr file</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#Top-level-metadata" class="md-nav__link">Top-level metadata</a>
+        </li>
+        <li class="md-nav__item"><a href="#Subcircuits" class="md-nav__link">Subcircuits</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#Number-of-subcircuits" class="md-nav__link">Number of subcircuits</a>
+        </li>
+        <li class="md-nav__item"><a href="#Subcircuit-metadata" class="md-nav__link">Subcircuit metadata</a>
+        </li>
+        <li class="md-nav__item"><a href="#Subcircuit-probabilities" class="md-nav__link">Subcircuit probabilities</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/notebooks/05_zarr.ipynb.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="CutQC2-zarr-file-format">
+<h1 id="notebooks-05-zarr--page-root">CutQC2 zarr file format<a class="headerlink" href="#notebooks-05-zarr--page-root" title="Link to this heading">¶</a></h1>
+<p>All relevant information during <code class="docutils literal notranslate"><span class="pre">Cutqc2</span></code> processing - the original circuit specification, cut locations, subcircuit probability values, and the final reconstructed probabilities - are stored in a single <a class="reference external" href="https://zarr.readthedocs.io/en/stable/quickstart.html">zarr</a> file. A zarr file is a directory containing multiple json files and binary data files, can be stored on disk or in cloud storage, allows for efficient access to subsets of the data without loading everything into memory, as well
+as parallel read and write operations. It can be accessed from Python, C++ and Rust, among other languages.</p>
+<p>See a detailed description of the Zarr format <a class="reference external" href="https://zarr.dev/">here</a></p>
+<section id="Creating-the-zarr-file">
+<h2 id="Creating-the-zarr-file">Creating the zarr file<a class="headerlink" href="#Creating-the-zarr-file" title="Link to this heading">¶</a></h2>
+<p>If we look at the <code class="docutils literal notranslate"><span class="pre">supremacy_6qubit.sh</span></code> script in the <code class="docutils literal notranslate"><span class="pre">examples/scripts</span></code> folder, it has a command to generate and cut a 6 qubit supremacy circuit.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>cutqc2<span class="w"> </span>cut<span class="w"> </span><span class="err">\</span>
+  <span class="o">--</span><span class="n">file</span> <span class="n">supremacy_6qubit</span><span class="o">.</span><span class="n">qasm3</span> \
+  <span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">subcircuit</span><span class="o">-</span><span class="n">width</span> <span class="mi">5</span> \
+  <span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">subcircuit</span><span class="o">-</span><span class="n">cuts</span> <span class="mi">10</span> \
+  <span class="o">--</span><span class="n">subcircuit</span><span class="o">-</span><span class="n">size</span><span class="o">-</span><span class="n">imbalance</span> <span class="mi">2</span> \
+  <span class="o">--</span><span class="nb">max</span><span class="o">-</span><span class="n">cuts</span> <span class="mi">10</span> \
+  <span class="o">--</span><span class="n">num</span><span class="o">-</span><span class="n">subcircuits</span> <span class="mi">3</span> \
+  <span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">file</span> <span class="n">supremacy_6qubit</span><span class="o">.</span><span class="n">zarr</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(INFO) (base_tasks.py) (18-Sep-25 09:42:17) Pass: UnrollCustomDefinitions - 0.10800 (ms)
+(INFO) (base_tasks.py) (18-Sep-25 09:42:17) Pass: BasisTranslator - 0.03314 (ms)
+(INFO) (cut_circuit.py) (18-Sep-25 09:42:17) Trying with 3 subcircuits
+Set parameter Username
+(INFO) (cutter.py) (18-Sep-25 09:42:17) Set parameter Username
+Set parameter LicenseID to value 2646086
+(INFO) (cutter.py) (18-Sep-25 09:42:17) Set parameter LicenseID to value 2646086
+Academic license - for non-commercial use only - expires 2026-04-01
+(INFO) (cutter.py) (18-Sep-25 09:42:17) Academic license - for non-commercial use only - expires 2026-04-01
+(INFO) (cut_circuit.py) (18-Sep-25 09:42:17) Running subcircuit 0 on backend: statevector_simulator
+(INFO) (cut_circuit.py) (18-Sep-25 09:42:17) Running subcircuit 1 on backend: statevector_simulator
+(INFO) (cut_circuit.py) (18-Sep-25 09:42:17) Running subcircuit 2 on backend: statevector_simulator
+/media/vineetb/delta/projects/cutqc2/.venv/lib/python3.12/site-packages/zarr/core/dtype/npy/structured.py:318: UnstableSpecificationWarning: The data type (Structured(fields=(('subcircuit', Int32(endianness='little')), ('qubit', Int32(endianness='little'))))) does not have a Zarr V3 specification. That means that the representation of arrays saved with this data type may change without warning in a future version of Zarr Python. Arrays stored with this data type may be unreadable by other Zarr libraries. Use this data type at your own risk! Check https://github.com/zarr-developers/zarr-extensions/tree/main/data-types for the status of data type specifications for Zarr V3.
+  v3_unstable_dtype_warning(self)
+/media/vineetb/delta/projects/cutqc2/.venv/lib/python3.12/site-packages/zarr/core/dtype/npy/string.py:248: UnstableSpecificationWarning: The data type (FixedLengthUTF32(length=20, endianness='little')) does not have a Zarr V3 specification. That means that the representation of arrays saved with this data type may change without warning in a future version of Zarr Python. Arrays stored with this data type may be unreadable by other Zarr libraries. Use this data type at your own risk! Check https://github.com/zarr-developers/zarr-extensions/tree/main/data-types for the status of data type specifications for Zarr V3.
+  v3_unstable_dtype_warning(self)
+</pre></div></div>
+</div>
+<p>Run the above command to generate the <code class="docutils literal notranslate"><span class="pre">supremacy_6qubit.zarr</span></code> “file”.</p>
+</section>
+<section id="Inspecting-the-zarr-file">
+<h2 id="Inspecting-the-zarr-file">Inspecting the zarr file<a class="headerlink" href="#Inspecting-the-zarr-file" title="Link to this heading">¶</a></h2>
+<p>In a <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> file (which is actually a folder), metadata is stored in json files (in <code class="docutils literal notranslate"><span class="pre">zarr.json</span></code> files) at various levels of the directory structure.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>cat<span class="w"> </span>supremacy_6qubit.zarr/zarr.json
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+{
+  "attributes": {
+    "version": "0.0.7",
+    "circuit_qasm": "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[6] q;\nh q[0];\nh q[1];\nh q[2];\nh q[3];\nh q[4];\nh q[5];\ncz q[0], q[1];\ncz q[4], q[5];\nt q[2];\nt q[3];\ncz q[2], q[4];\nry(pi/2) q[0];\nry(pi/2) q[1];\nry(pi/2) q[5];\nt q[0];\nt q[1];\nt q[5];\nry(pi/2) q[2];\nry(pi/2) q[4];\ncz q[0], q[2];\nt q[4];\ncz q[2], q[3];\nrx(pi/2) q[0];\ncz q[3], q[5];\nt q[0];\nrx(pi/2) q[2];\nt q[2];\nry(pi/2) q[3];\nry(pi/2) q[5];\ncz q[1], q[3];\nt q[5];\nh q[0];\nh q[1];\nh q[2];\nh q[3];\nh q[4];\nh q[5];\n"
+  },
+  "zarr_format": 3,
+  "consolidated_metadata": null,
+  "node_type": "group"
+}
+</pre></div></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">.zarr</span></code> files are easily accessed and manipulated in Python, but to keep this discussion language-agnostic, here we will use the <a class="reference external" href="https://stedolan.github.io/jq/">jq</a> tool to inspect and explain the contents of the json file. <code class="docutils literal notranslate"><span class="pre">jq</span></code> is a command line tool commonly available on Linux and MacOS systems, and allows us to extract arbitrary fields from json data.</p>
+<section id="Top-level-metadata">
+<h3 id="Top-level-metadata">Top-level metadata<a class="headerlink" href="#Top-level-metadata" title="Link to this heading">¶</a></h3>
+<p>The root <code class="docutils literal notranslate"><span class="pre">zarr.json</span></code> file contains metadata about the zarr file itself, including the Cutqc2 version number used to create it.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">".attributes.version"</span><span class="w"> </span>supremacy_6qubit.zarr/zarr.json
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+0.0.7
+</pre></div></div>
+</div>
+<p>It is important to realize that the <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> file created by one version of Cutqc2 may not be readable by another version of Cutqc2 (at least till we reach the <code class="docutils literal notranslate"><span class="pre">1.x</span></code> version).</p>
+<p>Similarly, the original circuit in QASM format is stored in the <code class="docutils literal notranslate"><span class="pre">circuit_qasm</span></code> attribute.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">".attributes.circuit_qasm"</span><span class="w"> </span>supremacy_6qubit.zarr/zarr.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+OPENQASM 3.0;
+include "stdgates.inc";
+qubit[6] q;
+h q[0];
+h q[1];
+</pre></div></div>
+</div>
+</section>
+<section id="Subcircuits">
+<h3 id="Subcircuits">Subcircuits<a class="headerlink" href="#Subcircuits" title="Link to this heading">¶</a></h3>
+<section id="Number-of-subcircuits">
+<h4 id="Number-of-subcircuits">Number of subcircuits<a class="headerlink" href="#Number-of-subcircuits" title="Link to this heading">¶</a></h4>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">".attributes.n"</span><span class="w"> </span>supremacy_6qubit.zarr/subcircuits/zarr.json
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+3
+</pre></div></div>
+</div>
+<p>Subcircuits are numbered from 0 to n-1, where n is the number of subcircuits.</p>
+</section>
+<section id="Subcircuit-metadata">
+<h4 id="Subcircuit-metadata">Subcircuit metadata<a class="headerlink" href="#Subcircuit-metadata" title="Link to this heading">¶</a></h4>
+<p>The qasm3 representation of each subcircuit is stored as the <code class="docutils literal notranslate"><span class="pre">qasm</span></code> attribute in its numbered folder.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">".attributes.qasm"</span><span class="w"> </span>supremacy_6qubit.zarr/subcircuits/0/zarr.json<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">5</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+OPENQASM 3.0;
+include "stdgates.inc";
+qubit[4] q;
+h q[0];
+h q[1];
+</pre></div></div>
+</div>
+</section>
+<section id="Subcircuit-probabilities">
+<h4 id="Subcircuit-probabilities">Subcircuit probabilities<a class="headerlink" href="#Subcircuit-probabilities" title="Link to this heading">¶</a></h4>
+<p>The probabilities for each subcircuit are stored in the <code class="docutils literal notranslate"><span class="pre">packed_probabilities</span></code> group in its numbered folder. Let’s inspect the shape of the probability values for subcircuit 0.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">".shape"</span><span class="w"> </span>supremacy_6qubit.zarr/subcircuits/0/packed_probabilities/zarr.json
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">[
+  </span>4<span class="ansi-bold">,
+  </span>4<span class="ansi-bold">,
+  </span>4<span class="ansi-bold">,
+  </span>8<span class="ansi-bold">
+</span><span class="ansi-bold">]</span>
+</pre></div></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="04_circuit_cutting_internals.html" title="Circuit-Cutting Implementation Details"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> Circuit-Cutting Implementation Details </span>
+              </div>
+            </a>
+          
+          
+            <a href="../faqs.html" title="FAQs"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> FAQs </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2025, Princeton University.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

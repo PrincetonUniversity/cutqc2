@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>Circuit-Cutting Implementation Details &#8212; CutQC2  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="CutQC2 zarr file format" href="05_zarr.html" />
+    <link rel="prev" title="Dynamic Definition" href="03_dynamic_definition.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue-grey data-md-color-accent=blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#notebooks/04_circuit_cutting_internals" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../index.html" title="CutQC2  documentation"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">CutQC2  documentation</span>
+          <span class="md-header-nav__topic"> Circuit-Cutting Implementation Details </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+      
+  
+  <script src="../_static/javascripts/version_dropdown.js"></script>
+  <script>
+    var json_loc = "../"versions.json"",
+        target_loc = "../../",
+        text = "Versions";
+    $( document ).ready( add_version_dropdown(json_loc, target_loc, text));
+  </script>
+  
+
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="../index.html" class="md-tabs__link">CutQC2  documentation</a></li>
+          <li class="md-tabs__item"><a href="../tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../index.html" title="CutQC2 documentation" class="md-nav__button md-logo">
+      
+        <img src="../_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../index.html"
+       title="CutQC2 documentation">CutQC2  documentation</a>
+  </label>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#notebooks-04-circuit-cutting-internals--page-root" class="md-nav__link">Circuit-Cutting Implementation Details</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#The-Computation-Graph" class="md-nav__link">The Computation Graph</a>
+        </li>
+        <li class="md-nav__item"><a href="#A-more-complex-example" class="md-nav__link">A more complex example</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/notebooks/04_circuit_cutting_internals.ipynb.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="Circuit-Cutting-Implementation-Details">
+<h1 id="notebooks-04-circuit-cutting-internals--page-root">Circuit-Cutting Implementation Details<a class="headerlink" href="#notebooks-04-circuit-cutting-internals--page-root" title="Link to this heading">¶</a></h1>
+<p>This notebook expands on the <a class="reference external" href="00_circuit_cutting.ipynb">circuit_cutting</a> notebook to illustrate some of the workings behind circuit-cutting, along with implementation-specific details in <code class="docutils literal notranslate"><span class="pre">Cutqc2</span></code>.</p>
+<p>We create a <code class="docutils literal notranslate"><span class="pre">CutCircuit</span></code> object and use it for circuit-cutting a simple 5-qubit circuit (Figure 4 in the CutQC paper).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">math</span><span class="w"> </span><span class="kn">import</span> <span class="n">pi</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">qiskit</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">cutqc2.core.cut_circuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">CutCircuit</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">example_circuit</span><span class="p">():</span>
+    <span class="n">qc</span> <span class="o">=</span> <span class="n">qiskit</span><span class="o">.</span><span class="n">QuantumCircuit</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">reset</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="n">qc</span><span class="o">.</span><span class="n">cz</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="n">qc</span><span class="o">.</span><span class="n">cz</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+    <span class="n">qc</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">cz</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+    <span class="n">qc</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">t</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">cz</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">rx</span><span class="p">(</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">qc</span><span class="o">.</span><span class="n">h</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">qc</span>
+
+
+<span class="n">circuit</span> <span class="o">=</span> <span class="n">example_circuit</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cut_circuit</span> <span class="o">=</span> <span class="n">CutCircuit</span><span class="p">(</span><span class="n">circuit</span><span class="o">=</span><span class="n">circuit</span><span class="p">)</span>
+<span class="n">cut_circuit</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span>
+    <span class="n">max_subcircuit_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>  <span class="c1"># Max qubits per subcircuit</span>
+    <span class="n">max_subcircuit_cuts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># Max cuts per subcircuit</span>
+    <span class="n">subcircuit_size_imbalance</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>  <span class="c1"># Allowable size imbalance between subcircuits</span>
+    <span class="n">max_cuts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Max total cuts in the circuit</span>
+    <span class="n">num_subcircuits</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>  <span class="c1"># Desired number of subcircuits to try</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(INFO) (cut_circuit.py) (18-Sep-25 09:42:32) Trying with 2 subcircuits
+Set parameter Username
+(INFO) (cutter.py) (18-Sep-25 09:42:32) Set parameter Username
+Set parameter LicenseID to value 2646086
+(INFO) (cutter.py) (18-Sep-25 09:42:32) Set parameter LicenseID to value 2646086
+Academic license - for non-commercial use only - expires 2026-04-01
+(INFO) (cutter.py) (18-Sep-25 09:42:32) Academic license - for non-commercial use only - expires 2026-04-01
+</pre></div></div>
+</div>
+<section id="The-Computation-Graph">
+<h2 id="The-Computation-Graph">The Computation Graph<a class="headerlink" href="#The-Computation-Graph" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">CutCircuit</span></code> class cuts the original circuit into subcircuits. These are internally labeled from <code class="docutils literal notranslate"><span class="pre">0</span></code> to <code class="docutils literal notranslate"><span class="pre">n-1</span></code>. These subcircuits have qubit wires connecting them. In the visual representation of the cut circuit below, we can see that qubit 2 of subcircuit 0 feeds into qubit 0 of subcircuit 1.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">cut_circuit</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+          ┌───┐                   ┌─────────┐┌───┐   ┌───┐
+q_0: ─|0&gt;─┤ H ├──■──────────────■─┤ Rx(π/2) ├┤ T ├───┤ H ├────────
+          ├───┤  │  ┌─────────┐ │ └──┬───┬──┘├───┤   └───┘
+q_1: ─|0&gt;─┤ H ├──■──┤ Rx(π/2) ├─┼────┤ T ├───┤ H ├────────────────
+          ├───┤┌───┐└─────────┘ │    ├───┴┐  └───┘           ┌───┐
+q_2: ─|0&gt;─┤ H ├┤ T ├────────────■────┤ // ├────■───────■─────┤ H ├
+          ├───┤├───┤                 └────┘    │       │     ├───┤
+q_3: ─|0&gt;─┤ H ├┤ T ├───────────────────────────┼───────■─────┤ H ├
+          ├───┤├───┤┌─────────┐                │  ┌─────────┐├───┤
+q_4: ─|0&gt;─┤ H ├┤ T ├┤ Rx(π/2) ├────────────────■──┤ Rx(π/2) ├┤ H ├
+          └───┘└───┘└─────────┘                   └─────────┘└───┘
+</pre></div></div>
+</div>
+<p>This inter-subcircuit qubit wiring results in a <em>Computation Graph</em>, available as the <code class="docutils literal notranslate"><span class="pre">compute_graph</span></code> attribute of the <code class="docutils literal notranslate"><span class="pre">CutCircuit</span></code> class. We can draw it out using its <code class="docutils literal notranslate"><span class="pre">.draw()</span></code> method:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">compute_graph</span> <span class="o">=</span> <span class="n">cut_circuit</span><span class="o">.</span><span class="n">compute_graph</span>
+<span class="n">compute_graph</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_04_circuit_cutting_internals_6_0.png" src="../_images/notebooks_04_circuit_cutting_internals_6_0.png"/>
+</div>
+</div>
+<p>This visual representation of the compute graph tells us that:</p>
+<ul class="simple">
+<li><p>We have 2 subcircuits, 0 and 1.</p></li>
+<li><p>Subcircuit 0 has 15 gates, 3 qubits, 2 of which are “effective” qubits (contributing to the output).</p></li>
+<li><p>Subcircuit 1 has 13 gates, 3 qubits, all 3 of which are “effective” (contributing to the output).</p></li>
+<li><p>Qubit 2 (<code class="docutils literal notranslate"><span class="pre">q2</span></code>) of Subcircuit 0 feeds in as Qubit 0 (<code class="docutils literal notranslate"><span class="pre">q0</span></code>) of Subcircuit 1 (notice the direction of the arrow connecting the blue nodes).</p></li>
+</ul>
+<p><strong>Each edge of this compute graph represents the qubit wire that is being cut</strong> as part of circuit-cutting.</p>
+<p>If we run the subcircuits of this <code class="docutils literal notranslate"><span class="pre">CutCircuit</span></code> object, we end up populating the individual subcircuit probability values as the <code class="docutils literal notranslate"><span class="pre">subcircuit_packed_probs</span></code> attribute.</p>
+<p>Circuit cutting decomposes any unknown quantum states at cut points into a linear combination of their Pauli bases, summing over four pairs of measurement circuits appended to the upstream subcircuit (subcircuit 0) and state initialization circuits prepended to the downstream subcircuit (subcircuit 1).</p>
+<p>Specifically, QPUs run four variations of subcircuit 0, each measures the upstream cut qubit q2 in one of the {I, X, Y, Z} Pauli bases. Correspondingly, QPUs run four variations of subcircuit 1, each initializes the downstream cut qubit q0 in one of the {|0⟩, |1⟩, |+⟩, |i⟩} states.</p>
+<p>Thus, in this example, subcircuit 0 will have 41 probability vectors (each of length 22 since it has 2 effective qubits), and subcircuit 1 will have 41 probability vectors (each of length 23 since it has 3 effective qubits).</p>
+<p>We can run the subcircuits and confirm that this is the case.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cut_circuit</span><span class="o">.</span><span class="n">run_subcircuits</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(INFO) (cut_circuit.py) (18-Sep-25 09:42:32) Running subcircuit 0 on backend: statevector_simulator
+(INFO) (cut_circuit.py) (18-Sep-25 09:42:32) Running subcircuit 1 on backend: statevector_simulator
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cut_circuit</span><span class="o">.</span><span class="n">subcircuit_packed_probs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(4, 4)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cut_circuit</span><span class="o">.</span><span class="n">subcircuit_packed_probs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(4, 8)
+</pre></div></div>
+</div>
+</section>
+<section id="A-more-complex-example">
+<h2 id="A-more-complex-example">A more complex example<a class="headerlink" href="#A-more-complex-example" title="Link to this heading">¶</a></h2>
+<p>If we create a 6-qubit Supremacy circuit, cut it, run the subcircuits, and plot the computation graph:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">Path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"supremacy_6qubit.qasm3"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">circuit_qasm3</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+<span class="n">cut_circuit</span> <span class="o">=</span> <span class="n">CutCircuit</span><span class="p">(</span><span class="n">circuit_qasm3</span><span class="o">=</span><span class="n">circuit_qasm3</span><span class="p">)</span>
+<span class="n">cut_circuit</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span>
+    <span class="n">max_subcircuit_width</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">max_subcircuit_cuts</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">subcircuit_size_imbalance</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">max_cuts</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">num_subcircuits</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">cut_circuit</span><span class="o">.</span><span class="n">run_subcircuits</span><span class="p">()</span>
+<span class="n">compute_graph</span> <span class="o">=</span> <span class="n">cut_circuit</span><span class="o">.</span><span class="n">compute_graph</span>
+<span class="n">compute_graph</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(INFO) (cut_circuit.py) (18-Sep-25 09:42:32) Trying with 3 subcircuits
+(INFO) (cut_circuit.py) (18-Sep-25 09:42:32) Running subcircuit 0 on backend: statevector_simulator
+(INFO) (cut_circuit.py) (18-Sep-25 09:42:32) Running subcircuit 1 on backend: statevector_simulator
+(INFO) (cut_circuit.py) (18-Sep-25 09:42:32) Running subcircuit 2 on backend: statevector_simulator
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_04_circuit_cutting_internals_13_1.png" src="../_images/notebooks_04_circuit_cutting_internals_13_1.png"/>
+</div>
+</div>
+<p>Subcircuit 0 has two incoming edges and one outgoing edge, or in other words, two cut edges upstream and one cut edge downstream. It thus has 42 initialization circuits and 41 measurement circuits. Each combination of initialization or measurement circuit has a 2effective_qubits, or 23 length probability vector. The total number of probability values for subcircuit 0 thus has the shape <code class="docutils literal notranslate"><span class="pre">(4,</span> <span class="pre">4,</span> <span class="pre">4,</span> <span class="pre">8)</span></code>. Let’s confirm this:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cut_circuit</span><span class="o">.</span><span class="n">subcircuit_packed_probs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(4, 4, 4, 8)
+</pre></div></div>
+</div>
+<p>Similarly, for subcircuit 1 and subcircuit 2:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cut_circuit</span><span class="o">.</span><span class="n">subcircuit_packed_probs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(4, 4, 2)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cut_circuit</span><span class="o">.</span><span class="n">subcircuit_packed_probs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(4, 4, 4, 4)
+</pre></div></div>
+</div>
+<p>If we were to save the <code class="docutils literal notranslate"><span class="pre">CutCircuit</span></code> object to a file and inspect what we saved (see the <a class="reference external" href="04_zarr.ipynb">zarr</a> notebook for further details), you should see the same result:</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cut_circuit</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="s2">"supremacy_6qubit.zarr"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/media/vineetb/delta/projects/cutqc2/.venv/lib/python3.12/site-packages/zarr/core/dtype/npy/structured.py:318: UnstableSpecificationWarning: The data type (Structured(fields=(('subcircuit', Int32(endianness='little')), ('qubit', Int32(endianness='little'))))) does not have a Zarr V3 specification. That means that the representation of arrays saved with this data type may change without warning in a future version of Zarr Python. Arrays stored with this data type may be unreadable by other Zarr libraries. Use this data type at your own risk! Check https://github.com/zarr-developers/zarr-extensions/tree/main/data-types for the status of data type specifications for Zarr V3.
+  v3_unstable_dtype_warning(self)
+/media/vineetb/delta/projects/cutqc2/.venv/lib/python3.12/site-packages/zarr/core/dtype/npy/string.py:248: UnstableSpecificationWarning: The data type (FixedLengthUTF32(length=20, endianness='little')) does not have a Zarr V3 specification. That means that the representation of arrays saved with this data type may change without warning in a future version of Zarr Python. Arrays stored with this data type may be unreadable by other Zarr libraries. Use this data type at your own risk! Check https://github.com/zarr-developers/zarr-extensions/tree/main/data-types for the status of data type specifications for Zarr V3.
+  v3_unstable_dtype_warning(self)
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>jq<span class="w"> </span>-r<span class="w"> </span><span class="s2">".shape"</span><span class="w"> </span>supremacy_6qubit.zarr/subcircuits/2/packed_probabilities/zarr.json
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+<span class="ansi-bold">[
+  </span>4<span class="ansi-bold">,
+  </span>4<span class="ansi-bold">,
+  </span>4<span class="ansi-bold">,
+  </span>4<span class="ansi-bold">
+</span><span class="ansi-bold">]</span>
+</pre></div></div>
+</div>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="03_dynamic_definition.html" title="Dynamic Definition"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> Dynamic Definition </span>
+              </div>
+            </a>
+          
+          
+            <a href="05_zarr.html" title="CutQC2 zarr file format"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> CutQC2 zarr file format </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2025, Princeton University.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

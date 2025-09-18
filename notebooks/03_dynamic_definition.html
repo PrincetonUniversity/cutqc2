@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>Dynamic Definition &#8212; CutQC2  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Circuit-Cutting Implementation Details" href="04_circuit_cutting_internals.html" />
+    <link rel="prev" title="Merging (and Unmerging) probability values" href="02_merge_unmerge.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue-grey data-md-color-accent=blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#notebooks/03_dynamic_definition" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../index.html" title="CutQC2  documentation"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">CutQC2  documentation</span>
+          <span class="md-header-nav__topic"> Dynamic Definition </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+      
+  
+  <script src="../_static/javascripts/version_dropdown.js"></script>
+  <script>
+    var json_loc = "../"versions.json"",
+        target_loc = "../../",
+        text = "Versions";
+    $( document ).ready( add_version_dropdown(json_loc, target_loc, text));
+  </script>
+  
+
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="../index.html" class="md-tabs__link">CutQC2  documentation</a></li>
+          <li class="md-tabs__item"><a href="../tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../index.html" title="CutQC2 documentation" class="md-nav__button md-logo">
+      
+        <img src="../_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../index.html"
+       title="CutQC2 documentation">CutQC2  documentation</a>
+  </label>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#notebooks-03-dynamic-definition--page-root" class="md-nav__link">Dynamic Definition</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#4-qubit-BV-Circuit" class="md-nav__link">4-qubit BV Circuit</a>
+        </li>
+        <li class="md-nav__item"><a href="#6-qubit-Supremacy-Circuit" class="md-nav__link">6-qubit Supremacy Circuit</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/notebooks/03_dynamic_definition.ipynb.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="Dynamic-Definition">
+<h1 id="notebooks-03-dynamic-definition--page-root">Dynamic Definition<a class="headerlink" href="#notebooks-03-dynamic-definition--page-root" title="Link to this heading">¶</a></h1>
+<p>The Dynamic Definition algorithm allows us to sample probability distributions when storing the full-state probability is not tractable (due to memory requirements).</p>
+<p>The algorithm as implemented in <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> has 3 parameters:</p>
+<ul class="simple">
+<li><p>A function that returns a probability distribution given a <code class="docutils literal notranslate"><span class="pre">qubit_spec</span></code> - a string of <em>active</em> (<code class="docutils literal notranslate"><span class="pre">A</span></code>), <em>merged</em> (<code class="docutils literal notranslate"><span class="pre">M</span></code>) and <em>conditioned</em> (<code class="docutils literal notranslate"><span class="pre">0</span></code>/<code class="docutils literal notranslate"><span class="pre">1</span></code>) qubits. See the <a class="reference external" href="merge_unmerge.ipynb">merge_unmerge</a> notebook for an introduction on these.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">capacity</span></code> - the max number of qubits we can mark as <strong>active</strong> at any point. This is referred to as <em>system memory</em> in Algorithm 1 of the CutQC paper.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_recursion</span></code> - the max recursions the algorithm goes through.</p></li>
+</ul>
+<p>The algorithm is outlined below.</p>
+<ul class="simple">
+<li><p>Initialize empty list <code class="docutils literal notranslate"><span class="pre">probability_bins</span></code></p></li>
+<li><p><strong>for</strong> each DD recursion <strong>do</strong></p>
+<ul>
+<li><p><strong>if</strong> First recursion <strong>then</strong></p>
+<ul>
+<li><p>Choose subset of qubits of length <code class="docutils literal notranslate"><span class="pre">capacity</span></code> to label as <strong>active</strong>;</p></li>
+</ul>
+</li>
+<li><p><strong>else</strong></p>
+<ul>
+<li><p>Choose the bin from <code class="docutils literal notranslate"><span class="pre">probability_bins</span></code> with the largest sum of probability;</p></li>
+<li><p>Fix the values of <strong>active</strong> qubits in the bin according to the index of the bin; Label these qubits as <strong>zoomed</strong>;</p></li>
+</ul>
+</li>
+<li><p>Label the rest of the qubits as <strong>merged</strong>;</p></li>
+<li><p>For each state of the <strong>zoomed</strong> qubits, determine probability vectors (run <em>shots</em>, - group shots with common <strong>merged</strong> qubits together).</p></li>
+<li><p>Reconstruct the 2active probability output for the <strong>active</strong> qubits; append to <code class="docutils literal notranslate"><span class="pre">probability_bins</span></code>;</p></li>
+<li><p><strong>if</strong> we’ve reached <code class="docutils literal notranslate"><span class="pre">max_recursion</span></code>, <strong>then</strong> return.</p></li>
+</ul>
+</li>
+</ul>
+<p>In effect, Dynamic Definition maintains a list of probability values (implemented using <code class="docutils literal notranslate"><span class="pre">heapq</span></code>) of active states, and at each recursion level, chooses to focus on the bin that has the highest cumulative probability mass, ignoring the rest.</p>
+<p>Let us see it in action for a 4-qubit BV circuit. This corresponds to Figure 7 in the original CutQC paper.</p>
+<section id="4-qubit-BV-Circuit">
+<h2 id="4-qubit-BV-Circuit">4-qubit BV Circuit<a class="headerlink" href="#4-qubit-BV-Circuit" title="Link to this heading">¶</a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">cutqc2.core.dynamic_definition</span><span class="w"> </span><span class="kn">import</span> <span class="n">DynamicDefinition</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cutqc2.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">merge_prob_vector</span>
+
+<span class="c1"># Emulate the probability distribution for a 4-qubit Bernstein-Vazirani problem</span>
+<span class="n">four_qubit_BV_probability_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">15</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>This circuit produces a single non-zero probability value of 1 at the bitstring index <code class="docutils literal notranslate"><span class="pre">1111</span></code>, which we emulate using <code class="docutils literal notranslate"><span class="pre">four_qubit_BV_probability_distribution</span></code>. We instantiate the <code class="docutils literal notranslate"><span class="pre">DynamicDefinition</span></code> class by providing it:</p>
+<ul class="simple">
+<li><p>the total number of qubits we’re emulating (<code class="docutils literal notranslate"><span class="pre">4</span></code>)</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">capacity</span></code> (set to <code class="docutils literal notranslate"><span class="pre">1</span></code>)</p></li>
+<li><p>a handle to a function that provides it the coarse-grained probability distribution for any <code class="docutils literal notranslate"><span class="pre">qubit_spec</span></code>.</p></li>
+</ul>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dynamic_definition</span> <span class="o">=</span> <span class="n">DynamicDefinition</span><span class="p">(</span>
+    <span class="c1"># Bernstein-Vazirani problem with 4 qubits</span>
+    <span class="n">num_qubits</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="c1"># We choose to have only 1 qubit active at a time</span>
+    <span class="n">capacity</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="c1"># The probability function is a callable that takes in a "qubit spec"</span>
+    <span class="c1"># (a string of 0/1/A/M characters), and returns the compressed quantum</span>
+    <span class="c1"># probability vector by merging/conditioning on specific qubits.</span>
+    <span class="c1"># The `merge_prob_vector` utility function from CutQC2 is used here.</span>
+    <span class="n">prob_fn</span><span class="o">=</span><span class="k">lambda</span> <span class="n">qubit_spec</span><span class="p">:</span> <span class="n">merge_prob_vector</span><span class="p">(</span>
+        <span class="n">four_qubit_BV_probability_distribution</span><span class="p">,</span> <span class="n">qubit_spec</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>We then run the Dynamic Definition algorithm for increasing values of <code class="docutils literal notranslate"><span class="pre">max_recursion</span></code> to see its effects. At each recursion, we call the <code class="docutils literal notranslate"><span class="pre">dynamic_definition.plot()</span></code>, which plots the probability of every state in a merged bin as the average of the sum of probabilities for that bin.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dynamic_definition</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_recursion</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">dynamic_definition</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:41) Calculating initial probabilities for qubit spec AMMM
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:41) No more bins to process or max recursion level reached.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area stderr docutils container">
+<div class="highlight"><pre>
+/media/vineetb/delta/projects/cutqc2/src/cutqc2/core/dynamic_definition.py:178: UserWarning: Generating all 2^num_qubits states. This may be memory intensive.
+  y = self.probabilities(full_states=full_states)
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_03_dynamic_definition_5_2.png" src="../_images/notebooks_03_dynamic_definition_5_2.png"/>
+</div>
+</div>
+<p>At recursion level 0, the algorithm uses qubit_spec <code class="docutils literal notranslate"><span class="pre">AMMM</span></code>, determines the probability masses for states <code class="docutils literal notranslate"><span class="pre">0MMM</span></code> and <code class="docutils literal notranslate"><span class="pre">1MMM</span></code> as <code class="docutils literal notranslate"><span class="pre">0.0</span></code> and <code class="docutils literal notranslate"><span class="pre">1.0</span></code> respectively, and evenly distributes the probability mass of <code class="docutils literal notranslate"><span class="pre">1.0</span></code> from bin <code class="docutils literal notranslate"><span class="pre">1MMM</span></code> to all states from <code class="docutils literal notranslate"><span class="pre">1000</span></code> to <code class="docutils literal notranslate"><span class="pre">1111</span></code>.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">max_recursion</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+    <span class="n">dynamic_definition</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_recursion</span><span class="o">=</span><span class="n">max_recursion</span><span class="p">)</span>
+    <span class="n">dynamic_definition</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AMMM
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AMMM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_03_dynamic_definition_7_1.png" src="../_images/notebooks_03_dynamic_definition_7_1.png"/>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AMMM
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AMMM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=2, qubit_spec='11MM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_03_dynamic_definition_7_3.png" src="../_images/notebooks_03_dynamic_definition_7_3.png"/>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AMMM
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AMMM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=2, qubit_spec='11MM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=3, qubit_spec='111M'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_03_dynamic_definition_7_5.png" src="../_images/notebooks_03_dynamic_definition_7_5.png"/>
+</div>
+</div>
+<p>With increasing values of <code class="docutils literal notranslate"><span class="pre">max_recursion</span></code>, the algorithm is able to concentrate the probability mass (<code class="docutils literal notranslate"><span class="pre">1.0</span></code> in this case) to more and more specific states, eventually attributing all of it to the state <code class="docutils literal notranslate"><span class="pre">1111</span></code>.</p>
+</section>
+<section id="6-qubit-Supremacy-Circuit">
+<h2 id="6-qubit-Supremacy-Circuit">6-qubit Supremacy Circuit<a class="headerlink" href="#6-qubit-Supremacy-Circuit" title="Link to this heading">¶</a></h2>
+<p>As another example, let’s run Dynamic Definition on a 6-qubit Supremacy Circuit.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">cutqc2.cutqc.helper_functions.benchmarks</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_circ</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cutqc2.cutqc.helper_functions.non_ibmq_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_circ</span>
+
+<span class="n">circuit</span> <span class="o">=</span> <span class="n">generate_circ</span><span class="p">(</span>
+    <span class="n">num_qubits</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span>
+    <span class="n">depth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">circuit_type</span><span class="o">=</span><span class="s2">"supremacy"</span><span class="p">,</span>
+    <span class="n">reg_name</span><span class="o">=</span><span class="s2">"q"</span><span class="p">,</span>
+    <span class="n">connected_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">seed</span><span class="o">=</span><span class="mi">12345</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">ground_truth</span> <span class="o">=</span> <span class="n">evaluate_circ</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s2">"statevector_simulator"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">supremacy_probability_distribution</span><span class="p">(</span><span class="n">qubit_spec</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">merge_prob_vector</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">,</span> <span class="n">qubit_spec</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(INFO) (base_tasks.py) (18-Sep-25 09:42:42) Pass: UnrollCustomDefinitions - 0.07343 (ms)
+(INFO) (base_tasks.py) (18-Sep-25 09:42:42) Pass: BasisTranslator - 0.02503 (ms)
+</pre></div></div>
+</div>
+<p>With increasing values of <code class="docutils literal notranslate"><span class="pre">max_recursion</span></code>, the algorithm is able to approximate the ground truth probability vector better and better. <code class="docutils literal notranslate"><span class="pre">max_recursion</span></code> beyond 5 has no effect in this case, as there are no bins left to explore beyond that recursion level.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">max_recursion</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ground_truth</span><span class="p">)),</span> <span class="n">ground_truth</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"r"</span><span class="p">)</span>
+    <span class="n">dynamic_definition</span> <span class="o">=</span> <span class="n">DynamicDefinition</span><span class="p">(</span>
+        <span class="n">num_qubits</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">capacity</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">prob_fn</span><span class="o">=</span><span class="n">supremacy_probability_distribution</span>
+    <span class="p">)</span>
+    <span class="n">dynamic_definition</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_recursion</span><span class="o">=</span><span class="n">max_recursion</span><span class="p">)</span>
+    <span class="n">dynamic_definition</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AAMMMM
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AAMMMM
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AAMMMM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AAMMMM
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AAMMMM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=2, qubit_spec='1001MM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AAMMMM
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AAMMMM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=2, qubit_spec='1001MM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=3, qubit_spec='1011MM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AAMMMM
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AAMMMM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=2, qubit_spec='1001MM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=3, qubit_spec='1011MM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=4, qubit_spec='0110MM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AAMMMM
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AAMMMM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=2, qubit_spec='1001MM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=3, qubit_spec='1011MM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=4, qubit_spec='0110MM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=5, qubit_spec='0100MM'
+(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
+</pre></div></div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_03_dynamic_definition_11_1.png" src="../_images/notebooks_03_dynamic_definition_11_1.png"/>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_03_dynamic_definition_11_2.png" src="../_images/notebooks_03_dynamic_definition_11_2.png"/>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_03_dynamic_definition_11_3.png" src="../_images/notebooks_03_dynamic_definition_11_3.png"/>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_03_dynamic_definition_11_4.png" src="../_images/notebooks_03_dynamic_definition_11_4.png"/>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_03_dynamic_definition_11_5.png" src="../_images/notebooks_03_dynamic_definition_11_5.png"/>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_03_dynamic_definition_11_6.png" src="../_images/notebooks_03_dynamic_definition_11_6.png"/>
+</div>
+</div>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="02_merge_unmerge.html" title="Merging (and Unmerging) probability values"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> Merging (and Unmerging) probability values </span>
+              </div>
+            </a>
+          
+          
+            <a href="04_circuit_cutting_internals.html" title="Circuit-Cutting Implementation Details"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> Circuit-Cutting Implementation Details </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2025, Princeton University.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

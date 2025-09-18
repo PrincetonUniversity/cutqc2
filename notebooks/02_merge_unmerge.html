@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>Merging (and Unmerging) probability values &#8212; CutQC2  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/nbsphinx-code-cells.css?v=2aa19091" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Dynamic Definition" href="03_dynamic_definition.html" />
+    <link rel="prev" title="Circuit-Cutting with Cutqc2" href="01_circuit_cutting.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue-grey data-md-color-accent=blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#notebooks/02_merge_unmerge" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../index.html" title="CutQC2  documentation"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">CutQC2  documentation</span>
+          <span class="md-header-nav__topic"> Merging (and Unmerging) probability values </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+      
+  
+  <script src="../_static/javascripts/version_dropdown.js"></script>
+  <script>
+    var json_loc = "../"versions.json"",
+        target_loc = "../../",
+        text = "Versions";
+    $( document ).ready( add_version_dropdown(json_loc, target_loc, text));
+  </script>
+  
+
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="../index.html" class="md-tabs__link">CutQC2  documentation</a></li>
+          <li class="md-tabs__item"><a href="../tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../index.html" title="CutQC2 documentation" class="md-nav__button md-logo">
+      
+        <img src="../_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../index.html"
+       title="CutQC2 documentation">CutQC2  documentation</a>
+  </label>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#notebooks-02-merge-unmerge--page-root" class="md-nav__link">Merging (and Unmerging) probability values</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#Merging" class="md-nav__link">Merging</a>
+        </li>
+        <li class="md-nav__item"><a href="#Unmerging" class="md-nav__link">Unmerging</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#Doesn&#39;t-unmerging-undermine-the-whole-point-of-doing-all-of-this?" class="md-nav__link">Doesn’t unmerging undermine the whole point of doing all of this?</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#Conclusion" class="md-nav__link">Conclusion</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/notebooks/02_merge_unmerge.ipynb.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="Merging-(and-Unmerging)-probability-values">
+<h1 id="notebooks-02-merge-unmerge--page-root">Merging (and Unmerging) probability values<a class="headerlink" href="#notebooks-02-merge-unmerge--page-root" title="Link to this heading">¶</a></h1>
+<p>In quantum computing, it is common to end up with extremely large probability vectors, with relatively few states being <em>interesting</em> (having non-zero values). Dealing with the entire probability vector is thus not only memory-intensive, but also unhelpful in analysis/visualization (try plotting a 2^30 probability vector - not only will you run out of memory, you’ll see nothing in the resulting plot). The problem is compounded when these individually large probability vectors are combined
+(taking a Kronecker product of these vectors, for example, as is one in the <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> codebase).</p>
+<p>This notebook introduces the <code class="docutils literal notranslate"><span class="pre">merge_prob_vector</span></code> (and the corresponding <code class="docutils literal notranslate"><span class="pre">unmerge_prob_vector</span></code>) functions, the building blocks of classical postprocessing using <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code>.</p>
+<section id="Merging">
+<h2 id="Merging">Merging<a class="headerlink" href="#Merging" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">merge_prob_vector</span></code> function in <code class="docutils literal notranslate"><span class="pre">cutqc2.utils</span></code> takes in a probability vector and a <code class="docutils literal notranslate"><span class="pre">qubit_spec</span></code> - a string with characters that mean something specific:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">A</span></code> - keep this qubit <em>active</em>, i.e. treat it as normal</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">M</span></code> - <em>merge</em> this qubit, i.e. sum the probability values for cases when this qubit is either 0 or 1. This effectively compresses multiple states into bins.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span></code> - only consider cases when this qubit is <code class="docutils literal notranslate"><span class="pre">0</span></code>, otherwise, ignore them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code> - only consider cases when this qubit is <code class="docutils literal notranslate"><span class="pre">1</span></code>, otherwise, ignore them.</p></li>
+</ul>
+<p>The merge operation thus returns a new probability vector (of length &lt;= the original uncompressed vector), allowing us <em>zoomed-in</em> access to probability values.</p>
+</section>
+<section id="Unmerging">
+<h2 id="Unmerging">Unmerging<a class="headerlink" href="#Unmerging" title="Link to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">unmerge_prob_vector</span></code> function does the opposite. It takes a compressed probability vector, the <code class="docutils literal notranslate"><span class="pre">qubit_spec</span></code> used to create it, and <em>spreads</em> the values across all possible states, distributing probability mass evenly when it needs to.</p>
+<p>The unmerge operation thus returns a new probability vector (of length &gt;= the compressed vector), allowing us <em>zoomed-out</em> access to probability values.</p>
+<p><code class="docutils literal notranslate"><span class="pre">unmerge_prob_vector</span></code> is obviously a <em>lossy</em> operation (since it assumes an even distribution between possible states), and cannot recover the original probability distribution.</p>
+<p>The combined effect of merging/unmerging is that we get a <em>blurred</em> representation of the probability distribution.</p>
+<p>Let’s see these in action.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">cutqc2.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">merge_prob_vector</span><span class="p">,</span> <span class="n">unmerge_prob_vector</span>
+</pre></div>
+</div>
+</div>
+<p>Create a length 32 (5 bit) probability vector using numpy, and plot it.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">full_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">dirichlet</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">full_distribution</span><span class="p">)),</span> <span class="n">full_distribution</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"r"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[&lt;matplotlib.lines.Line2D at 0x72e5fa9b7d40&gt;]
+</pre></div></div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_02_merge_unmerge_3_1.png" src="../_images/notebooks_02_merge_unmerge_3_1.png"/>
+</div>
+</div>
+<p>Let’s create a function that takes in the original distribution, a <code class="docutils literal notranslate"><span class="pre">qubit_spec</span></code>, and plots the distribution as well as the blurred representation of it (by merging and unmerging using the same <code class="docutils literal notranslate"><span class="pre">qubit_spec</span></code>).</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">qubit_spec</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="c1"># Plot original distribution</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dist</span><span class="p">)),</span> <span class="n">dist</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"r"</span><span class="p">)</span>
+
+    <span class="c1"># Plot coarse-grained distribution</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">unmerge_prob_vector</span><span class="p">(</span><span class="n">merge_prob_vector</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">qubit_spec</span><span class="p">),</span> <span class="n">qubit_spec</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dist</span><span class="p">)),</span> <span class="n">dist</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">qubit_spec</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Look at the different plots we get for differing values of <code class="docutils literal notranslate"><span class="pre">qubit_spec</span></code>s, going from all merged qubits (<code class="docutils literal notranslate"><span class="pre">MMMMM</span></code>) to all active (<code class="docutils literal notranslate"><span class="pre">AAAAA</span></code>). The more active qubits we have in our <code class="docutils literal notranslate"><span class="pre">qubit_spec</span></code>, the better the reconstructed distribution approximates the original distribution.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="n">full_distribution</span><span class="p">,</span> <span class="s2">"MMMMM"</span><span class="p">)</span>
+
+<span class="n">plot</span><span class="p">(</span><span class="n">full_distribution</span><span class="p">,</span> <span class="s2">"MMMAM"</span><span class="p">)</span>
+<span class="c1"># note that the location of the active qubits matter.</span>
+<span class="c1"># The following is not the same case as above.</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">full_distribution</span><span class="p">,</span> <span class="s2">"MAMMM"</span><span class="p">)</span>
+
+<span class="n">plot</span><span class="p">(</span><span class="n">full_distribution</span><span class="p">,</span> <span class="s2">"MAAAA"</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">full_distribution</span><span class="p">,</span> <span class="s2">"AAAAA"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_02_merge_unmerge_7_0.png" src="../_images/notebooks_02_merge_unmerge_7_0.png"/>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_02_merge_unmerge_7_1.png" src="../_images/notebooks_02_merge_unmerge_7_1.png"/>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_02_merge_unmerge_7_2.png" src="../_images/notebooks_02_merge_unmerge_7_2.png"/>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_02_merge_unmerge_7_3.png" src="../_images/notebooks_02_merge_unmerge_7_3.png"/>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_02_merge_unmerge_7_4.png" src="../_images/notebooks_02_merge_unmerge_7_4.png"/>
+</div>
+</div>
+<p>If we were peeking into the distribution using just a single qubit resolution, we might, as an example, try to plot the distribution when the MSB is 0 (and the rest of the qubits are merged), and again when the MSB is 1 (and the rest of the qubits are merged). This will tell us which half of the distribution has more probability mass (for further investigation).</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plot</span><span class="p">(</span><span class="n">full_distribution</span><span class="p">,</span> <span class="s2">"0MMMM"</span><span class="p">)</span>
+<span class="n">plot</span><span class="p">(</span><span class="n">full_distribution</span><span class="p">,</span> <span class="s2">"1MMMM"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_02_merge_unmerge_9_0.png" src="../_images/notebooks_02_merge_unmerge_9_0.png"/>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_02_merge_unmerge_9_1.png" src="../_images/notebooks_02_merge_unmerge_9_1.png"/>
+</div>
+</div>
+<section id="Doesn't-unmerging-undermine-the-whole-point-of-doing-all-of-this?">
+<h3 id="Doesn't-unmerging-undermine-the-whole-point-of-doing-all-of-this?">Doesn’t unmerging undermine the whole point of doing all of this?<a class="headerlink" href="#Doesn't-unmerging-undermine-the-whole-point-of-doing-all-of-this?" title="Link to this heading">¶</a></h3>
+<p>It is absolutely correct that unmerging like we’re naively doing here brings us back to the regime of <code class="docutils literal notranslate"><span class="pre">2^num_qubits</span></code> address space. All the bar plots above have 32 bins after all. However, this is done here only for illustrative purposes. We will typically be using the <code class="docutils literal notranslate"><span class="pre">unmerge_prob_vector</span></code> function by passing in another argument, <code class="docutils literal notranslate"><span class="pre">full_states</span></code>, which is an <code class="docutils literal notranslate"><span class="pre">ndarray</span></code> of state values we’re interested in exploring.</p>
+<p>Let us modify our <code class="docutils literal notranslate"><span class="pre">plot</span></code> function so it takes a <code class="docutils literal notranslate"><span class="pre">full_states</span></code> argument that we pass on to <code class="docutils literal notranslate"><span class="pre">unmerge_prob_vector</span></code>. We’ll call it <code class="docutils literal notranslate"><span class="pre">selective_plot</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">selective_plot</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">qubit_spec</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">full_states</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="c1"># Plot original distribution</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dist</span><span class="p">)),</span> <span class="n">dist</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"r"</span><span class="p">)</span>
+
+    <span class="c1"># Plot coarse-grained distribution</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">unmerge_prob_vector</span><span class="p">(</span>
+        <span class="n">merge_prob_vector</span><span class="p">(</span><span class="n">dist</span><span class="p">,</span> <span class="n">qubit_spec</span><span class="p">),</span> <span class="n">qubit_spec</span><span class="p">,</span> <span class="n">full_states</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dist</span><span class="p">)),</span> <span class="n">dist</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">qubit_spec</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>With this function, if we choose to work with 4 qubits (i.e. one merged and 4 active), we can choose to only expand the second half of the unmerged plot.</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">selective_plot</span><span class="p">(</span><span class="n">full_distribution</span><span class="p">,</span> <span class="s2">"MAAAA"</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">65</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="../_images/notebooks_02_merge_unmerge_13_0.png" src="../_images/notebooks_02_merge_unmerge_13_0.png"/>
+</div>
+</div>
+</section>
+</section>
+<section id="Conclusion">
+<h2 id="Conclusion">Conclusion<a class="headerlink" href="#Conclusion" title="Link to this heading">¶</a></h2>
+<p>We’re now effectively able to approximate the original distribution of 5 qubits with a memory space of 4 qubits. The quality of the approximation may not be great (we’ll never know since we don’t have access to the original distribution - the dashed red lines in this toy example). That’s where the <code class="docutils literal notranslate"><span class="pre">DynamicDefinition</span></code> class comes in!</p>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="01_circuit_cutting.html" title="Circuit-Cutting with Cutqc2"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> Circuit-Cutting with Cutqc2 </span>
+              </div>
+            </a>
+          
+          
+            <a href="03_dynamic_definition.html" title="Dynamic Definition"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> Dynamic Definition </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2025, Princeton University.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>
