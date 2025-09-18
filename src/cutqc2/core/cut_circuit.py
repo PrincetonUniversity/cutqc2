@@ -1054,7 +1054,10 @@ class CutCircuit:
         return supported_formats[filepath.suffix](self, filepath, *args, **kwargs)
 
     def plot(
-        self, plot_ground_truth: bool = True, full_states: np.ndarray | None = None
+        self,
+        plot_ground_truth: bool = False,
+        full_states: np.ndarray | None = None,
+        output_file: str | Path | None = None,
     ) -> None:
         if full_states is None:
             warnings.warn(
@@ -1079,4 +1082,7 @@ class CutCircuit:
             )
 
         plt.tight_layout()
-        plt.show(block=False)
+        if output_file is not None:
+            plt.savefig(str(output_file))
+        else:
+            plt.show(block=False)

@@ -50,7 +50,7 @@ def test_figure4_verify(figure_4_qiskit_circuit):
     cut_circuit.verify(probabilities)
 
 
-def test_supremacy_verify():
+def test_supremacy_verify(tmp_path):
     circuit = generate_circ(
         num_qubits=6,
         depth=1,
@@ -72,5 +72,5 @@ def test_supremacy_verify():
     cut_circuit.run_subcircuits()
     cut_circuit.postprocess()
     probabilities = cut_circuit.get_probabilities()
-    cut_circuit.plot()
+    cut_circuit.plot(output_file=tmp_path / "supremacy_verify.png")
     cut_circuit.verify(probabilities)

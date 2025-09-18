@@ -41,9 +41,11 @@ def test_merged_active_qubits_merge():
     prob_vector = np.array([0.1, 0.2, 0.3, 0.4])
     result = merge_prob_vector(prob_vector, qubit_spec="MA")
     # Note that we read the qubit spec from MSB to LSB
-    # So qubit 0 is active, qubit 1 is merged
-    # (00, 10) merge into 0 as (0.1 + 0.3)
-    # (01, 11) merge into 1 as (0.2 + 0.4)
+    # So qubit0 is active, qubit1 is merged
+    # For qubit0 = 0:
+    #   Values in (00, 10) merge into bin 0 as (0.1 + 0.3)
+    # For qubit0 = 1:
+    #   Values in (01, 11) merge into bin 1 as (0.2 + 0.4)
     np.testing.assert_array_almost_equal(xp.asnumpy(result), [0.4, 0.6])
 
 
@@ -63,9 +65,11 @@ def test_active_merged_qubits_merge():
     prob_vector = np.array([0.1, 0.2, 0.3, 0.4])
     result = merge_prob_vector(prob_vector, "AM")
     # Note that we read the qubit specification from MSB to LSB
-    # So qubit 0 is merged, qubit 1 is active
-    # (00, 01) merge into 0 as (0.1 + 0.2)
-    # (10, 11) merge into 1 as (0.3 + 0.4)
+    # So qubit0 is merged, qubit1 is active
+    # For qubit1 = 0:
+    #   Values in (00, 01) merge into bin 0 as (0.1 + 0.2)
+    # For qubit1 = 1:
+    #   Values in (10, 11) merge into bin 1 as (0.3 + 0.4)
     np.testing.assert_array_almost_equal(xp.asnumpy(result), [0.3, 0.7])
 
 
