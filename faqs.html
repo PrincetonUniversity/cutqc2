@@ -243,7 +243,7 @@ Install the package without the <code class="docutils literal notranslate"><span
 </section>
 <section id="how-do-i-run-cutqc2-with-mpi">
 <h3 id="how-do-i-run-cutqc2-with-mpi">How do I run cutqc2 with MPI?<a class="headerlink" href="#how-do-i-run-cutqc2-with-mpi" title="Link to this heading">¶</a></h3>
-<p>Currently the <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">postprocess</span></code> step can benefit from MPI support. If you’ve read the <a class="reference internal" href="#getting_started.md"><span class="xref myst">Getting Started</span></a> guide, you will know that normally you run this command as follows:</p>
+<p>Currently the <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">postprocess</span></code> step can benefit from MPI support. If you’ve read the <a class="reference internal" href="#notebooks/merge_unmerge.ipynb"><span class="xref myst">Command line Usage</span></a> tutorial, you will know that normally you run this command as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cutqc2</span> <span class="n">postprocess</span> \
   <span class="o">--</span><span class="n">file</span> <span class="n">supremacy_6qubit</span><span class="o">.</span><span class="n">zarr</span> \
   <span class="o">--</span><span class="n">save</span>
@@ -255,6 +255,8 @@ Install the package without the <code class="docutils literal notranslate"><span
   <span class="o">--</span><span class="n">save</span>
 </pre></div>
 </div>
+<p>Note that a main worker process coordinates work among the rest of the MPI ranks, so if you want to parallelize work across 2 nodes, you should run the command using <code class="docutils literal notranslate"><span class="pre">mpirun</span> <span class="pre">-np</span> <span class="pre">3</span> <span class="pre">..</span></code>.
+You will typically want to submit this command as a job to your cluster’s job scheduler (e.g., SLURM, PBS, etc.). See a sample <code class="docutils literal notranslate"><span class="pre">.sbatch</span></code> file in the <code class="docutils literal notranslate"><span class="pre">examples/scripts</span></code> folder.</p>
 </section>
 </section>
 <section id="development">

@@ -195,6 +195,14 @@
         </li></ul>
             </nav>
         </li>
+        <li class="md-nav__item"><a href="#additional-installation-requirements" class="md-nav__link">Additional installation requirements</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#gurobi" class="md-nav__link">Gurobi</a>
+        </li>
+        <li class="md-nav__item"><a href="#mpi" class="md-nav__link">MPI</a>
+        </li></ul>
+            </nav>
+        </li>
         <li class="md-nav__item"><a href="#test-the-package" class="md-nav__link">Test the package</a>
         </li></ul>
             </nav>
@@ -317,6 +325,31 @@ you will want to use the exact dependency versions that we have previously teste
 </div>
 </li>
 </ol>
+</section>
+</section>
+<section id="additional-installation-requirements">
+<h2 id="additional-installation-requirements">Additional installation requirements<a class="headerlink" href="#additional-installation-requirements" title="Link to this heading">¶</a></h2>
+<section id="gurobi">
+<h3 id="gurobi">Gurobi<a class="headerlink" href="#gurobi" title="Link to this heading">¶</a></h3>
+<p>If you want to utilize circuit-cutting in <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code>, you will need to install <a class="reference external" href="https://www.gurobi.com/solutions/licensing/">Gurobi</a> and obtain a license.
+Small circuits will likely work without a license, but a valid license is needed for cutting moderate to large-sized circuits. Once you get an appropriate
+license, you will likely need to set the <code class="docutils literal notranslate"><span class="pre">GRB_LICENSE_FILE</span></code> environment variable. Alternately, you can use the following environment variables, which we
+use in our CI setup:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GUROBI_WLSACCESSID</span>
+<span class="n">GUROBI_LICENSEID</span>
+<span class="n">GUROBI_WLSSECRET</span>
+</pre></div>
+</div>
+</section>
+<section id="mpi">
+<h3 id="mpi">MPI<a class="headerlink" href="#mpi" title="Link to this heading">¶</a></h3>
+<p>Whether or not you utilize MPI support with <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> (most helpful when running the <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">postprocess</span></code> command on large datasets), you will need to have an MPI implementation installed on your system.
+Most clusters will already have an MPI implementation installed, which you can load using <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span></code> commands. If you want to install one locally, we recommend using <a class="reference external" href="https://www.open-mpi.org/">OpenMPI</a>.
+On MACs, you can install it using <a class="reference external" href="https://brew.sh/">Homebrew</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">brew</span> <span class="n">install</span> <span class="nb">open</span><span class="o">-</span><span class="n">mpi</span>
+</pre></div>
+</div>
+<p>If you’re able to run <code class="docutils literal notranslate"><span class="pre">mpirun</span></code> or <code class="docutils literal notranslate"><span class="pre">mpiexec</span></code> commands, you should be all set.</p>
 </section>
 </section>
 <section id="test-the-package">
