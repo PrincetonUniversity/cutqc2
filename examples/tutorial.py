@@ -52,11 +52,11 @@ if __name__ == "__main__":
 
     # Cut the circuit automatically with specified parameters.
     cut_circuit.cut(
-        max_subcircuit_width=3,
-        max_subcircuit_cuts=2,
-        subcircuit_size_imbalance=3,
-        max_cuts=1,
-        num_subcircuits=[2],
+        max_subcircuit_width=3,  # Max qubits per subcircuit
+        max_subcircuit_cuts=2,  # Max cuts per subcircuit
+        subcircuit_size_imbalance=3,  # Allowable size imbalance between subcircuits
+        max_cuts=1,  # Max total cuts in the circuit
+        num_subcircuits=[2],  # Desired number of subcircuits to try
     )
 
     # Notice the location of the cut as the '//' marker gate.
@@ -73,17 +73,19 @@ if __name__ == "__main__":
 
     # Save the cut circuit to a file
     # We could have done this at any point after creating the `CutCircuit` object.
-    cut_circuit.to_file("tutorial.h5")
+    cut_circuit.to_file("tutorial.zarr")
 
     # Load the cut circuit from the file
-    cut_circuit = CutCircuit.from_file("tutorial.h5")
+    cut_circuit = CutCircuit.from_file("tutorial.zarr")
 
     # We perform the postprocessing step on the reloaded cut-circuit,
     # though we could have done this on the original cut-circuit as well.
 
     # Modify the `capacity` and `max_recursion` parameters to control
     # the accuracy/runtime of the reconstruction process.
-    probabilities = cut_circuit.postprocess(capacity=3, max_recursion=9)
+    cut_circuit.postprocess(capacity=3, max_recursion=9)
+
+    probabilities = cut_circuit.get_probabilities()
 
     # Verification involves comparing the generated probabilities
     # with the expected probabilities from a simulation of the uncut circuit.
@@ -92,4 +94,4 @@ if __name__ == "__main__":
     print(f"Verification error: {error}")
 
     # Plot the results of the reconstruction
-    cut_circuit.plot()
+    cut_circuit.plot(plot_ground_truth=True)

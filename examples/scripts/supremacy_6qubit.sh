@@ -18,4 +18,5 @@ cutqc2 verify \
   --file supremacy_6qubit.zarr
 
 cutqc2 plot \
-  --file supremacy_6qubit.zarr
+  --file supremacy_6qubit.zarr \
+  --output-file supremacy_6qubit.png

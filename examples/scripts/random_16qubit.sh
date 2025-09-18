@@ -15,4 +15,8 @@ cutqc2 postprocess \
 
 # Do this only for small circuits!
 cutqc2 verify \
-  --file supremacy_6qubit.zarr
+  --file random_16qubit.zarr
+
+cutqc2 plot \
+  --file random_16qubit.zarr \
+  --output-file random_16qubit.png

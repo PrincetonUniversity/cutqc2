@@ -161,9 +161,14 @@ class DynamicDefinition:
         return probabilities
 
     def plot(
-        self, auto: bool = False, prob_mass_threshold: float = 0.9, max_bars: int = 20
+        self,
+        plot_bins: bool = False,
+        prob_mass_threshold: float = 0.9,
+        max_bars: int = 20,
+        ax: plt.Axes | None = None,
+        full_states: np.ndarray | None = None,
     ):
-        if auto:
+        if plot_bins:
             mass_sum = 0
             x = []
             y = []
@@ -175,13 +180,18 @@ class DynamicDefinition:
                 if mass_sum >= prob_mass_threshold or j > max_bars - 1:
                     break
         else:
-            y = self.probabilities()
-            x = np.arange(len(y))
+            y = self.probabilities(full_states=full_states)
+            x = np.arange(len(y)) if full_states is None else full_states
 
-        plt.figure(figsize=(12, 4))
-        plt.bar(x, y)
-        plt.xlabel("Bitstring index")
-        plt.ylabel("Probability")
-        plt.ylim(0, 1)
-        plt.title(f"Recursion Level {self.recursion_level}")
-        plt.show()
+        if ax:
+            ax.bar(x, y)
+            ax.set_xlabel("Bitstring index")
+            ax.set_ylabel("Probability")
+            ax.set_title(f"Recursion Level {self.recursion_level}")
+        else:
+            plt.figure(figsize=(12, 4))
+            plt.bar(x, y)
+            plt.xlabel("Bitstring index")
+            plt.ylabel("Probability")
+            plt.title(f"Recursion Level {self.recursion_level}")
+            plt.show()

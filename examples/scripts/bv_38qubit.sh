@@ -16,4 +16,5 @@ cutqc2 postprocess \
   --save
 
 cutqc2 plot \
-  --file bv_38qubit.zarr
+  --file bv_38qubit.zarr \
+  --output-file bv_38qubit.png

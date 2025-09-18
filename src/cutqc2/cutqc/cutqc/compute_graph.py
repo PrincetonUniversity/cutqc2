@@ -51,9 +51,14 @@ class ComputeGraph:
     def draw(self):
         graph = self._to_rustworkx()
         node_list = graph.node_indices()
-        node_size = [graph[i]['effective'] * 200 for i in node_list]
-        return mpl_draw(graph, node_list=list(node_list), node_size=node_size, with_labels=True, labels=lambda node: node['index'])
-
+        return mpl_draw(
+            graph,
+            node_list=list(node_list),
+            with_labels=True,
+            labels=lambda node: f"Subcircuit {node['index']}\n{node['size']} gates\n{node['d']} total qubits\n{node['effective']} eff qubits",
+            edge_labels=lambda edge: f"q{edge['O_qubit']._index} -> q{edge['rho_qubit']._index}",
+            arrow_size=20
+        )
 
     def incoming_to_outgoing_graph(self) -> dict[tuple[int, int], tuple[int, int]]:
         """

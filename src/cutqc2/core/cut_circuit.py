@@ -71,17 +71,17 @@ class CutCircuit:
         self.check_valid(circuit)
 
         self.circuit = circuit.copy()
-        self.circuit_with_cut_gates = circuit.copy()
+
+        # A QuantumCircuit object that contains the original circuit with cut gates inserted
+        # Here we initialize it, but will add instructions in the `add_cuts_and_generate_subcircuits` method.
+        self.circuit_with_cut_gates = QuantumCircuit(*circuit.qregs)
 
         self.inter_wire_dag = self.get_inter_wire_dag(self.circuit)
         self.inter_wire_dag_metadata = self.get_dag_metadata(self.inter_wire_dag)
 
-        # location of cuts, as (<wire_index>, <gate_index>) tuples
-        self.cuts: list[tuple[int, int]] = []
+        self.num_cuts = 0
         self.subcircuits: list[QuantumCircuit] = []
 
-        # DAGEdge pairs that represent the cuts and subcircuits
-        self.cut_dagedgepairs: list[tuple[DAGEdge, DAGEdge]] = []
         self.subcircuit_dagedges: list[list[DAGEdge]] = []
 
         self.complete_path_map: dict[Qubit, list[dict]] = {}
@@ -323,46 +323,14 @@ class CutCircuit:
             )
 
             if mip_model.solve():
-                return mip_model.cut_edges_pairs, mip_model.subcircuits
+                return mip_model.subcircuits
             continue
         raise RuntimeError("No viable cuts found")
 
-    def add_cut_at_position(self, wire_index: int, gate_index: int):
-        cut_qubit = self.circuit.qubits[wire_index]
-
-        cut_wire_position = 0
-        found = False
-        for i, instr in enumerate(self.circuit.data):
-            if cut_qubit in instr.qubits:  # we're on the right wire
-                if cut_wire_position == gate_index:
-                    cut_instr = CircuitInstruction(WireCutGate(), qubits=(cut_qubit,))
-                    self.circuit_with_cut_gates.data.insert(i + 1, cut_instr)
-                    found = True
-                    break
-                cut_wire_position += 1
-
-        if found:
-            self.cuts.append((wire_index, gate_index))
-        else:
-            raise ValueError(
-                f"Gate index '{gate_index}' or wire {wire_index} not found in the circuit. Cannot add cut."
-            )
-
-    def add_cuts(self, cut_edges: list[tuple[DAGEdge, DAGEdge]]):
-        # validate cut_edges
-        for cut_edge in cut_edges:
-            p, q = cut_edge[0] | cut_edge[1]
-            if q - p != 1:
-                raise ValueError(
-                    "Invalid cut - the cut edge does not connect two adjacent gates."
-                )
-            self.cut_dagedgepairs.append(cut_edge)
-            self.add_cut_at_position(p.wire_index, p.gate_index)
-
     def add_cuts_and_generate_subcircuits(  # noqa: PLR0912, PLR0915
-        self, cut_edges: list[tuple[DAGEdge, DAGEdge]], subcircuits: list[list[DAGEdge]]
+        self, subcircuits: list[list[DAGEdge]]
     ):
-        self.add_cuts(cut_edges=cut_edges)
+        # self.add_cuts(cut_edges=cut_edges)
         self.subcircuit_dagedges = subcircuits
 
         wire_and_gate_to_subcircuit: dict[tuple[int, int], int] = {}
@@ -398,7 +366,7 @@ class CutCircuit:
             q: [] for q in range(self.circuit.num_qubits)
         }
         # mapping from uncut circuit wire index to subcircuit index we last saw on that wire
-        current_subciruit_on_wire: dict[int, int] = {
+        current_subciruit_on_wire: dict[int, int | None] = {
             q: None for q in range(self.circuit.num_qubits)
         }
         # mapping from uncut circuit wire index to list of Instructions that
@@ -439,6 +407,16 @@ class CutCircuit:
                         prev_subcircuit_i is not None
                         and prev_subcircuit_i != subcircuit_i
                     ):
+                        self.circuit_with_cut_gates.append(
+                            instruction=CircuitInstruction(
+                                WireCutGate(),
+                                qubits=(
+                                    self.circuit_with_cut_gates.qubits[wire_index],
+                                ),
+                            )
+                        )
+                        self.num_cuts += 1
+
                         # For the previous subcircuit on this wire,
                         # add a new qubit wire for this wire index.
                         subcircuit_wire_index = next_subcircuit_wire_index[
@@ -522,6 +500,12 @@ class CutCircuit:
                     )
                     subcircuit_instructions[subcircuit_i].append(instr)
 
+            self.circuit_with_cut_gates.append(
+                instruction=CircuitInstruction(op, qubits=op_node.qargs),
+                qargs=op_node.qargs,
+                cargs=None,
+            )
+
             if len(op_node.qargs) == 2:  # noqa: PLR2004
                 two_qubit_gate_index_on_wire[op_node.qargs[0]._index] += 1
                 two_qubit_gate_index_on_wire[op_node.qargs[1]._index] += 1
@@ -558,10 +542,6 @@ class CutCircuit:
         # book-keeping tasks
         self.populate_compute_graph()
         self.populate_subcircuit_entries()
-
-    @property
-    def num_cuts(self) -> int:
-        return len(self.cuts)
 
     @property
     def reconstruction_qubit_order(self) -> dict[int, list[int]]:
@@ -608,7 +588,7 @@ class CutCircuit:
         max_subcircuit_cuts: int,
         subcircuit_size_imbalance: int,
     ):
-        cut_edges_pairs, subcircuits = self.find_cuts(
+        subcircuits = self.find_cuts(
             max_subcircuit_width=max_subcircuit_width,
             max_cuts=max_cuts,
             num_subcircuits=num_subcircuits,
@@ -616,9 +596,7 @@ class CutCircuit:
             subcircuit_size_imbalance=subcircuit_size_imbalance,
         )
 
-        self.add_cuts_and_generate_subcircuits(
-            cut_edges=cut_edges_pairs, subcircuits=subcircuits
-        )
+        self.add_cuts_and_generate_subcircuits(subcircuits=subcircuits)
 
     def run_subcircuits(
         self,
@@ -1076,7 +1054,10 @@ class CutCircuit:
         return supported_formats[filepath.suffix](self, filepath, *args, **kwargs)
 
     def plot(
-        self, plot_ground_truth: bool = True, full_states: np.ndarray | None = None
+        self,
+        plot_ground_truth: bool = False,
+        full_states: np.ndarray | None = None,
+        output_file: str | Path | None = None,
     ) -> None:
         if full_states is None:
             warnings.warn(
@@ -1101,4 +1082,7 @@ class CutCircuit:
             )
 
         plt.tight_layout()
-        plt.show(block=False)
+        if output_file is not None:
+            plt.savefig(str(output_file))
+        else:
+            plt.show(block=False)

@@ -129,10 +129,11 @@ def unmerge_prob_vector(
     """
     num_qubits = len(qubit_spec)
     if full_states is None:
-        warnings.warn(
-            "Generating all 2^num_qubits states. This may be memory intensive.",
-            stacklevel=2,
-        )
+        if num_qubits > 20:  # noqa: PLR2004
+            warnings.warn(
+                "Generating all 2^num_qubits states. This may be memory intensive.",
+                stacklevel=2,
+            )
         full_states = np.arange(2**num_qubits, dtype=np.int64)
 
     active_qubit_indices = [i for i, q in enumerate(qubit_spec) if q == "A"]
