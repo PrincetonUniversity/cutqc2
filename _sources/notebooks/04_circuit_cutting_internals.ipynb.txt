@@ -196,7 +196,7 @@
     "Pauli bases. Correspondingly, QPUs run four variations of subcircuit 1, each initializes the downstream cut qubit q0 in one of the {|0⟩, |1⟩, |+⟩, |i⟩}\n",
     "states. \n",
     "\n",
-    "Thus, in this example, subcircuit 0 will have 4<sup>1</sup> probability vectors (each of length 2<sup>2</sup> since it has 2 effective qubits), and subcircuit 1 will have 4<sup>1</sup> probability vectors (each of length 2<sup>3</sup> since it has 3 effective qubits).\n",
+    "Thus, in this example, subcircuit 0 will have $4^{1}$ probability vectors (each of length $2^{2}$ since it has 2 effective qubits), and subcircuit 1 will have $4^{1}$ probability vectors (each of length $2^{3}$ since it has 3 effective qubits).\n",
     "\n",
     "We can run the subcircuits and confirm that this is the case."
    ]
@@ -321,7 +321,7 @@
    "id": "cf1fa06c-2d2a-4c4e-bbb1-1f1c842cb67d",
    "metadata": {},
    "source": [
-    "Subcircuit 0 has two incoming edges and one outgoing edge, or in other words, two cut edges upstream and one cut edge downstream. It thus has 4<sup>2</sup> initialization circuits and 4<sup>1</sup> measurement circuits. Each combination of initialization or measurement circuit has a 2<sup>effective_qubits</sup>, or 2<sup>3</sup> length probability vector. The total number of probability values for subcircuit 0 thus has the shape `(4, 4, 4, 8)`. Let's confirm this:"
+    "Subcircuit 0 has two incoming edges and one outgoing edge, or in other words, two cut edges upstream and one cut edge downstream. It thus has $4^{2}$ initialization circuits and $4^{1}$ measurement circuits. Each combination of initialization or measurement circuit has a $2^{effective-qubits}$, or $2^{3}$ length probability vector. The total number of probability values for subcircuit 0 thus has the shape `(4, 4, 4, 8)`. Let's confirm this:"
    ]
   },
   {
