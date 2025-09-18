@@ -23,7 +23,7 @@ This will make `cutqc2` use `numpy` instead of `cupy` for numerical computations
 
 ### How do I run cutqc2 with MPI?
 
-Currently the `cutqc2 postprocess` step can benefit from MPI support. If you've read the [Getting Started](getting_started.md) guide, you will know that normally you run this command as follows:
+Currently the `cutqc2 postprocess` step can benefit from MPI support. If you've read the [Command line Usage](notebooks/merge_unmerge.ipynb) tutorial, you will know that normally you run this command as follows:
 ```
 cutqc2 postprocess \
   --file supremacy_6qubit.zarr \
@@ -36,6 +36,9 @@ mpirun -n 4 cutqc2 postprocess \
   --file supremacy_6qubit.zarr \
   --save
 ```
+
+Note that a main worker process coordinates work among the rest of the MPI ranks, so if you want to parallelize work across 2 nodes, you should run the command using `mpirun -np 3 ..`.
+You will typically want to submit this command as a job to your cluster's job scheduler (e.g., SLURM, PBS, etc.). See a sample `.sbatch` file in the `examples/scripts` folder.
 
 ## Development
 
