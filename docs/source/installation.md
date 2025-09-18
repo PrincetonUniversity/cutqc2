@@ -101,6 +101,32 @@ you will want to use the exact dependency versions that we have previously teste
     pip install -e . --no-deps
     ```
 
+## Additional installation requirements
+
+### Gurobi
+
+If you want to utilize circuit-cutting in `cutqc2`, you will need to install [Gurobi](https://www.gurobi.com/solutions/licensing/) and obtain a license.
+Small circuits will likely work without a license, but a valid license is needed for cutting moderate to large-sized circuits. Once you get an appropriate
+license, you will likely need to set the `GRB_LICENSE_FILE` environment variable. Alternately, you can use the following environment variables, which we
+use in our CI setup:
+
+```
+GUROBI_WLSACCESSID
+GUROBI_LICENSEID
+GUROBI_WLSSECRET
+```
+
+### MPI
+
+Whether or not you utilize MPI support with `cutqc2` (most helpful when running the `cutqc2 postprocess` command on large datasets), you will need to have an MPI implementation installed on your system.
+Most clusters will already have an MPI implementation installed, which you can load using `module load` commands. If you want to install one locally, we recommend using [OpenMPI](https://www.open-mpi.org/).
+On MACs, you can install it using [Homebrew](https://brew.sh/):
+```
+brew install open-mpi
+```
+
+If you're able to run `mpirun` or `mpiexec` commands, you should be all set.
+
 ## Test the package
 
 To verify that the installation was successful, you should now run the test suite using `pytest`.
