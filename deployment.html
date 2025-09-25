@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>Cluster deployment &#8212; CutQC2  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributing to the code" href="contributing.html" />
+    <link rel="prev" title="FAQs" href="faqs.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue-grey data-md-color-accent=blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#deployment" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="index.html" title="CutQC2  documentation"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">CutQC2  documentation</span>
+          <span class="md-header-nav__topic"> Cluster deployment </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+      
+  
+  <script src="_static/javascripts/version_dropdown.js"></script>
+  <script>
+    var json_loc = ""versions.json"",
+        target_loc = "../",
+        text = "Versions";
+    $( document ).ready( add_version_dropdown(json_loc, target_loc, text));
+  </script>
+  
+
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="index.html" class="md-tabs__link">CutQC2  documentation</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="index.html" title="CutQC2 documentation" class="md-nav__button md-logo">
+      
+        <img src="_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="index.html"
+       title="CutQC2 documentation">CutQC2  documentation</a>
+  </label>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#deployment--page-root" class="md-nav__link">Cluster deployment</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#installing-and-deploying-cutqc2" class="md-nav__link">Installing and deploying cutqc2</a>
+        </li>
+        <li class="md-nav__item"><a href="#installing-and-deploying-cuquantum" class="md-nav__link">Installing and deploying cuQuantum</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cuquantum" class="md-nav__link">cuquantum</a>
+        </li>
+        <li class="md-nav__item"><a href="#cutensor" class="md-nav__link">cutensor</a>
+        </li>
+        <li class="md-nav__item"><a href="#clone-cuquantum-repo" class="md-nav__link">Clone cuQuantum repo</a>
+        </li>
+        <li class="md-nav__item"><a href="#compile-cuda-aware-mpi-library" class="md-nav__link">Compile cuda-aware MPI library</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#cuquantum-cuda-examples" class="md-nav__link">cuQuantum CUDA examples</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#single-gpu-example" class="md-nav__link">Single GPU example</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#compile" class="md-nav__link">Compile</a>
+        </li>
+        <li class="md-nav__item"><a href="#run" class="md-nav__link">Run</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#cuda-aware-mpi-example" class="md-nav__link">cuda-aware MPI example</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#id1" class="md-nav__link">Compile</a>
+        </li>
+        <li class="md-nav__item"><a href="#job-sbatch" class="md-nav__link">job.sbatch</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#cuquantum-python-examples" class="md-nav__link">CuQuantum Python examples</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#create-conda-environment-with-cuquantum" class="md-nav__link">Create conda environment with cuquantum</a>
+        </li>
+        <li class="md-nav__item"><a href="#run-python-cuda-aware-mpi-example" class="md-nav__link">Run python cuda-aware MPI example</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#id2" class="md-nav__link">job.sbatch</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#run-distributed-kronecker-product-calculation-using-cuda-aware-mpi" class="md-nav__link">Run distributed Kronecker product calculation using cuda-aware MPI</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/deployment.md.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="cluster-deployment">
+<h1 id="deployment--page-root">Cluster deployment<a class="headerlink" href="#deployment--page-root" title="Link to this heading">¶</a></h1>
+<p>The following notes detail deployment-related steps for <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> and <code class="docutils literal notranslate"><span class="pre">cuQuantum</span></code> on the <a class="reference external" href="https://researchcomputing.princeton.edu/systems/della">Della</a> cluster at Princeton. Other clusters at Princeton should work with more or less the same steps.</p>
+<section id="installing-and-deploying-cutqc2">
+<h2 id="installing-and-deploying-cutqc2">Installing and deploying cutqc2<a class="headerlink" href="#installing-and-deploying-cutqc2" title="Link to this heading">¶</a></h2>
+<p>The cluster has several <code class="docutils literal notranslate"><span class="pre">anaconda3</span></code> modules to choose from, which help us create a new python environment to install <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code>. At the time of this writing, the following steps were used to install <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">load</span> <span class="n">anaconda3</span><span class="o">/</span><span class="mf">2024.10</span>
+<span class="n">conda</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="n">cutqc2</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.12</span> <span class="n">pip</span>
+<span class="n">conda</span> <span class="n">activate</span> <span class="n">cutqc2</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">PrincetonUniversity</span><span class="o">/</span><span class="n">cutqc2</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">cutqc2</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="p">[</span><span class="n">dev</span><span class="p">,</span><span class="n">docs</span><span class="p">,</span><span class="n">gpu</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>We now run a sample script in the <code class="docutils literal notranslate"><span class="pre">examples/scripts</span></code> folder to verify that everything works.</p>
+<p>Since we’re running this on the head node, we’ll choose the simplest example, <code class="docutils literal notranslate"><span class="pre">supremacy_6qubit.sh</span></code>:
+Before running, we’ll load the modules that give us access to MPI. We’ll also run this with the environment variable <code class="docutils literal notranslate"><span class="pre">CUTQC2_CORE_NUMERIC</span></code> set to <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, since the head node does not have a GPU.
+See the <a class="reference internal" href="faqs.html"><span class="std std-doc">FAQ</span></a> page for more details.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">load</span> <span class="n">nvhpc</span><span class="o">/</span><span class="mf">25.5</span>
+<span class="n">module</span> <span class="n">load</span> <span class="n">openmpi</span><span class="o">/</span><span class="n">cuda</span><span class="o">-</span><span class="mf">12.9</span><span class="o">/</span><span class="n">nvhpc</span><span class="o">-</span><span class="mf">25.5</span><span class="o">/</span><span class="mf">4.1.8</span>
+<span class="n">export</span> <span class="n">CUTQC2_CORE_NUMERIC</span><span class="o">=</span><span class="n">numpy</span>
+<span class="n">cd</span> <span class="n">examples</span><span class="o">/</span><span class="n">scripts</span>
+<span class="n">bash</span> <span class="n">supremacy_6qubit</span><span class="o">.</span><span class="n">sh</span>
+</pre></div>
+</div>
+<p>The example should take ~10 seconds to run.</p>
+<p>When submitting jobs to the cluster’s job scheduler (SLURM), use a <code class="docutils literal notranslate"><span class="pre">.sbatch</span></code> file similar to <code class="docutils literal notranslate"><span class="pre">examples/scripts/job.sbatch</span></code>.</p>
+</section>
+<section id="installing-and-deploying-cuquantum">
+<h2 id="installing-and-deploying-cuquantum">Installing and deploying cuQuantum<a class="headerlink" href="#installing-and-deploying-cuquantum" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">cuquantum</span></code> (specifically, <code class="docutils literal notranslate"><span class="pre">cutensornet</span></code>) is a dependency of <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code>, though it is not currently utilized for tensor contraction. For future work, it may be useful to experiment with <code class="docutils literal notranslate"><span class="pre">cutensornet</span></code> on Della.
+The following writeup details the steps to get <code class="docutils literal notranslate"><span class="pre">cuQuantum</span></code> working on a multi-GPU cluster with cuda-aware MPI. The steps were tested on the Della cluster @ Princeton on 09/16/2025, and are mostly a tweaked variation on the official install <a class="reference external" href="https://docs.nvidia.com/cuda/cuquantum/22.05.0/cutensornet/getting_started.html">instructions</a>.</p>
+<section id="cuquantum">
+<h3 id="cuquantum">cuquantum<a class="headerlink" href="#cuquantum" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">developer</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">nvidia</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">compute</span><span class="o">/</span><span class="n">cuquantum</span><span class="o">/</span><span class="n">redist</span><span class="o">/</span><span class="n">cuquantum</span><span class="o">/</span><span class="n">linux</span><span class="o">-</span><span class="n">x86_64</span><span class="o">/</span><span class="n">cuquantum</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="mf">25.06.0.10</span><span class="n">_cuda12</span><span class="o">-</span><span class="n">archive</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">xz</span>
+</pre></div>
+</div>
+<p>export <code class="docutils literal notranslate"><span class="pre">CUQUANTUM_ROOT</span></code> environment variable to whereever you <code class="docutils literal notranslate"><span class="pre">tar</span> <span class="pre">xf</span></code> the file above, and add it to your <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code> or equivalent.</p>
+</section>
+<section id="cutensor">
+<h3 id="cutensor">cutensor<a class="headerlink" href="#cutensor" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">wget</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">developer</span><span class="o">.</span><span class="n">download</span><span class="o">.</span><span class="n">nvidia</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">compute</span><span class="o">/</span><span class="n">cutensor</span><span class="o">/</span><span class="n">redist</span><span class="o">/</span><span class="n">libcutensor</span><span class="o">/</span><span class="n">linux</span><span class="o">-</span><span class="n">x86_64</span><span class="o">/</span><span class="n">libcutensor</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="mf">2.3.0.6</span><span class="n">_cuda12</span><span class="o">-</span><span class="n">archive</span><span class="o">.</span><span class="n">tar</span><span class="o">.</span><span class="n">xz</span>
+</pre></div>
+</div>
+<p>export <code class="docutils literal notranslate"><span class="pre">CUTENSOR_ROOT</span></code> environment variable to whereever you <code class="docutils literal notranslate"><span class="pre">tar</span> <span class="pre">xf</span></code> the file above, and add it to your <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code> or equivalent.</p>
+<p>In subsequent steps, we will assume (modify any <code class="docutils literal notranslate"><span class="pre">job.sbatch</span></code> files accordingly if this path is different):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">CUQUANTUM_ROOT</span><span class="o">=/</span><span class="n">scratch</span><span class="o">/</span><span class="n">gpfs</span><span class="o">/</span><span class="n">vineetb</span><span class="o">/</span><span class="n">ext</span><span class="o">/</span><span class="n">cuquantum</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="mf">25.06.0.10</span><span class="n">_cuda12</span><span class="o">-</span><span class="n">archive</span>
+<span class="n">CUTENSOR_ROOT</span><span class="o">=/</span><span class="n">scratch</span><span class="o">/</span><span class="n">gpfs</span><span class="o">/</span><span class="n">vineetb</span><span class="o">/</span><span class="n">ext</span><span class="o">/</span><span class="n">libcutensor</span><span class="o">-</span><span class="n">linux</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="mf">2.3.0.6</span><span class="n">_cuda12</span><span class="o">-</span><span class="n">archive</span>
+</pre></div>
+</div>
+</section>
+<section id="clone-cuquantum-repo">
+<h3 id="clone-cuquantum-repo">Clone cuQuantum repo<a class="headerlink" href="#clone-cuquantum-repo" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">~</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">git</span><span class="nd">@github</span><span class="o">.</span><span class="n">com</span><span class="p">:</span><span class="n">NVIDIA</span><span class="o">/</span><span class="n">cuQuantum</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">cuQuantum</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="n">v25</span><span class="mf">.06.0</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">v25.06.0</span></code> is the last tag that was tested with CUDA 12.9. Later tags <em>might</em> work, but we likely need <code class="docutils literal notranslate"><span class="pre">module</span> <span class="pre">load</span> <span class="pre">cudatoolkit/13.0</span></code> etc in the steps below.</p>
+</section>
+<section id="compile-cuda-aware-mpi-library">
+<h3 id="compile-cuda-aware-mpi-library">Compile cuda-aware MPI library<a class="headerlink" href="#compile-cuda-aware-mpi-library" title="Link to this heading">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>export CUDA_PATH=/usr/local/cuda-12.9
+export MPI_PATH=/usr/local/openmpi/cuda-12.9/4.1.8/nvhpc255/
+cd $CUQUANTUM_ROOT/distributed_interfaces
+source activate_mpi_cutn.sh
+echo $CUTENSORNET_COMM_LIB
+</pre></div>
+</div>
+<p>This compiles <code class="docutils literal notranslate"><span class="pre">libcutensornet_distributed_interface_mpi.so</span></code>. Note down the location of <code class="docutils literal notranslate"><span class="pre">$CUTENSORNET_COMM_LIB</span></code>. This is used in <code class="docutils literal notranslate"><span class="pre">job.sbatch</span></code> files that follow. If you specify it relative to <code class="docutils literal notranslate"><span class="pre">$CUQUANTUM_ROOT</span></code>, you shouldn’t need to change it anyway.</p>
+</section>
+</section>
+<section id="cuquantum-cuda-examples">
+<h2 id="cuquantum-cuda-examples">cuQuantum CUDA examples<a class="headerlink" href="#cuquantum-cuda-examples" title="Link to this heading">¶</a></h2>
+<section id="single-gpu-example">
+<h3 id="single-gpu-example">Single GPU example<a class="headerlink" href="#single-gpu-example" title="Link to this heading">¶</a></h3>
+<section id="compile">
+<h4 id="compile">Compile<a class="headerlink" href="#compile" title="Link to this heading">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>module load cudatoolkit/12.9
+cd ~/cuQuantum/samples/cutensornet
+nvcc tensornet_example.cu -I${CUQUANTUM_ROOT}/include -I${CUTENSOR_ROOT}/include -L${CUQUANTUM_ROOT}/lib -L${CUTENSOR_ROOT}/lib -lcutensornet -lcutensor -o tensornet_example
+</pre></div>
+</div>
+</section>
+<section id="run">
+<h4 id="run">Run<a class="headerlink" href="#run" title="Link to this heading">¶</a></h4>
+<p>We can run this interactively by requesting a GPU node using <code class="docutils literal notranslate"><span class="pre">srun</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>srun -t 00:05:00 --mem=64G --gres=gpu:1 --pty /bin/bash
+export LD_LIBRARY_PATH=${CUQUANTUM_ROOT}/lib:${CUTENSOR_ROOT}/lib:${LD_LIBRARY_PATH}
+./tensornet_example
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">CUQUANTUM_ROOT</span></code> and <code class="docutils literal notranslate"><span class="pre">CUTENSOR_ROOT</span></code> should be set on the compute node where you try this, of course (add them to your <code class="docutils literal notranslate"><span class="pre">~/.bash_profile</span></code> or redefine them once on the compute node).</p>
+<p>Ensure you’re back on the head node before proceeding!</p>
+</section>
+</section>
+<section id="cuda-aware-mpi-example">
+<h3 id="cuda-aware-mpi-example">cuda-aware MPI example<a class="headerlink" href="#cuda-aware-mpi-example" title="Link to this heading">¶</a></h3>
+<p>A successful run of this verifies that CUDA-aware MPI is working fine with cuQuantum.</p>
+<section id="id1">
+<h4 id="id1">Compile<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>module load cudatoolkit/12.9
+cd ~/cuQuantum/samples/cutensornet
+export MPI_PATH=/usr/local/openmpi/cuda-12.9/4.1.8/nvhpc255/
+nvcc tensornet_example_mpi_auto.cu -I${CUQUANTUM_ROOT}/include -I${CUTENSOR_ROOT}/include -I${MPI_PATH}/include -L${CUQUANTUM_ROOT}/lib -L${CUTENSOR_ROOT}/lib -lcutensornet -lcutensor -L${MPI_PATH}/lib64 -lmpi -o tensornet_example_mpi_auto
+</pre></div>
+</div>
+</section>
+<section id="job-sbatch">
+<h4 id="job-sbatch">job.sbatch<a class="headerlink" href="#job-sbatch" title="Link to this heading">¶</a></h4>
+<p>Submit using <code class="docutils literal notranslate"><span class="pre">sbatch</span> <span class="pre">job.sbatch</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#!/bin/bash
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem-per-cpu=40G
+#SBATCH -t 00:03:00
+#SBATCH --gres=gpu:1
+#SBATCH --constraint=nomig
+#SBATCH --output=log.txt
+
+module purge
+module load nvhpc/25.5
+module load openmpi/cuda-12.9/nvhpc-25.5/4.1.8
+
+export CUQUANTUM_ROOT=/scratch/gpfs/vineetb/ext/cuquantum-linux-x86_64-25.06.0.10_cuda12-archive
+export CUTENSOR_ROOT=/scratch/gpfs/vineetb/ext/libcutensor-linux-x86_64-2.3.0.6_cuda12-archive
+export LD_LIBRARY_PATH=${CUQUANTUM_ROOT}/lib:${CUTENSOR_ROOT}/lib:${LD_LIBRARY_PATH}
+export CUTENSORNET_COMM_LIB=${CUQUANTUM_ROOT}/distributed_interfaces/libcutensornet_distributed_interface_mpi.so
+
+srun ~/cuQuantum/samples/cutensornet/tensornet_example_mpi_auto
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="cuquantum-python-examples">
+<h2 id="cuquantum-python-examples">CuQuantum Python examples<a class="headerlink" href="#cuquantum-python-examples" title="Link to this heading">¶</a></h2>
+<section id="create-conda-environment-with-cuquantum">
+<h3 id="create-conda-environment-with-cuquantum">Create conda environment with cuquantum<a class="headerlink" href="#create-conda-environment-with-cuquantum" title="Link to this heading">¶</a></h3>
+<p>We create the conda environment at <code class="docutils literal notranslate"><span class="pre">/scratch/gpfs/vineetb/envs/cuquantum</span></code> simply to save space in the home folder. Modify as needed.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">module</span> <span class="n">load</span> <span class="n">anaconda3</span><span class="o">/</span><span class="mf">2024.10</span>
+<span class="n">conda</span> <span class="n">create</span> <span class="o">--</span><span class="n">prefix</span> <span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">gpfs</span><span class="o">/</span><span class="n">vineetb</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">cuquantum1</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.12</span> <span class="n">pip</span>
+<span class="n">conda</span> <span class="n">activate</span> <span class="o">/</span><span class="n">scratch</span><span class="o">/</span><span class="n">gpfs</span><span class="o">/</span><span class="n">vineetb</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">cuquantum</span>
+<span class="n">conda</span> <span class="n">install</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span><span class="p">::</span><span class="n">cuquantum</span><span class="o">-</span><span class="n">python</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="n">mpi4py</span>
+</pre></div>
+</div>
+</section>
+<section id="run-python-cuda-aware-mpi-example">
+<h3 id="run-python-cuda-aware-mpi-example">Run python cuda-aware MPI example<a class="headerlink" href="#run-python-cuda-aware-mpi-example" title="Link to this heading">¶</a></h3>
+<p>The example <code class="docutils literal notranslate"><span class="pre">example22_mpi_auto.py</span></code> is packaged in the <code class="docutils literal notranslate"><span class="pre">cuQuantum</span></code> repo as <code class="docutils literal notranslate"><span class="pre">python/samples/tensornet/contraction/coarse/example22_mpi_auto.py</span></code>.
+A successful run of this verifies that CUDA-aware MPI is working fine with cuQuantum using Python.</p>
+<section id="id2">
+<h4 id="id2">job.sbatch<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
+<p>Submit using <code class="docutils literal notranslate"><span class="pre">sbatch</span> <span class="pre">job.sbatch</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>#!/bin/bash
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem-per-cpu=80G
+#SBATCH -t 00:01:00
+#SBATCH --gres=gpu:1
+#SBATCH --constraint="nomig"
+#SBATCH --output=log.txt
+
+module purge
+module load nvhpc/25.5
+module load openmpi/cuda-12.9/nvhpc-25.5/4.1.8
+module load cudatoolkit/12.9
+module load anaconda3/2024.10
+
+export CUQUANTUM_ROOT=/scratch/gpfs/vineetb/ext/cuquantum-linux-x86_64-25.06.0.10_cuda12-archive
+export CUTENSOR_ROOT=/scratch/gpfs/vineetb/ext/libcutensor-linux-x86_64-2.3.0.6_cuda12-archive
+export LD_LIBRARY_PATH=${CUQUANTUM_ROOT}/lib:${CUTENSOR_ROOT}/lib:${LD_LIBRARY_PATH}
+export CUTENSORNET_COMM_LIB=${CUQUANTUM_ROOT}/distributed_interfaces/libcutensornet_distributed_interface_mpi.so
+
+conda activate /scratch/gpfs/vineetb/envs/cuquantum
+
+mpirun -np 2 python ~/cuQuantum/python/samples/tensornet/contraction/coarse/example22_mpi_auto.py
+</pre></div>
+</div>
+</section>
+</section>
+<section id="run-distributed-kronecker-product-calculation-using-cuda-aware-mpi">
+<h3 id="run-distributed-kronecker-product-calculation-using-cuda-aware-mpi">Run distributed Kronecker product calculation using cuda-aware MPI<a class="headerlink" href="#run-distributed-kronecker-product-calculation-using-cuda-aware-mpi" title="Link to this heading">¶</a></h3>
+<p>The following example does a distributed Kronecker product calculation using cuda-aware MPI.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span> 
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">cupy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cupy.cuda.runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">getDeviceCount</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>  <span class="c1"># this line initializes MPI</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">cuquantum.bindings</span><span class="w"> </span><span class="kn">import</span> <span class="n">cutensornet</span> <span class="k">as</span> <span class="n">cutn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cuquantum.tensornet</span><span class="w"> </span><span class="kn">import</span> <span class="n">contract</span><span class="p">,</span> <span class="n">get_mpi_comm_pointer</span>
+
+
+<span class="n">root</span> <span class="o">=</span> <span class="mi">0</span> 
+<span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+<span class="n">rank</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">(),</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="s2">"CUTENSORNET_COMM_LIB"</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"need to set CUTENSORNET_COMM_LIB to the path of the MPI wrapper library"</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">"CUTENSORNET_COMM_LIB"</span><span class="p">]):</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"CUTENSORNET_COMM_LIB does not point to the path of the MPI wrapper library"</span><span class="p">)</span>
+
+<span class="n">device_id</span> <span class="o">=</span> <span class="n">rank</span> <span class="o">%</span> <span class="n">getDeviceCount</span><span class="p">()</span>
+<span class="n">cp</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">Device</span><span class="p">(</span><span class="n">device_id</span><span class="p">)</span><span class="o">.</span><span class="n">use</span><span class="p">()</span>
+
+<span class="n">expr</span> <span class="o">=</span> <span class="s1">'i,j-&gt;ij'</span>
+<span class="n">shapes</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">2</span><span class="o">**</span><span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]),),</span> <span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="nb">int</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]),)]</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="n">root</span><span class="p">:</span>
+    <span class="n">operands</span> <span class="o">=</span> <span class="p">[</span><span class="n">cp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">*</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">'float32'</span><span class="p">)</span> <span class="k">for</span> <span class="n">shape</span> <span class="ow">in</span> <span class="n">shapes</span><span class="p">]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">operands</span> <span class="o">=</span> <span class="p">[</span><span class="n">cp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="k">for</span> <span class="n">shape</span> <span class="ow">in</span> <span class="n">shapes</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">operand</span> <span class="ow">in</span> <span class="n">operands</span><span class="p">:</span>
+   <span class="n">comm</span><span class="o">.</span><span class="n">Bcast</span><span class="p">(</span><span class="n">operand</span><span class="p">,</span> <span class="n">root</span><span class="p">)</span>
+
+<span class="n">handle</span> <span class="o">=</span> <span class="n">cutn</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+<span class="n">cutn</span><span class="o">.</span><span class="n">distributed_reset_configuration</span><span class="p">(</span>
+    <span class="n">handle</span><span class="p">,</span> <span class="o">*</span><span class="n">get_mpi_comm_pointer</span><span class="p">(</span><span class="n">comm</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">contract</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s1">'device_id'</span> <span class="p">:</span> <span class="n">device_id</span><span class="p">,</span> <span class="s1">'handle'</span><span class="p">:</span> <span class="n">handle</span><span class="p">})</span>
+
+<span class="c1"># Check correctness - not always possible</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="n">root</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'check'</span><span class="p">:</span>
+   <span class="n">result_cp</span> <span class="o">=</span> <span class="n">cp</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+   <span class="nb">print</span><span class="p">(</span><span class="s2">"Does the cuQuantum parallel contraction result match the cupy.einsum result?"</span><span class="p">,</span> <span class="n">cp</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">result_cp</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>When saved as <code class="docutils literal notranslate"><span class="pre">kron.py</span></code> and run using the <code class="docutils literal notranslate"><span class="pre">job.sbatch</span></code> sbatch script above, changing the last line to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mpirun</span> <span class="o">-</span><span class="n">np</span> <span class="mi">2</span> <span class="n">python</span> <span class="n">kron</span><span class="o">.</span><span class="n">py</span> <span class="mi">10</span> <span class="mi">21</span>
+</pre></div>
+</div>
+<p>Things should work fine till around a combined size of 33 elements (2^33 = about 32G). Beyond that, we get an <code class="docutils literal notranslate"><span class="pre">out-of-memory</span></code> error, as expected.
+Use <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">kron.py</span> <span class="pre">10</span> <span class="pre">21</span> <span class="pre">check</span></code> for small values of the arguments to verify correctness.</p>
+</section>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="faqs.html" title="FAQs"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> FAQs </span>
+              </div>
+            </a>
+          
+          
+            <a href="contributing.html" title="Contributing to the code"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> Contributing to the code </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2025, Princeton University.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

@@ -242,7 +242,7 @@
 <li><p>The <code class="docutils literal notranslate"><span class="pre">subcircuit-size-imbalance</span></code> parameter controls how much larger one sub-circuit can be, compared to another.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">num-subcircuits</span></code> parameter specifies how many sub-circuits to create. You can specify this parameter multiple times - <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> will try each in sequence till it finds a suitable cut solution.</p></li>
 <li><p>Run each sub-circuit on a simulator (by default, <code class="docutils literal notranslate"><span class="pre">qiskit</span></code>’s statevector simulator is used).</p></li>
-<li><p>Save results (that can be used for reconstruction) in a <code class="docutils literal notranslate"><span class="pre">zarr</span></code> file named <code class="docutils literal notranslate"><span class="pre">supremacy_6qubit.zarr</span></code>.</p></li>
+<li><p>Save results (that can be used for reconstruction) in a <code class="docutils literal notranslate"><span class="pre">zarr</span></code> file named <code class="docutils literal notranslate"><span class="pre">supremacy_6qubit.zarr</span></code>. If you do not specify an <code class="docutils literal notranslate"><span class="pre">--output-file</span></code>, a default filename (that includes a timestamp, among other things) will be used.</p></li>
 </ul>
 </section>
 <section id="Postprocessing">

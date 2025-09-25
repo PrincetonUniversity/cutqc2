@@ -14,6 +14,7 @@ By combining classical and quantum computation, CutQC2 significantly expands the
    installation
    tutorials
    faqs
+   deployment
    contributing
 
    src/modules

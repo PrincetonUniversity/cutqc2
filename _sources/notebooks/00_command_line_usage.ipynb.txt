@@ -37,7 +37,7 @@
     " - The `subcircuit-size-imbalance` parameter controls how much larger one sub-circuit can be, compared to another.\n",
     " - The `num-subcircuits` parameter specifies how many sub-circuits to create. You can specify this parameter multiple times - `cutqc2` will try each in sequence till it finds a suitable cut solution.\n",
     " - Run each sub-circuit on a simulator (by default, `qiskit`'s statevector simulator is used).\n",
-    " - Save results (that can be used for reconstruction) in a `zarr` file named `supremacy_6qubit.zarr`.\n",
+    " - Save results (that can be used for reconstruction) in a `zarr` file named `supremacy_6qubit.zarr`. If you do not specify an `--output-file`, a default filename (that includes a timestamp, among other things) will be used.\n",
     "\n",
     "## Postprocessing\n",
     "\n",
