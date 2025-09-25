@@ -3,6 +3,7 @@ import logging
 import warnings
 from copy import deepcopy
 from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Self
 
@@ -100,6 +101,18 @@ class CutCircuit:
 
     def __getitem__(self, item):
         return self.subcircuits[item]
+
+    @property
+    def default_filepath(self) -> str:
+        """
+        Generate a default filepath for saving the cut circuit.
+        By default, the filename is of the form:
+        {num_qubits}q-{num_cuts}cuts-{num_subcircuits}subcircuits_{timestamp}.zarr
+        """
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        return (
+            f"{self.circuit.num_qubits}q-{self.num_cuts}c-{len(self)}s_{timestamp}.zarr"
+        )
 
     @staticmethod
     def check_valid(circuit: QuantumCircuit):
@@ -1042,7 +1055,20 @@ class CutCircuit:
         self.subcircuit_entry_probs = {}
         self.subcircuit_packed_probs = {}
 
-    def to_file(self, filepath: str | Path, *args, **kwargs) -> None:
+    def to_file(self, filepath: str | Path | None, *args, **kwargs) -> None:
+        """
+        Save the cut circuit to a file.
+        Parameters
+        ----------
+        filepath: str | Path | None
+            File path to save the cut circuit. If None, uses the default filepath.
+        args: Any
+            Any additional positional arguments to pass to the save function.
+        kwargs: Any
+            Any additional keyword arguments to pass to the save function.
+        """
+        if filepath is None:
+            filepath = self.default_filepath
         if isinstance(filepath, str):
             filepath = Path(filepath)
 

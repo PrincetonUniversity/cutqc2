@@ -68,8 +68,7 @@ def cut(  # noqa: PLR0913
     )
 
     cut_circuit.run_subcircuits()
-    if output_file:
-        cut_circuit.to_file(output_file)
+    cut_circuit.to_file(output_file)
 
 
 @cli.command()
