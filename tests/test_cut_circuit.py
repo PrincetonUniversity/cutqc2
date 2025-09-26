@@ -22,6 +22,42 @@ def simple_circuit() -> QuantumCircuit:
 
 def test_cut_circuit_add_cut_at_position(simple_circuit):
     cut_circuit = CutCircuit(simple_circuit)
+    """
+    In the annotated circuit diagram below, the first number in each i,j pair
+    indicates the wire index, and the second number indicates the gate index
+    on that wire. Single qubit gates (like H) do not increment the gate index.
+    
+                  ┌───┐ 0,0        0,1    
+        q_0: ─|0>─┤ H ├──■──────────■──
+                  └───┘┌─┴─┐        │  
+        q_1: ─|0>──────┤ X ├────────┼──
+                   1,0 └───┘      ┌─┴─┐
+        q_2: ─|0>─────────────────┤ X ├
+                                  └───┘
+                                   2,0
+                                   
+    Each gate that spans exactly 2 wires (the 2 cx gates in this circuit)
+    constitute a "DAGEdge". A DAGEdge is defined by its start and end "DagNode"s.
+    A DAGNode is specified by its wire index and gate index on that wire.
+    
+    The `subcircuits` parameter to <cut_circuit>.add_cuts_and_generate_subcircuits
+    denotes the list of DAGEdges that make up that subcircuit.
+    
+    Thus, by specifying the subcircuits as:
+      subcircuit_0 = [DAGEdge(DagNode(0,0), DagNode(1,0))]
+      subcircuit_1 = [DAGEdge(DagNode(0,1), DagNode(2,0))]
+    
+    we're effectively placing the cut at (note the location of the `//` gate):
+
+                  ┌───┐ 0,0 ┌────┐ 0,1    
+        q_0: ─|0>─┤ H ├──■──┤ // ├──■──
+                  └───┘┌─┴─┐└────┘  │  
+        q_1: ─|0>──────┤ X ├────────┼──
+                   1,0 └───┘      ┌─┴─┐
+        q_2: ─|0>─────────────────┤ X ├
+                                  └───┘
+                                   2,0   
+    """
     subcircuits = [
         [
             DAGEdge(
@@ -97,8 +133,6 @@ def test_cut_circuit_find_cuts(simple_circuit):
         max_subcircuit_width=2,
         max_cuts=1,
         num_subcircuits=[2],
-        max_subcircuit_cuts=1,
-        subcircuit_size_imbalance=1,
     )
 
     assert len(subcircuits) == 2
@@ -138,8 +172,6 @@ def test_cut_circuit_figure4_cut(figure_4_qiskit_circuit):
     cut_circuit = CutCircuit(figure_4_qiskit_circuit)
     cut_circuit.cut(
         max_subcircuit_width=3,
-        max_subcircuit_cuts=2,
-        subcircuit_size_imbalance=3,
         max_cuts=1,
         num_subcircuits=[2],
     )

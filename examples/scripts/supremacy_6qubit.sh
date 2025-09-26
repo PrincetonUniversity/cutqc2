@@ -3,8 +3,6 @@
 cutqc2 cut \
   --file supremacy_6qubit.qasm3 \
   --max-subcircuit-width 5 \
-  --max-subcircuit-cuts 10 \
-  --subcircuit-size-imbalance 2 \
   --max-cuts 10 \
   --num-subcircuits 3 \
   --output-file supremacy_6qubit.zarr

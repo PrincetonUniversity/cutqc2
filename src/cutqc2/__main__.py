@@ -26,15 +26,6 @@ def cli():
 @click.option(
     "--max-subcircuit-width", help="Max subcircuit width.", type=int, default=6
 )
-@click.option(
-    "--max-subcircuit-cuts", help="Max subcircuit cuts.", type=int, default=10
-)
-@click.option(
-    "--subcircuit-size-imbalance",
-    help="Subcircuit size imbalance.",
-    type=int,
-    default=3,
-)
 @click.option("--max-cuts", help="Max cuts.", type=int, default=10)
 @click.option(
     "--num-subcircuits",
@@ -48,11 +39,9 @@ def cli():
     type=str,
     help="Output file to save the cut circuit in Zarr format.",
 )
-def cut(  # noqa: PLR0913
+def cut(
     file,
     max_subcircuit_width,
-    max_subcircuit_cuts,
-    subcircuit_size_imbalance,
     max_cuts,
     num_subcircuits,
     output_file,
@@ -61,8 +50,6 @@ def cut(  # noqa: PLR0913
     cut_circuit = CutCircuit(circuit_qasm3=circuit_qasm3)
     cut_circuit.cut(
         max_subcircuit_width=max_subcircuit_width,
-        max_subcircuit_cuts=max_subcircuit_cuts,
-        subcircuit_size_imbalance=subcircuit_size_imbalance,
         max_cuts=max_cuts,
         num_subcircuits=list(num_subcircuits),
     )

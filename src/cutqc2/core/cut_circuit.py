@@ -164,7 +164,6 @@ class CutCircuit:
     def get_dag_metadata(dag: DAGCircuit) -> dict:
         edges = []
         node_name_ids = {}
-        id_node_names = {}
         id_to_dag_edge = {}
         vertex_ids = {}
         curr_node_id = 0
@@ -195,7 +194,6 @@ class CutCircuit:
             qubit_gate_counter[arg1] += 1
             if vertex_name not in node_name_ids and hash(vertex) not in vertex_ids:
                 node_name_ids[vertex_name] = curr_node_id
-                id_node_names[curr_node_id] = vertex_name
                 id_to_dag_edge[curr_node_id] = dag_edge
                 vertex_ids[hash(vertex)] = curr_node_id
 
@@ -212,8 +210,6 @@ class CutCircuit:
         return {
             "n_vertices": n_vertices,
             "edges": edges,
-            "vertex_ids": node_name_ids,
-            "id_vertices": id_node_names,
             "id_to_dag_edge": id_to_dag_edge,
         }
 
@@ -293,44 +289,55 @@ class CutCircuit:
         return counter
 
     def find_cuts(
-        self,
-        max_subcircuit_width: int,
-        max_cuts: int,
-        num_subcircuits: list[int],
-        max_subcircuit_cuts: int,
-        subcircuit_size_imbalance: int,
+        self, max_subcircuit_width: int, max_cuts: int, num_subcircuits: list[int]
     ):
-        from cutqc2.cutqc.cutqc.cutter import MIP_Model
+        from cutqc2.cutqc.cutqc.mip import MIPCutSearcher
 
-        n_vertices, edges, vertex_ids, id_vertices, id_to_dag_edge = (
+        n_vertices, edges, id_to_dag_edge = (
             self.inter_wire_dag_metadata["n_vertices"],
             self.inter_wire_dag_metadata["edges"],
-            self.inter_wire_dag_metadata["vertex_ids"],
-            self.inter_wire_dag_metadata["id_vertices"],
             self.inter_wire_dag_metadata["id_to_dag_edge"],
         )
 
         num_qubits = self.circuit.num_qubits
         for num_subcircuit in num_subcircuits:
             logger.info(f"Trying with {num_subcircuit} subcircuits")
+
+            if num_subcircuit > num_qubits:
+                logger.info(
+                    f"Skipping as more subcircuits ({num_subcircuit}) than qubits ({num_qubits})"
+                )
+                continue
+
+            if max_cuts + 1 < num_subcircuit:
+                logger.info(
+                    f"Skipping as not enough cuts ({max_cuts}) to create {num_subcircuit} subcircuits"
+                )
+                continue
+
+            """
+            Each subcircuit can use up to max_subcircuit_width qubits, so in total they
+            could cover at most num_subcircuit * max_subcircuit_width qubits. However,
+            adjacent subcircuits must overlap by at least 1 qubit to reconnect properly,
+            which reduces the distinct qubit coverage by (num_subcircuit - 1).
+            If even after accounting for this overlap the total coverage is still less
+            than num_qubits, then it's impossible to fit the circuit into this partition.
+            """
             if (
                 num_subcircuit * max_subcircuit_width - (num_subcircuit - 1)
                 < num_qubits
-                or num_subcircuit > num_qubits
-                or max_cuts + 1 < num_subcircuit
             ):
+                logger.info(
+                    f"Skipping as cannot fit all qubits ({num_qubits}) into {num_subcircuit} subcircuits with max width {max_subcircuit_width}"
+                )
                 continue
 
-            mip_model = MIP_Model(
+            mip_model = MIPCutSearcher(
                 n_vertices=n_vertices,
                 edges=edges,
-                vertex_ids=vertex_ids,
-                id_vertices=id_vertices,
                 id_to_dag_edge=id_to_dag_edge,
                 num_subcircuit=num_subcircuit,
                 max_subcircuit_width=max_subcircuit_width,
-                max_subcircuit_cuts=max_subcircuit_cuts,
-                subcircuit_size_imbalance=subcircuit_size_imbalance,
                 num_qubits=num_qubits,
                 max_cuts=max_cuts,
             )
@@ -598,15 +605,11 @@ class CutCircuit:
         max_subcircuit_width: int,
         max_cuts: int,
         num_subcircuits: list[int],
-        max_subcircuit_cuts: int,
-        subcircuit_size_imbalance: int,
     ):
         subcircuits = self.find_cuts(
             max_subcircuit_width=max_subcircuit_width,
             max_cuts=max_cuts,
             num_subcircuits=num_subcircuits,
-            max_subcircuit_cuts=max_subcircuit_cuts,
-            subcircuit_size_imbalance=subcircuit_size_imbalance,
         )
 
         self.add_cuts_and_generate_subcircuits(subcircuits=subcircuits)

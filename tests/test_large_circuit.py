@@ -12,8 +12,6 @@ def test_verify():
     cut_circuit = CutCircuit(qc)
     cut_circuit.cut(
         max_subcircuit_width=6,
-        max_subcircuit_cuts=10,
-        subcircuit_size_imbalance=3,
         max_cuts=10,
         num_subcircuits=[5],
     )

@@ -180,4 +180,8 @@ class DAGEdge:
         raise ValueError("No common wire")
 
     def weight(self) -> int:
+        """
+        Calculate the `weight` of the edge, defined by the number of inputs
+        directly connected to the source or destination node.
+        """
         return int(self.source.gate_index == 0) + int(self.dest.gate_index == 0)

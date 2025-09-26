@@ -21,8 +21,6 @@ def test_adder_verify():
     cut_circuit = CutCircuit(circuit)
     cut_circuit.cut(
         max_subcircuit_width=20,
-        max_subcircuit_cuts=20,
-        subcircuit_size_imbalance=20,
         max_cuts=20,
         num_subcircuits=[3],
     )
@@ -37,8 +35,6 @@ def test_figure4_verify(figure_4_qiskit_circuit):
     cut_circuit = CutCircuit(figure_4_qiskit_circuit)
     cut_circuit.cut(
         max_subcircuit_width=3,
-        max_subcircuit_cuts=2,
-        subcircuit_size_imbalance=3,
         max_cuts=1,
         num_subcircuits=[2],
     )
@@ -63,8 +59,6 @@ def test_supremacy_verify(tmp_path):
     cut_circuit = CutCircuit(circuit)
     cut_circuit.cut(
         max_subcircuit_width=math.ceil(circuit.num_qubits / 4 * 3),
-        max_subcircuit_cuts=10,
-        subcircuit_size_imbalance=2,
         max_cuts=10,
         num_subcircuits=[3],
     )
