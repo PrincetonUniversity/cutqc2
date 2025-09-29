@@ -20,7 +20,7 @@ def simple_circuit() -> QuantumCircuit:
     return qc
 
 
-def test_cut_circuit_add_cut_at_position(simple_circuit):
+def test_add_cut0(simple_circuit):
     cut_circuit = CutCircuit(simple_circuit)
     """
     In the annotated circuit diagram below, the first number in each i,j pair
@@ -40,7 +40,7 @@ def test_cut_circuit_add_cut_at_position(simple_circuit):
     constitute a "DAGEdge". A DAGEdge is defined by its start and end "DagNode"s.
     A DAGNode is specified by its wire index and gate index on that wire.
     
-    The `subcircuits` parameter to <cut_circuit>.add_cuts_and_generate_subcircuits
+    The `subcircuits` parameter to <cut_circuit>.cut
     denotes the list of DAGEdges that make up that subcircuit.
     
     Thus, by specifying the subcircuits as:
@@ -72,7 +72,7 @@ def test_cut_circuit_add_cut_at_position(simple_circuit):
             )
         ],
     ]
-    cut_circuit.add_cuts_and_generate_subcircuits(subcircuits)
+    cut_circuit.cut(subcircuits=subcircuits)
     got_str = str(cut_circuit)
     expected_str = textwrap.dedent("""
                   ┌───┐     ┌────┐     
@@ -87,7 +87,7 @@ def test_cut_circuit_add_cut_at_position(simple_circuit):
     assert cut_circuit.num_cuts == 1
 
 
-def test_cut_circuit_generate_subcircuits(simple_circuit):
+def test_add_cut1(simple_circuit):
     cut_circuit = CutCircuit(simple_circuit)
     subcircuits = [
         [
@@ -103,7 +103,7 @@ def test_cut_circuit_generate_subcircuits(simple_circuit):
             )
         ],
     ]
-    cut_circuit.add_cuts_and_generate_subcircuits(subcircuits)
+    cut_circuit.cut(subcircuits=subcircuits)
 
     assert len(cut_circuit) == 2
 
@@ -160,7 +160,7 @@ def test_cut_circuit_verify(simple_circuit):
         ],
     ]
 
-    cut_circuit.add_cuts_and_generate_subcircuits(subcircuits)
+    cut_circuit.cut(subcircuits=subcircuits)
 
     cut_circuit.run_subcircuits()
     cut_circuit.postprocess()
@@ -203,7 +203,7 @@ def test_cut_circuit_figure4_reconstruction_order(figure_4_qiskit_circuit):
             ),
         ],
     ]
-    cut_circuit.add_cuts_and_generate_subcircuits(subcircuits)
+    cut_circuit.cut(subcircuits=subcircuits)
     assert cut_circuit.reconstruction_qubit_order == {0: [1, 0], 1: [3, 4, 2]}
 
 
@@ -231,7 +231,7 @@ def test_cut_circuit_figure4_verify(figure_4_qiskit_circuit):
             ),
         ],
     ]
-    cut_circuit.add_cuts_and_generate_subcircuits(subcircuits)
+    cut_circuit.cut(subcircuits=subcircuits)
     cut_circuit.run_subcircuits()
     cut_circuit.postprocess()
     probabilities = cut_circuit.get_probabilities()

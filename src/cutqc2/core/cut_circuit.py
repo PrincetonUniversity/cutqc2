@@ -74,7 +74,7 @@ class CutCircuit:
         self.circuit = circuit.copy()
 
         # A QuantumCircuit object that contains the original circuit with cut gates inserted
-        # Here we initialize it, but will add instructions in the `add_cuts_and_generate_subcircuits` method.
+        # Here we initialize it, but will add instructions in the `cut` method.
         self.circuit_with_cut_gates = QuantumCircuit(*circuit.qregs)
 
         self.inter_wire_dag = self.get_inter_wire_dag(self.circuit)
@@ -347,10 +347,76 @@ class CutCircuit:
             continue
         raise RuntimeError("No viable cuts found")
 
-    def add_cuts_and_generate_subcircuits(  # noqa: PLR0912, PLR0915
-        self, subcircuits: list[list[DAGEdge]]
+    @property
+    def greedy_subcircuit_order(self):
+        """
+        Order subcircuits by ascending effective width.
+
+        The order of subcircuits in which the reconstructor computes
+        the Kronecker products incurs different sizes of carryover vectors
+        and affects the total number of floating-point multiplications. This
+        ordering approach places the smallest subcircuits first in order to
+        minimize the carryover in the size of the vectors.
+        Returns
+        -------
+        np.array
+            Indices of subcircuits in ascending order of effective width.
+        """
+        return np.argsort(
+            [node["effective"] for node in self.compute_graph.nodes.values()]
+        )
+
+    @property
+    def reconstruction_qubit_order(self) -> dict[int, list[int]]:
+        subcircuit_out_qubits = {
+            subcircuit_idx: [] for subcircuit_idx in range(len(self))
+        }
+        for input_qubit in self.complete_path_map:
+            path = self.complete_path_map[input_qubit]
+            output_qubit = path[-1]
+            subcircuit_out_qubits[output_qubit["subcircuit_idx"]].append(
+                (
+                    output_qubit["subcircuit_qubit"],
+                    self.circuit.qubits.index(input_qubit),
+                )
+            )
+        for subcircuit_idx in subcircuit_out_qubits:  # noqa: PLC0206
+            subcircuit_out_qubits[subcircuit_idx] = sorted(
+                subcircuit_out_qubits[subcircuit_idx],
+                key=lambda x: self[subcircuit_idx].qubits.index(x[0]),
+                reverse=True,
+            )
+            subcircuit_out_qubits[subcircuit_idx] = [
+                x[1] for x in subcircuit_out_qubits[subcircuit_idx]
+            ]
+        return subcircuit_out_qubits
+
+    @reconstruction_qubit_order.setter
+    def reconstruction_qubit_order(self, value: dict[int, list[int]]):
+        self._reconstruction_qubit_order = deepcopy(value)
+
+    def reconstruction_flat_qubit_order(self) -> np.array:
+        reconstruction_qubit_order = self.reconstruction_qubit_order
+        result = []
+        for subcircuit in self.greedy_subcircuit_order:
+            _result = reconstruction_qubit_order[subcircuit]
+            result.extend(_result)
+        return np.argsort(result)[::-1]
+
+    def cut(  # noqa: PLR0912, PLR0915
+        self,
+        max_subcircuit_width: int | None = None,
+        max_cuts: int | None = None,
+        num_subcircuits: list[int] | None = None,
+        subcircuits: list[list[DAGEdge]] | None = None,
     ):
-        # self.add_cuts(cut_edges=cut_edges)
+        if subcircuits is None:
+            subcircuits = self.find_cuts(
+                max_subcircuit_width=max_subcircuit_width,
+                max_cuts=max_cuts,
+                num_subcircuits=num_subcircuits,
+            )
+
         self.subcircuit_dagedges = subcircuits
 
         wire_and_gate_to_subcircuit: dict[tuple[int, int], int] = {}
@@ -563,76 +629,6 @@ class CutCircuit:
         self.populate_compute_graph()
         self.populate_subcircuit_entries()
 
-    @property
-    def greedy_subcircuit_order(self):
-        """
-        Order subcircuits by ascending effective width.
-
-        The order of subcircuits in which the reconstructor computes
-        the Kronecker products incurs different sizes of carryover vectors
-        and affects the total number of floating-point multiplications. This
-        ordering approach places the smallest subcircuits first in order to
-        minimize the carryover in the size of the vectors.
-        Returns
-        -------
-        np.array
-            Indices of subcircuits in ascending order of effective width.
-        """
-        return np.argsort(
-            [node["effective"] for node in self.compute_graph.nodes.values()]
-        )
-
-    @property
-    def reconstruction_qubit_order(self) -> dict[int, list[int]]:
-        subcircuit_out_qubits = {
-            subcircuit_idx: [] for subcircuit_idx in range(len(self))
-        }
-        for input_qubit in self.complete_path_map:
-            path = self.complete_path_map[input_qubit]
-            output_qubit = path[-1]
-            subcircuit_out_qubits[output_qubit["subcircuit_idx"]].append(
-                (
-                    output_qubit["subcircuit_qubit"],
-                    self.circuit.qubits.index(input_qubit),
-                )
-            )
-        for subcircuit_idx in subcircuit_out_qubits:  # noqa: PLC0206
-            subcircuit_out_qubits[subcircuit_idx] = sorted(
-                subcircuit_out_qubits[subcircuit_idx],
-                key=lambda x: self[subcircuit_idx].qubits.index(x[0]),
-                reverse=True,
-            )
-            subcircuit_out_qubits[subcircuit_idx] = [
-                x[1] for x in subcircuit_out_qubits[subcircuit_idx]
-            ]
-        return subcircuit_out_qubits
-
-    @reconstruction_qubit_order.setter
-    def reconstruction_qubit_order(self, value: dict[int, list[int]]):
-        self._reconstruction_qubit_order = deepcopy(value)
-
-    def reconstruction_flat_qubit_order(self) -> np.array:
-        reconstruction_qubit_order = self.reconstruction_qubit_order
-        result = []
-        for subcircuit in self.greedy_subcircuit_order:
-            _result = reconstruction_qubit_order[subcircuit]
-            result.extend(_result)
-        return np.argsort(result)[::-1]
-
-    def cut(
-        self,
-        max_subcircuit_width: int,
-        max_cuts: int,
-        num_subcircuits: list[int],
-    ):
-        subcircuits = self.find_cuts(
-            max_subcircuit_width=max_subcircuit_width,
-            max_cuts=max_cuts,
-            num_subcircuits=num_subcircuits,
-        )
-
-        self.add_cuts_and_generate_subcircuits(subcircuits=subcircuits)
-
     def run_subcircuits(
         self,
         subcircuits: list[int] | None = None,
@@ -691,40 +687,55 @@ class CutCircuit:
                 probs[index] = merge_prob_vector(value_cp, qubit_spec)
         return probs
 
-    def get_all_subcircuit_packed_probs(
-        self, qubit_specs: dict[int, str] | None = None
-    ) -> dict[int, np.ndarray]:
-        result = {}
-        for i in range(len(self)):
-            result[i] = self.get_packed_probabilities(
-                i, qubit_spec=qubit_specs.get(i) if qubit_specs else None
-            )
-        return result
+    def _get_subcircuit_effective_qubits(self, qubit_spec: str | None = None):
+        """
+        Partition a global qubit specification string into per-subcircuit slices.
 
-    def get_subcircuit_effective_qubits(self, qubit_spec: str | None = None):
-        effective_qubits = []
-        for node in self.greedy_subcircuit_order:
-            effective_qubits.append(self.compute_graph.nodes[node]["effective"])
+        Each subcircuit has an 'effective' qubit count stored in the compute graph.
+        This function assigns to each subcircuit the portion of the qubit_spec
+        that corresponds to its effective qubits.
 
-        if qubit_spec is None:
-            active_qubits = np.sum(effective_qubits)
-            qubit_spec = "A" * active_qubits
-        else:
-            active_qubits = qubit_spec.count("A")
+        Parameters
+        ----------
+        qubit_spec : str or None
+            A string over {"A", "M", "0", "1"} representing the role of each active qubit,
+            concatenated across *all* subcircuits in greedy_subcircuit_order.
+            If None, a default spec of "A" for each active qubit is used.
 
-        starts = [0]
-        for length in effective_qubits[:-1]:
-            starts.append(starts[-1] + length)
-        ends = [
-            start + length
-            for start, length in zip(starts, effective_qubits, strict=False)
+        Returns
+        -------
+        effective_qubits_dict : dict
+            Mapping {subcircuit_node: qubit_spec_slice} where the slice is the part
+            of the global qubit_spec corresponding to that subcircuit's effective qubits.
+        active_qubits : int
+            Total number of active ("A") qubits across all subcircuits.
+        """
+        # Get the effective qubit counts for each subcircuit
+        effective_counts = [
+            self.compute_graph.nodes[node]["effective"]
+            for node in self.greedy_subcircuit_order
         ]
 
-        effective_qubits_dict = {}
-        for j, start, end in zip(
-            self.greedy_subcircuit_order, starts, ends, strict=False
-        ):
-            effective_qubits_dict[j] = qubit_spec[start:end]
+        total_effective = sum(effective_counts)
+
+        # If no spec is provided, default to all active ("A")
+        if qubit_spec is None:
+            qubit_spec = "A" * total_effective
+
+        # Count how many "A"s there are in the global spec
+        active_qubits = qubit_spec.count("A")
+
+        # Compute starting indices for each subcircuit's slice
+        starts = [0] + list(itertools.accumulate(effective_counts))[:-1]
+
+        # Assign each subcircuit its slice of the qubit_spec
+        effective_qubits_dict = {
+            node: qubit_spec[start : start + length]
+            for node, start, length in zip(
+                self.greedy_subcircuit_order, starts, effective_counts, strict=False
+            )
+        }
+
         return effective_qubits_dict, active_qubits
 
     def _compute_probabilities(
@@ -778,15 +789,17 @@ class CutCircuit:
 
         return result
 
-    def compute_probabilities(self, qubit_spec: str | None = None) -> np.array:
+    def compute_probabilities(self, qubit_spec: str | None = None) -> np.array:  # noqa: PLR0912, PLR0915
         logger.info(f"Computing probabilities for qubit spec {qubit_spec}")
 
-        effective_qubits_dict, active_qubits = self.get_subcircuit_effective_qubits(
+        effective_qubits_dict, active_qubits = self._get_subcircuit_effective_qubits(
             qubit_spec
         )
-        subcircuit_packed_probs = self.get_all_subcircuit_packed_probs(
-            qubit_specs=effective_qubits_dict
-        )
+        subcircuit_packed_probs = {}
+        for i in range(len(self)):
+            subcircuit_packed_probs[i] = self.get_packed_probabilities(
+                i, qubit_spec=effective_qubits_dict[i]
+            )
 
         total_work = self.n_basis ** sum(self.in_degrees)
         gen = itertools.product(range(self.n_basis), repeat=sum(self.in_degrees))

@@ -132,7 +132,7 @@ def zarr_to_cut_circuit(filepath: str | Path) -> CutCircuit:  # noqa: PLR0912
             ]
             subcircuit_dagedges[subcircuit_idx] = subcircuit_n_dagedges
 
-        cut_circuit.add_cuts_and_generate_subcircuits(subcircuit_dagedges)
+        cut_circuit.cut(subcircuits=subcircuit_dagedges)
 
     # Reconstruction qubit order & subcircuit probabilities
     reconstruction_qubit_order = {}
