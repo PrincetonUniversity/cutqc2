@@ -564,6 +564,25 @@ class CutCircuit:
         self.populate_subcircuit_entries()
 
     @property
+    def greedy_subcircuit_order(self):
+        """
+        Order subcircuits by ascending effective width.
+
+        The order of subcircuits in which the reconstructor computes
+        the Kronecker products incurs different sizes of carryover vectors
+        and affects the total number of floating-point multiplications. This
+        ordering approach places the smallest subcircuits first in order to
+        minimize the carryover in the size of the vectors.
+        Returns
+        -------
+        np.array
+            Indices of subcircuits in ascending order of effective width.
+        """
+        return np.argsort(
+            [node["effective"] for node in self.compute_graph.nodes.values()]
+        )
+
+    @property
     def reconstruction_qubit_order(self) -> dict[int, list[int]]:
         subcircuit_out_qubits = {
             subcircuit_idx: [] for subcircuit_idx in range(len(self))
@@ -595,7 +614,7 @@ class CutCircuit:
     def reconstruction_flat_qubit_order(self) -> np.array:
         reconstruction_qubit_order = self.reconstruction_qubit_order
         result = []
-        for subcircuit in self.smart_order:
+        for subcircuit in self.greedy_subcircuit_order:
             _result = reconstruction_qubit_order[subcircuit]
             result.extend(_result)
         return np.argsort(result)[::-1]
@@ -684,7 +703,7 @@ class CutCircuit:
 
     def get_subcircuit_effective_qubits(self, qubit_spec: str | None = None):
         effective_qubits = []
-        for node in self.smart_order:
+        for node in self.greedy_subcircuit_order:
             effective_qubits.append(self.compute_graph.nodes[node]["effective"])
 
         if qubit_spec is None:
@@ -702,7 +721,9 @@ class CutCircuit:
         ]
 
         effective_qubits_dict = {}
-        for j, start, end in zip(self.smart_order, starts, ends, strict=False):
+        for j, start, end in zip(
+            self.greedy_subcircuit_order, starts, ends, strict=False
+        ):
             effective_qubits_dict[j] = qubit_spec[start:end]
         return effective_qubits_dict, active_qubits
 
@@ -728,7 +749,7 @@ class CutCircuit:
             measurements = initializations[self.in_to_out_mask]
 
             initialization_probabilities = None
-            for subcircuit in self.smart_order:
+            for subcircuit in self.greedy_subcircuit_order:
                 subcircuit_initializations = tuple(
                     initializations[
                         self.in_starts[subcircuit] : self.in_starts[subcircuit + 1]
@@ -984,10 +1005,6 @@ class CutCircuit:
                         "rho_qubit": path[counter + 1]["subcircuit_qubit"],
                     },
                 )
-
-        self.smart_order = np.argsort(
-            [node["effective"] for node in self.compute_graph.nodes.values()]
-        )
 
     def populate_subcircuit_entries(self):
         compute_graph = self.compute_graph
