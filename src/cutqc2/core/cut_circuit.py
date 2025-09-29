@@ -90,7 +90,7 @@ class CutCircuit:
 
         self.subcircuit_dagedges: list[list[DAGEdge]] = []
 
-        self.complete_path_map: dict[Qubit, list[dict]] = {}
+        self.complete_path_map: dict[int, list[tuple[int, int]]] = {}
         self._reconstruction_qubit_order = None
 
         self.dynamic_definition: DynamicDefinition | None = None
@@ -265,34 +265,6 @@ class CutCircuit:
             result.append((coeff, tuple(labels)))
         return result
 
-    def get_counter(self):
-        O_rho_pairs = []
-        for input_qubit in self.complete_path_map:
-            path = self.complete_path_map[input_qubit]
-            if len(path) > 1:
-                for path_ctr, item in enumerate(path[:-1]):
-                    O_qubit_tuple = item
-                    rho_qubit_tuple = path[path_ctr + 1]
-                    O_rho_pairs.append((O_qubit_tuple, rho_qubit_tuple))
-
-        counter = {}
-        for subcircuit_idx, subcircuit in enumerate(self.subcircuits):
-            counter[subcircuit_idx] = {
-                "effective": subcircuit.num_qubits,
-                "rho": 0,
-                "O": 0,
-                "d": subcircuit.num_qubits,
-                "depth": subcircuit.depth(),
-                "size": subcircuit.size(),
-            }
-        for pair in O_rho_pairs:
-            O_qubit, rho_qubit = pair
-            counter[O_qubit["subcircuit_idx"]]["effective"] -= 1
-            counter[O_qubit["subcircuit_idx"]]["O"] += 1
-            counter[rho_qubit["subcircuit_idx"]]["rho"] += 1
-
-        return counter
-
     def find_cuts(
         self, max_subcircuit_width: int, max_cuts: int, num_subcircuits: list[int]
     ):
@@ -376,19 +348,18 @@ class CutCircuit:
         subcircuit_out_qubits = {
             subcircuit_idx: [] for subcircuit_idx in range(len(self))
         }
-        for input_qubit in self.complete_path_map:
-            path = self.complete_path_map[input_qubit]
-            output_qubit = path[-1]
-            subcircuit_out_qubits[output_qubit["subcircuit_idx"]].append(
+        for input_qubit, path in self.complete_path_map.items():
+            output_subcircuit_i, output_qubit = path[-1]
+            subcircuit_out_qubits[output_subcircuit_i].append(
                 (
-                    output_qubit["subcircuit_qubit"],
-                    self.circuit.qubits.index(input_qubit),
+                    output_qubit,
+                    input_qubit,
                 )
             )
         for subcircuit_idx in subcircuit_out_qubits:  # noqa: PLC0206
             subcircuit_out_qubits[subcircuit_idx] = sorted(
                 subcircuit_out_qubits[subcircuit_idx],
-                key=lambda x: self[subcircuit_idx].qubits.index(x[0]),
+                key=lambda x: x[0],
                 reverse=True,
             )
             subcircuit_out_qubits[subcircuit_idx] = [
@@ -617,18 +588,7 @@ class CutCircuit:
 
             self.subcircuits.append(subcircuit)
 
-        self.complete_path_map = {qubit: [] for qubit in self.circuit.qubits}
-        for wire_index, path in complete_path_map.items():
-            qubit = self.circuit.qubits[wire_index]
-            for subcircuit_i, qubit_index in path:
-                self.complete_path_map[qubit].append(
-                    {
-                        "subcircuit_idx": subcircuit_i,
-                        "subcircuit_qubit": self.subcircuits[subcircuit_i].qubits[
-                            qubit_index
-                        ],
-                    }
-                )
+        self.complete_path_map = complete_path_map
 
         # book-keeping tasks
         self.populate_compute_graph()
@@ -1002,7 +962,26 @@ class CutCircuit:
         subcircuits = self.subcircuits
 
         self.compute_graph = ComputeGraph()
-        counter = self.get_counter()
+
+        counter = {}
+        for j, subcircuit in enumerate(self.subcircuits):
+            counter[j] = {
+                "effective": subcircuit.num_qubits,
+                "rho": 0,
+                "O": 0,
+                "d": subcircuit.num_qubits,
+                "depth": subcircuit.depth(),
+                "size": subcircuit.size(),
+            }
+
+        for path in self.complete_path_map.values():
+            if len(path) > 1:
+                for j, (subcircuit_i, _) in enumerate(path[:-1]):
+                    next_subcircuit_i = path[j + 1][0]
+                    counter[subcircuit_i]["effective"] -= 1
+                    counter[subcircuit_i]["O"] += 1
+                    counter[next_subcircuit_i]["rho"] += 1
+
         for subcircuit_idx, subcircuit_attributes in counter.items():
             subcircuit_attributes_copy = deepcopy(subcircuit_attributes)
             subcircuit_attributes_copy["subcircuit"] = subcircuits[subcircuit_idx]
@@ -1010,17 +989,16 @@ class CutCircuit:
                 subcircuit_idx=subcircuit_idx, attributes=subcircuit_attributes_copy
             )
 
-        for circuit_qubit in self.complete_path_map:
-            path = self.complete_path_map[circuit_qubit]
-            for counter in range(len(path) - 1):
-                upstream_subcircuit_idx = path[counter]["subcircuit_idx"]
-                downstream_subcircuit_idx = path[counter + 1]["subcircuit_idx"]
+        for path in self.complete_path_map.values():
+            for j in range(len(path) - 1):
+                upstream_subcircuit_idx = path[j][0]
+                downstream_subcircuit_idx = path[j + 1][0]
                 self.compute_graph.add_edge(
                     u_for_edge=upstream_subcircuit_idx,
                     v_for_edge=downstream_subcircuit_idx,
                     attributes={
-                        "O_qubit": path[counter]["subcircuit_qubit"],
-                        "rho_qubit": path[counter + 1]["subcircuit_qubit"],
+                        "O_qubit": path[j][1],
+                        "rho_qubit": path[j + 1][1],
                     },
                 )
 
@@ -1052,14 +1030,10 @@ class CutCircuit:
                     ) = edge
                     if subcircuit_idx == upstream_subcircuit_idx:
                         O_qubit = edge_attributes["O_qubit"]
-                        subcircuit_entry_meas[bare_subcircuit.qubits.index(O_qubit)] = (
-                            edge_basis
-                        )
+                        subcircuit_entry_meas[O_qubit] = edge_basis
                     elif subcircuit_idx == downstream_subcircuit_idx:
                         rho_qubit = edge_attributes["rho_qubit"]
-                        subcircuit_entry_init[
-                            bare_subcircuit.qubits.index(rho_qubit)
-                        ] = edge_basis
+                        subcircuit_entry_init[rho_qubit] = edge_basis
                     else:
                         raise IndexError(
                             "Generating entries for a subcircuit. subcircuit_idx should be either upstream or downstream"

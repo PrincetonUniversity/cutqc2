@@ -58,7 +58,7 @@ class ComputeGraph:
             node_list=list(node_list),
             with_labels=True,
             labels=lambda node: f"Subcircuit {node['index']}\n{node['size']} gates\n{node['d']} total qubits\n{node['effective']} eff qubits",
-            edge_labels=lambda edge: f"q{edge['O_qubit']._index} -> q{edge['rho_qubit']._index}",
+            edge_labels=lambda edge: f"q{edge['O_qubit']} -> q{edge['rho_qubit']}",
             arrow_size=20,
         )
 
@@ -74,9 +74,9 @@ class ComputeGraph:
         """
 
         compute_graph = {
-            (edge[1], edge[2]["rho_qubit"]._index): (
+            (edge[1], edge[2]["rho_qubit"]): (
                 edge[0],
-                edge[2]["O_qubit"]._index,
+                edge[2]["O_qubit"],
             )
             for edge in self.edges
         }
