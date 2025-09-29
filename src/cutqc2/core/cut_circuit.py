@@ -384,7 +384,7 @@ class CutCircuit:
         max_subcircuit_width: int | None = None,
         max_cuts: int | None = None,
         num_subcircuits: list[int] | None = None,
-        subcircuits: list[list[DAGEdge]] | None = None,
+        subcircuits: list[list[DAGEdge]] | list[list[str]] | None = None,
     ):
         if subcircuits is None:
             subcircuits = self.find_cuts(
@@ -392,6 +392,10 @@ class CutCircuit:
                 max_cuts=max_cuts,
                 num_subcircuits=num_subcircuits,
             )
+        elif isinstance(subcircuits[0][0], str):
+            subcircuits = [
+                [DAGEdge.from_string(s) for s in sublist] for sublist in subcircuits
+            ]
 
         self.subcircuit_dagedges = subcircuits
 

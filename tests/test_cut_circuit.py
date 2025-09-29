@@ -88,22 +88,27 @@ def test_add_cut0(simple_circuit):
 
 
 def test_add_cut1(simple_circuit):
+    # Similar example to the one above, but specifying the subcircuits
+    # directly as a list of list of strings, rather than as DAGEdges.
     cut_circuit = CutCircuit(simple_circuit)
-    subcircuits = [
-        [
-            DAGEdge(
-                DagNode(wire_index=0, gate_index=0),
-                DagNode(wire_index=1, gate_index=0),
-            )
-        ],
-        [
-            DAGEdge(
-                DagNode(wire_index=2, gate_index=0),
-                DagNode(wire_index=0, gate_index=1),
-            )
-        ],
-    ]
-    cut_circuit.cut(subcircuits=subcircuits)
+    cut_circuit.cut(subcircuits=[["[0]1 [1]0"], ["[2]0 [0]1"]])
+    got_str = str(cut_circuit)
+    expected_str = textwrap.dedent("""
+                  ┌───┐     ┌────┐     
+        q_0: ─|0>─┤ H ├──■──┤ // ├──■──
+                  └───┘┌─┴─┐└────┘  │  
+        q_1: ─|0>──────┤ X ├────────┼──
+                       └───┘      ┌─┴─┐
+        q_2: ─|0>─────────────────┤ X ├
+                                  └───┘
+    """).strip("\n")
+    assert got_str == expected_str
+    assert cut_circuit.num_cuts == 1
+
+
+def test_add_cut2(simple_circuit):
+    cut_circuit = CutCircuit(simple_circuit)
+    cut_circuit.cut(subcircuits=[["[0]1 [1]0"], ["[2]0 [0]1"]])
 
     assert len(cut_circuit) == 2
 
