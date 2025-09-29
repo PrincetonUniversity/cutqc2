@@ -276,8 +276,6 @@
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cut_circuit</span> <span class="o">=</span> <span class="n">CutCircuit</span><span class="p">(</span><span class="n">circuit</span><span class="o">=</span><span class="n">circuit</span><span class="p">)</span>
 <span class="n">cut_circuit</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span>
     <span class="n">max_subcircuit_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>  <span class="c1"># Max qubits per subcircuit</span>
-    <span class="n">max_subcircuit_cuts</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># Max cuts per subcircuit</span>
-    <span class="n">subcircuit_size_imbalance</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>  <span class="c1"># Allowable size imbalance between subcircuits</span>
     <span class="n">max_cuts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Max total cuts in the circuit</span>
     <span class="n">num_subcircuits</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>  <span class="c1"># Desired number of subcircuits to try</span>
 <span class="p">)</span>

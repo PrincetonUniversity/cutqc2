@@ -94,8 +94,6 @@
     "cut_circuit = CutCircuit(circuit=circuit)\n",
     "cut_circuit.cut(\n",
     "    max_subcircuit_width=3,  # Max qubits per subcircuit\n",
-    "    max_subcircuit_cuts=2,  # Max cuts per subcircuit\n",
-    "    subcircuit_size_imbalance=3,  # Allowable size imbalance between subcircuits\n",
     "    max_cuts=1,  # Max total cuts in the circuit\n",
     "    num_subcircuits=[2],  # Desired number of subcircuits to try\n",
     ")"
