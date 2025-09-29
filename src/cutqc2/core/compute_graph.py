@@ -1,4 +1,5 @@
 from collections import defaultdict
+
 from rustworkx import PyDiGraph
 from rustworkx.visualization import mpl_draw
 
@@ -40,11 +41,12 @@ class ComputeGraph:
         digraph = PyDiGraph()
         node_indices = {}
         for subc_idx, attrs in self.nodes.items():
-            attrs |= {"index": subc_idx}
-            node_indices |= {subc_idx: digraph.add_node(attrs)}
+            node_indices |= {subc_idx: digraph.add_node(attrs | {"index": subc_idx})}
 
         for u_for_edge, v_for_edge, attributes in self.edges:
-            digraph.add_edge(node_indices[u_for_edge], node_indices[v_for_edge], attributes)
+            digraph.add_edge(
+                node_indices[u_for_edge], node_indices[v_for_edge], attributes
+            )
 
         return digraph
 
@@ -57,7 +59,7 @@ class ComputeGraph:
             with_labels=True,
             labels=lambda node: f"Subcircuit {node['index']}\n{node['size']} gates\n{node['d']} total qubits\n{node['effective']} eff qubits",
             edge_labels=lambda edge: f"q{edge['O_qubit']._index} -> q{edge['rho_qubit']._index}",
-            arrow_size=20
+            arrow_size=20,
         )
 
     def incoming_to_outgoing_graph(self) -> dict[tuple[int, int], tuple[int, int]]:
@@ -105,8 +107,4 @@ class ComputeGraph:
             new_compute_graph[(to_sub, new_to_qubit)] = from_sub, new_from_qubit
 
         # important! - sort keys by (to_subcircuit, to_qubit)
-        new_compute_graph = {
-            k: new_compute_graph[k] for k in sorted(new_compute_graph)
-        }
-
-        return new_compute_graph
+        return {k: new_compute_graph[k] for k in sorted(new_compute_graph)}

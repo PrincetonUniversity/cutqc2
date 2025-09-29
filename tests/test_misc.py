@@ -1,6 +1,6 @@
 import numpy as np
 
-from cutqc2.cutqc.cutqc.evaluator import measure_prob, measure_state
+from cutqc2.core.utils import measure_prob, measure_state
 
 """
 sigma, effective_state = measure_state(<unmeasured_state>, <measurement_bases>)

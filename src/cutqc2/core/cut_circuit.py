@@ -18,12 +18,17 @@ from qiskit.converters import circuit_to_dag
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.qasm3 import loads
 
+from cutqc2.core.compute_graph import ComputeGraph
 from cutqc2.core.dag import DAGEdge, DagNode
 from cutqc2.core.dynamic_definition import DynamicDefinition
-from cutqc2.core.utils import chunked, merge_prob_vector, permute_bits_vectorized
+from cutqc2.core.utils import (
+    attribute_shots,
+    chunked,
+    merge_prob_vector,
+    permute_bits_vectorized,
+    run_subcircuit_instances,
+)
 from cutqc2.cupy import vector_kron
-from cutqc2.cutqc.cutqc.compute_graph import ComputeGraph
-from cutqc2.cutqc.cutqc.evaluator import attribute_shots, run_subcircuit_instances
 from cutqc2.cutqc.helper_functions.conversions import quasi_to_real
 from cutqc2.cutqc.helper_functions.metrics import MSE
 from cutqc2.cutqc.helper_functions.non_ibmq_functions import evaluate_circ
@@ -291,7 +296,7 @@ class CutCircuit:
     def find_cuts(
         self, max_subcircuit_width: int, max_cuts: int, num_subcircuits: list[int]
     ):
-        from cutqc2.cutqc.cutqc.mip import MIPCutSearcher
+        from cutqc2.core.mip import MIPCutSearcher
 
         n_vertices, edges, id_to_dag_edge = (
             self.inter_wire_dag_metadata["n_vertices"],

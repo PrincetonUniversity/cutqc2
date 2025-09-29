@@ -1,15 +1,14 @@
 import os
-import math
-from qiskit.dagcircuit.dagcircuit import DAGCircuit
-from qiskit.dagcircuit import DAGOpNode
-from qiskit.converters import circuit_to_dag, dag_to_circuit
+from typing import TYPE_CHECKING
+
 import gurobipy as gp
-from qiskit import QuantumCircuit, QuantumRegister
-from cutqc2.core.cut_circuit import CutCircuit
+
+if TYPE_CHECKING:
+    from cutqc2.core.dag import DAGEdge
 
 
 class MIPCutSearcher:
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         *,
         n_vertices: int,
@@ -18,7 +17,7 @@ class MIPCutSearcher:
         num_subcircuit: int,
         max_subcircuit_width: int,
         num_qubits: int,
-        max_cuts: int
+        max_cuts: int,
     ):
         self.check_graph(n_vertices, edges)
 
@@ -32,14 +31,25 @@ class MIPCutSearcher:
         self.max_cuts = max_cuts
 
         # Count the number of input qubits directly connected to each vertex
-        self.vertex_weight = {i: edge.weight() for i, edge in self.id_to_dag_edge.items()}
+        self.vertex_weight = {
+            i: edge.weight() for i, edge in self.id_to_dag_edge.items()
+        }
 
-        if all(env_var in os.environ for env_var in ("GUROBI_WLSACCESSID", "GUROBI_WLSSECRET", "GUROBI_LICENSEID")):
-            env = gp.Env(params = {
-                "WLSACCESSID": os.environ["GUROBI_WLSACCESSID"],
-                "WLSSECRET": os.environ["GUROBI_WLSSECRET"],
-                "LICENSEID": int(os.environ["GUROBI_LICENSEID"]),
-            })
+        if all(
+            env_var in os.environ
+            for env_var in (
+                "GUROBI_WLSACCESSID",
+                "GUROBI_WLSSECRET",
+                "GUROBI_LICENSEID",
+            )
+        ):
+            env = gp.Env(
+                params={
+                    "WLSACCESSID": os.environ["GUROBI_WLSACCESSID"],
+                    "WLSSECRET": os.environ["GUROBI_WLSSECRET"],
+                    "LICENSEID": int(os.environ["GUROBI_LICENSEID"]),
+                }
+            )
             self.model = gp.Model(name="cut_searching", env=env)
         else:
             self.model = gp.Model(name="cut_searching")
@@ -72,21 +82,31 @@ class MIPCutSearcher:
         #   0 otherwise
         self.vars["y"] = {}
         for v in range(self.n_vertices):
-            self.vars["y"][v] = self.model.addVars(indexes, lb=0.0, ub=1.0, vtype=gp.GRB.BINARY)
+            self.vars["y"][v] = self.model.addVars(
+                indexes, lb=0.0, ub=1.0, vtype=gp.GRB.BINARY
+            )
 
         # Indicator variables - x[e][c]
         #   1 if edge e is cut by subcircuit c
         #   0 otherwise
         self.vars["x"] = {}
         for e in range(self.n_edges):
-            self.vars["x"][e] = self.model.addVars(indexes, lb=0.0, ub=1.0, vtype=gp.GRB.BINARY)
+            self.vars["x"][e] = self.model.addVars(
+                indexes, lb=0.0, ub=1.0, vtype=gp.GRB.BINARY
+            )
 
         # Eq (4): Number of original input qubits in each subcircuit
-        self.vars["alpha"] = self.model.addVars(indexes, lb=0.1, ub=self.max_subcircuit_width, vtype=gp.GRB.INTEGER)
+        self.vars["alpha"] = self.model.addVars(
+            indexes, lb=0.1, ub=self.max_subcircuit_width, vtype=gp.GRB.INTEGER
+        )
         # Eq (5): Number of initialization qubits in each subcircuit
-        self.vars["rho"] = self.model.addVars(indexes, lb=0, ub=self.max_subcircuit_width, vtype=gp.GRB.INTEGER)
+        self.vars["rho"] = self.model.addVars(
+            indexes, lb=0, ub=self.max_subcircuit_width, vtype=gp.GRB.INTEGER
+        )
         # Eq (6): Number of measurement qubits in each subcircuit
-        self.vars["O"] = self.model.addVars(indexes, lb=0, ub=self.max_subcircuit_width, vtype=gp.GRB.INTEGER)
+        self.vars["O"] = self.model.addVars(
+            indexes, lb=0, ub=self.max_subcircuit_width, vtype=gp.GRB.INTEGER
+        )
 
         self.model.update()
 
@@ -100,55 +120,47 @@ class MIPCutSearcher:
         # depends simply on the weight factors (in {0, 1, 2}) for the vertices
         # in the subcircuit.
         self.model.addConstrs(
-            (
-                self.vars["alpha"][c]
-                == gp.quicksum(
-                    self.vertex_weight[i] *
-                    self.vars["y"][i][c]
-                    for i in range(self.n_vertices)
-                )
-                for c in range(self.num_subcircuit)
+            self.vars["alpha"][c]
+            == gp.quicksum(
+                self.vertex_weight[i] * self.vars["y"][i][c]
+                for i in range(self.n_vertices)
             )
+            for c in range(self.num_subcircuit)
         )
 
         # Eq (5): A subcircuit requires initialization qubits when, for some
         # edge that is cut, the downstream vertex is in that subcircuit.
         self.model.addConstrs(
-            (
-                self.vars["rho"][c]
-                == gp.quicksum(
-                    self.vars["x"][i][c] * self.vars["y"][self.edges[i][1]][c]
-                    for i in range(self.n_edges)
-                )
-                for c in range(self.num_subcircuit)
+            self.vars["rho"][c]
+            == gp.quicksum(
+                self.vars["x"][i][c] * self.vars["y"][self.edges[i][1]][c]
+                for i in range(self.n_edges)
             )
+            for c in range(self.num_subcircuit)
         )
 
         # Eq (6): A subcircuit requires measurement qubits when, for some
         # edge that is cut, the upstream vertex is in that subcircuit.
         self.model.addConstrs(
-            (
-                self.vars["O"][c]
-                == gp.quicksum(
-                    self.vars["x"][i][c] * self.vars["y"][self.edges[i][0]][c]
-                    for i in range(self.n_edges)
-                )
-                for c in range(self.num_subcircuit)
+            self.vars["O"][c]
+            == gp.quicksum(
+                self.vars["x"][i][c] * self.vars["y"][self.edges[i][0]][c]
+                for i in range(self.n_edges)
             )
+            for c in range(self.num_subcircuit)
         )
 
         # Eq (8): Every vertex should be assigned to exactly one subcircuit
         for v in range(self.n_vertices):
             self.model.addConstr(
-                gp.quicksum(
-                    [self.vars["y"][v][i] for i in range(self.num_subcircuit)]
-                ) == 1,
+                gp.quicksum([self.vars["y"][v][i] for i in range(self.num_subcircuit)])
+                == 1,
             )
 
         # Eq (9): The total number of qubits in each subcircuit
         self.model.addConstrs(
-            (self.vars["alpha"][c] + self.vars["rho"][c] <= self.max_subcircuit_width
-             for c in range(self.num_subcircuit))
+            self.vars["alpha"][c] + self.vars["rho"][c] <= self.max_subcircuit_width
+            for c in range(self.num_subcircuit)
         )
 
         # Eq (10): x[e][c] = y[e_a][c] XOR y[e_b][c]
@@ -163,7 +175,7 @@ class MIPCutSearcher:
 
                 # Eq (11) - linear constraints corresponding to Eq (10)
                 self.model.addConstr(x_e_c <= y_ea_c + y_eb_c)
-                self.model.addConstr(x_e_c>= y_ea_c - y_eb_c)
+                self.model.addConstr(x_e_c >= y_ea_c - y_eb_c)
                 self.model.addConstr(x_e_c >= y_eb_c - y_ea_c)
                 self.model.addConstr(x_e_c <= 2 - y_ea_c - y_eb_c)
 
@@ -188,7 +200,7 @@ class MIPCutSearcher:
         """
         We cannot model Eq (14) in Gurobi because it is not linear, due to the
         term 2^f(i).
-        
+
         We choose instead to minimize the total number of cuts while still
         satisfying all the constraints that pertain to
         `self.max_subcircuit_width`
@@ -208,7 +220,7 @@ class MIPCutSearcher:
             for i in range(self.num_subcircuit):
                 subcircuit = []
                 for j in range(self.n_vertices):
-                    if abs(self.vars["y"][j][i].x) > 1e-4:
+                    if abs(self.vars["y"][j][i].x) > 1e-4:  # noqa: PLR2004
                         subcircuit.append(self.id_to_dag_edge[j])
                 self.subcircuits.append(subcircuit)
 
@@ -223,19 +235,15 @@ class MIPCutSearcher:
 
             for i in range(self.num_subcircuit):
                 for j in range(self.n_edges):
-                    if abs(self.vars["x"][j][i].x) > 1e-4 and j not in cut_edges_idx:
+                    if abs(self.vars["x"][j][i].x) > 1e-4 and j not in cut_edges_idx:  # noqa: PLR2004
                         cut_edges_idx.append(j)
                         u, v = self.edges[j]
 
                         self.cut_edges_pairs.append(
-                            (
-                                self.id_to_dag_edge[u],
-                                self.id_to_dag_edge[v]
-                            )
+                            (self.id_to_dag_edge[u], self.id_to_dag_edge[v])
                         )
             return True
-        else:
-            return False
+        return False
 
     @staticmethod
     def check_graph(n_vertices: int, edges: list[int]):
@@ -245,8 +253,8 @@ class MIPCutSearcher:
          2. all (u, v) must be ordered and smaller than n_vertices
         """
 
-        vertices = set([i for (i, _) in edges])
-        vertices |= set([i for (_, i) in edges])
+        vertices = {i for (i, _) in edges}
+        vertices |= {i for (_, i) in edges}
         assert vertices == set(range(n_vertices))
         for u, v in edges:
             assert u < v
