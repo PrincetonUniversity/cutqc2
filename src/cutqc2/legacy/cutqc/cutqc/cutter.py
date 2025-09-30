@@ -334,16 +334,16 @@ def read_circ(circuit):
         qubit_gate_counter[arg0] += 1
         qubit_gate_counter[arg1] += 1
         # logging.info(vertex.op.label,vertex_name,curr_node_id)
-        if vertex_name not in node_name_ids and id(vertex) not in vertex_ids:
+        if vertex_name not in node_name_ids and hash(vertex) not in vertex_ids:
             node_name_ids[vertex_name] = curr_node_id
             id_node_names[curr_node_id] = vertex_name
-            vertex_ids[id(vertex)] = curr_node_id
+            vertex_ids[hash(vertex)] = curr_node_id
             curr_node_id += 1
 
     for u, v, _ in dag.edges():
         if isinstance(u, DAGOpNode) and isinstance(v, DAGOpNode):
-            u_id = vertex_ids[id(u)]
-            v_id = vertex_ids[id(v)]
+            u_id = vertex_ids[hash(u)]
+            v_id = vertex_ids[hash(v)]
             edges.append((u_id, v_id))
 
     n_vertices = dag.size()
