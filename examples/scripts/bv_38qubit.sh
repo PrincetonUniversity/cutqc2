@@ -3,8 +3,6 @@
 cutqc2 cut \
   --file bv_38qubit.qasm3 \
   --max-subcircuit-width 6 \
-  --max-subcircuit-cuts 50 \
-  --subcircuit-size-imbalance 5 \
   --max-cuts 100 \
   --num-subcircuits 10 \
   --output-file bv_38qubit.zarr

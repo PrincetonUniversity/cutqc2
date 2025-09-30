@@ -17,8 +17,6 @@ def test_supremacy_reconstruction_with_increasing_capacity():
     cut_circuit = CutCircuit(circuit)
     cut_circuit.cut(
         max_subcircuit_width=math.ceil(circuit.num_qubits / 4 * 3),
-        max_subcircuit_cuts=10,
-        subcircuit_size_imbalance=2,
         max_cuts=10,
         num_subcircuits=[3],
     )

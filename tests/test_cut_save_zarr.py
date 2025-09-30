@@ -13,8 +13,6 @@ def test_figure4_save(figure_4_qiskit_circuit, tmp_path):
 
     cut_circuit.cut(
         max_subcircuit_width=3,
-        max_subcircuit_cuts=2,
-        subcircuit_size_imbalance=3,
         max_cuts=1,
         num_subcircuits=[2],
     )
@@ -37,8 +35,6 @@ def test_figure4_load_complete_path_map(figure_4_qiskit_circuit, tmp_path):
     cut_circuit = CutCircuit(figure_4_qiskit_circuit)
     cut_circuit.cut(
         max_subcircuit_width=3,
-        max_subcircuit_cuts=2,
-        subcircuit_size_imbalance=3,
         max_cuts=1,
         num_subcircuits=[2],
     )

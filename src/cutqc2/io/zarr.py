@@ -30,10 +30,8 @@ def cut_circuit_to_zarr(cut_circuit, filepath: str | Path) -> None:
         if cut_circuit.complete_path_map:
             complete_path_map = [{}] * cut_circuit.circuit.num_qubits
             for qubit, path in cut_circuit.complete_path_map.items():
-                value = [
-                    (e["subcircuit_idx"], e["subcircuit_qubit"]._index) for e in path
-                ]
-                complete_path_map[qubit._index] = value
+                value = [(e[0], e[1]) for e in path]
+                complete_path_map[qubit] = value
 
             dtype = np.dtype([("subcircuit", "i4"), ("qubit", "i4")])
             for j, path in enumerate(complete_path_map):
@@ -132,7 +130,7 @@ def zarr_to_cut_circuit(filepath: str | Path) -> CutCircuit:  # noqa: PLR0912
             ]
             subcircuit_dagedges[subcircuit_idx] = subcircuit_n_dagedges
 
-        cut_circuit.add_cuts_and_generate_subcircuits(subcircuit_dagedges)
+        cut_circuit.cut(subcircuits=subcircuit_dagedges)
 
     # Reconstruction qubit order & subcircuit probabilities
     reconstruction_qubit_order = {}

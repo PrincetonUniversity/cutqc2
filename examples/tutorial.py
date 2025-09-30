@@ -53,8 +53,6 @@ if __name__ == "__main__":
     # Cut the circuit automatically with specified parameters.
     cut_circuit.cut(
         max_subcircuit_width=3,  # Max qubits per subcircuit
-        max_subcircuit_cuts=2,  # Max cuts per subcircuit
-        subcircuit_size_imbalance=3,  # Allowable size imbalance between subcircuits
         max_cuts=1,  # Max total cuts in the circuit
         num_subcircuits=[2],  # Desired number of subcircuits to try
     )

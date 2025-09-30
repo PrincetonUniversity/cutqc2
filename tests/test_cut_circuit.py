@@ -20,8 +20,44 @@ def simple_circuit() -> QuantumCircuit:
     return qc
 
 
-def test_cut_circuit_add_cut_at_position(simple_circuit):
+def test_add_cut0(simple_circuit):
     cut_circuit = CutCircuit(simple_circuit)
+    """
+    In the annotated circuit diagram below, the first number in each i,j pair
+    indicates the wire index, and the second number indicates the gate index
+    on that wire. Single qubit gates (like H) do not increment the gate index.
+    
+                  ┌───┐ 0,0        0,1    
+        q_0: ─|0>─┤ H ├──■──────────■──
+                  └───┘┌─┴─┐        │  
+        q_1: ─|0>──────┤ X ├────────┼──
+                   1,0 └───┘      ┌─┴─┐
+        q_2: ─|0>─────────────────┤ X ├
+                                  └───┘
+                                   2,0
+                                   
+    Each gate that spans exactly 2 wires (the 2 cx gates in this circuit)
+    constitute a "DAGEdge". A DAGEdge is defined by its start and end "DagNode"s.
+    A DAGNode is specified by its wire index and gate index on that wire.
+    
+    The `subcircuits` parameter to <cut_circuit>.cut
+    denotes the list of DAGEdges that make up that subcircuit.
+    
+    Thus, by specifying the subcircuits as:
+      subcircuit_0 = [DAGEdge(DagNode(0,0), DagNode(1,0))]
+      subcircuit_1 = [DAGEdge(DagNode(0,1), DagNode(2,0))]
+    
+    we're effectively placing the cut at (note the location of the `//` gate):
+
+                  ┌───┐ 0,0 ┌────┐ 0,1    
+        q_0: ─|0>─┤ H ├──■──┤ // ├──■──
+                  └───┘┌─┴─┐└────┘  │  
+        q_1: ─|0>──────┤ X ├────────┼──
+                   1,0 └───┘      ┌─┴─┐
+        q_2: ─|0>─────────────────┤ X ├
+                                  └───┘
+                                   2,0   
+    """
     subcircuits = [
         [
             DAGEdge(
@@ -36,7 +72,7 @@ def test_cut_circuit_add_cut_at_position(simple_circuit):
             )
         ],
     ]
-    cut_circuit.add_cuts_and_generate_subcircuits(subcircuits)
+    cut_circuit.cut(subcircuits=subcircuits)
     got_str = str(cut_circuit)
     expected_str = textwrap.dedent("""
                   ┌───┐     ┌────┐     
@@ -51,23 +87,28 @@ def test_cut_circuit_add_cut_at_position(simple_circuit):
     assert cut_circuit.num_cuts == 1
 
 
-def test_cut_circuit_generate_subcircuits(simple_circuit):
+def test_add_cut1(simple_circuit):
+    # Similar example to the one above, but specifying the subcircuits
+    # directly as a list of list of strings, rather than as DAGEdges.
     cut_circuit = CutCircuit(simple_circuit)
-    subcircuits = [
-        [
-            DAGEdge(
-                DagNode(wire_index=0, gate_index=0),
-                DagNode(wire_index=1, gate_index=0),
-            )
-        ],
-        [
-            DAGEdge(
-                DagNode(wire_index=2, gate_index=0),
-                DagNode(wire_index=0, gate_index=1),
-            )
-        ],
-    ]
-    cut_circuit.add_cuts_and_generate_subcircuits(subcircuits)
+    cut_circuit.cut(subcircuits=[["[0]1 [1]0"], ["[2]0 [0]1"]])
+    got_str = str(cut_circuit)
+    expected_str = textwrap.dedent("""
+                  ┌───┐     ┌────┐     
+        q_0: ─|0>─┤ H ├──■──┤ // ├──■──
+                  └───┘┌─┴─┐└────┘  │  
+        q_1: ─|0>──────┤ X ├────────┼──
+                       └───┘      ┌─┴─┐
+        q_2: ─|0>─────────────────┤ X ├
+                                  └───┘
+    """).strip("\n")
+    assert got_str == expected_str
+    assert cut_circuit.num_cuts == 1
+
+
+def test_add_cut2(simple_circuit):
+    cut_circuit = CutCircuit(simple_circuit)
+    cut_circuit.cut(subcircuits=[["[0]1 [1]0"], ["[2]0 [0]1"]])
 
     assert len(cut_circuit) == 2
 
@@ -97,8 +138,6 @@ def test_cut_circuit_find_cuts(simple_circuit):
         max_subcircuit_width=2,
         max_cuts=1,
         num_subcircuits=[2],
-        max_subcircuit_cuts=1,
-        subcircuit_size_imbalance=1,
     )
 
     assert len(subcircuits) == 2
@@ -126,7 +165,7 @@ def test_cut_circuit_verify(simple_circuit):
         ],
     ]
 
-    cut_circuit.add_cuts_and_generate_subcircuits(subcircuits)
+    cut_circuit.cut(subcircuits=subcircuits)
 
     cut_circuit.run_subcircuits()
     cut_circuit.postprocess()
@@ -138,8 +177,6 @@ def test_cut_circuit_figure4_cut(figure_4_qiskit_circuit):
     cut_circuit = CutCircuit(figure_4_qiskit_circuit)
     cut_circuit.cut(
         max_subcircuit_width=3,
-        max_subcircuit_cuts=2,
-        subcircuit_size_imbalance=3,
         max_cuts=1,
         num_subcircuits=[2],
     )
@@ -171,7 +208,7 @@ def test_cut_circuit_figure4_reconstruction_order(figure_4_qiskit_circuit):
             ),
         ],
     ]
-    cut_circuit.add_cuts_and_generate_subcircuits(subcircuits)
+    cut_circuit.cut(subcircuits=subcircuits)
     assert cut_circuit.reconstruction_qubit_order == {0: [1, 0], 1: [3, 4, 2]}
 
 
@@ -199,7 +236,7 @@ def test_cut_circuit_figure4_verify(figure_4_qiskit_circuit):
             ),
         ],
     ]
-    cut_circuit.add_cuts_and_generate_subcircuits(subcircuits)
+    cut_circuit.cut(subcircuits=subcircuits)
     cut_circuit.run_subcircuits()
     cut_circuit.postprocess()
     probabilities = cut_circuit.get_probabilities()

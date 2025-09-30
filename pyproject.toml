@@ -70,7 +70,7 @@ testpaths = ["tests"]
 addopts = "-sv"
 
 [tool.ruff]
-exclude = ["src/cutqc2/cutqc/**"]
+exclude = ["src/cutqc2/cutqc/**", "src/cutqc2/library/**"]
 
 [tool.ruff.lint]
 extend-select = [
