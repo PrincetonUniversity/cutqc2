@@ -377,7 +377,10 @@ class CutCircuit:
         for subcircuit in self.greedy_subcircuit_order:
             _result = reconstruction_qubit_order[subcircuit]
             result.extend(_result)
-        return np.argsort(result)[::-1]
+
+        result = np.array(result)
+        # Return the descending ranks of the qubits in the reconstruction order
+        return (-result).argsort().argsort()
 
     def cut(  # noqa: PLR0912, PLR0915
         self,
@@ -622,6 +625,8 @@ class CutCircuit:
     def get_packed_probabilities(
         self, subcircuit_i: int, qubit_spec: str | None = None
     ) -> np.ndarray:
+        # Find the in-degree + out-degree of the subcircuit in the compute graph.
+        # This tells us how many probability vector dimensions we need.
         n_prob_vecs: int = sum(
             [subcircuit_i in (e[0], e[1]) for e in self.compute_graph.edges]
         )
@@ -911,17 +916,13 @@ class CutCircuit:
             full_states = np.arange(2**self.circuit.num_qubits, dtype="int64")
 
         perm = self.reconstruction_flat_qubit_order()
-        inverse_perm = np.zeros_like(perm)
-        for dest, src in enumerate(perm):
-            inverse_perm[src] = dest
-
-        inverse_permuted_indices = permute_bits_vectorized(
+        permuted_indices = permute_bits_vectorized(
             arr=full_states,
-            permutation=inverse_perm,
+            permutation=perm,
             n_bits=self.circuit.num_qubits,
         )
         reconstructed_probabilities = self.dynamic_definition.probabilities(
-            full_states=inverse_permuted_indices
+            full_states=permuted_indices
         )
 
         if not quasi:
