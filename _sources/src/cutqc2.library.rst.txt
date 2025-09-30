@@ -1,0 +1,39 @@
+cutqc2.library package
+======================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   cutqc2.library.Arithmetic
+   cutqc2.library.BernsteinVazirani
+   cutqc2.library.Dynamics
+   cutqc2.library.QAOA
+   cutqc2.library.QFT
+   cutqc2.library.QWalk
+   cutqc2.library.Random
+   cutqc2.library.Supremacy
+   cutqc2.library.VQE
+   cutqc2.library.sample
+   cutqc2.library.utils
+
+Submodules
+----------
+
+cutqc2.library.generators module
+--------------------------------
+
+.. automodule:: cutqc2.library.generators
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cutqc2.library
+   :members:
+   :undoc-members:
+   :show-inheritance:

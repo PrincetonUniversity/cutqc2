@@ -1,0 +1,21 @@
+cutqc2.library.VQE package
+==========================
+
+Submodules
+----------
+
+cutqc2.library.VQE.uccsd\_ansatz module
+---------------------------------------
+
+.. automodule:: cutqc2.library.VQE.uccsd_ansatz
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cutqc2.library.VQE
+   :members:
+   :undoc-members:
+   :show-inheritance:

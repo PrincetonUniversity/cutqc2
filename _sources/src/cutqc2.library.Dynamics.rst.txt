@@ -1,0 +1,21 @@
+cutqc2.library.Dynamics package
+===============================
+
+Submodules
+----------
+
+cutqc2.library.Dynamics.quantum\_dynamics module
+------------------------------------------------
+
+.. automodule:: cutqc2.library.Dynamics.quantum_dynamics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cutqc2.library.Dynamics
+   :members:
+   :undoc-members:
+   :show-inheritance:

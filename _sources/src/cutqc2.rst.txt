@@ -11,6 +11,7 @@ Subpackages
    cutqc2.cupy
    cutqc2.io
    cutqc2.legacy
+   cutqc2.library
    cutqc2.numeric
 
 Submodules

@@ -1,0 +1,21 @@
+cutqc2.library.QWalk package
+============================
+
+Submodules
+----------
+
+cutqc2.library.QWalk.quantum\_walk module
+-----------------------------------------
+
+.. automodule:: cutqc2.library.QWalk.quantum_walk
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cutqc2.library.QWalk
+   :members:
+   :undoc-members:
+   :show-inheritance:

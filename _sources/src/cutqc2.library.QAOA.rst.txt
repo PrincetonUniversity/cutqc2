@@ -1,0 +1,21 @@
+cutqc2.library.QAOA package
+===========================
+
+Submodules
+----------
+
+cutqc2.library.QAOA.hw\_efficient\_ansatz module
+------------------------------------------------
+
+.. automodule:: cutqc2.library.QAOA.hw_efficient_ansatz
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cutqc2.library.QAOA
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -46,7 +46,7 @@
   
   
   
-    <title>Modules &#8212; CutQC2  documentation</title>
+    <title>cutqc2.library.QWalk package &#8212; CutQC2  documentation</title>
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=75810a84" />
     <link rel="stylesheet" type="text/css" href="../_static/material.css?v=79c92029" />
     <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
@@ -56,8 +56,8 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="cutqc2 package" href="cutqc2.html" />
-    <link rel="prev" title="Contributing to the code" href="../contributing.html" />
+    <link rel="next" title="cutqc2.library.Random package" href="cutqc2.library.Random.html" />
+    <link rel="prev" title="cutqc2.library.QFT package" href="cutqc2.library.QFT.html" />
   
    
 
@@ -76,7 +76,7 @@
   <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
   <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
   <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
-  <a href="#src/modules" tabindex="1" class="md-skip"> Skip to content </a>
+  <a href="#src/cutqc2.library.QWalk" tabindex="1" class="md-skip"> Skip to content </a>
   <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
@@ -94,7 +94,7 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           <span class="md-header-nav__topic">CutQC2  documentation</span>
-          <span class="md-header-nav__topic"> Modules </span>
+          <span class="md-header-nav__topic"> cutqc2.library.QWalk package </span>
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
@@ -151,6 +151,9 @@
     <div class="md-tabs__inner md-grid">
       <ul class="md-tabs__list">
           <li class="md-tabs__item"><a href="../index.html" class="md-tabs__link">CutQC2  documentation</a></li>
+          <li class="md-tabs__item"><a href="modules.html" class="md-tabs__link">Modules</a></li>
+          <li class="md-tabs__item"><a href="cutqc2.html" class="md-tabs__link">cutqc2 package</a></li>
+          <li class="md-tabs__item"><a href="cutqc2.library.html" class="md-tabs__link">cutqc2.library package</a></li>
       </ul>
     </div>
   </nav>
@@ -181,9 +184,20 @@
               <div class="md-sidebar__inner">
                 
 <nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
   <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#src-cutqc2-library-qwalk--page-root" class="md-nav__link">cutqc2.library.QWalk package</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#submodules" class="md-nav__link">Submodules</a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2-library-qwalk-quantum-walk-module" class="md-nav__link">cutqc2.library.QWalk.quantum_walk module</a>
+        </li>
+        <li class="md-nav__item"><a href="#module-contents" class="md-nav__link">Module contents</a>
+        </li></ul>
+            </nav>
+        </li>
     
-<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/src/modules.rst.txt">Show Source</a> </li>
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/src/cutqc2.library.QWalk.rst.txt">Show Source</a> </li>
 
 <li id="searchbox" class="md-nav__item"></li>
 
@@ -196,65 +210,17 @@
         <div class="md-content">
           <article class="md-content__inner md-typeset" role="main">
             
-  <section id="modules">
-<h1 id="src-modules--page-root">Modules<a class="headerlink" href="#src-modules--page-root" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="cutqc2.html">cutqc2 package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="cutqc2.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cutqc2.core.html">cutqc2.core package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.core.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.core.html#cutqc2-core-compute-graph-module">cutqc2.core.compute_graph module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.core.html#cutqc2-core-cut-circuit-module">cutqc2.core.cut_circuit module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.core.html#cutqc2-core-dag-module">cutqc2.core.dag module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.core.html#cutqc2-core-dynamic-definition-module">cutqc2.core.dynamic_definition module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.core.html#cutqc2-core-mip-module">cutqc2.core.mip module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.core.html#cutqc2-core-utils-module">cutqc2.core.utils module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.core.html#module-contents">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="cutqc2.cupy.html">cutqc2.cupy package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.cupy.html#module-contents">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="cutqc2.io.html">cutqc2.io package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.io.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.io.html#cutqc2-io-zarr-module">cutqc2.io.zarr module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.io.html#module-contents">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="cutqc2.legacy.html">cutqc2.legacy package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.legacy.html#module-contents">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="cutqc2.library.html">cutqc2.library package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.library.html#subpackages">Subpackages</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.library.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.library.html#cutqc2-library-generators-module">cutqc2.library.generators module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.library.html#module-contents">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="cutqc2.numeric.html">cutqc2.numeric package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.numeric.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.numeric.html#cutqc2-numeric-cupy-module">cutqc2.numeric.cupy module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.numeric.html#cutqc2-numeric-numpy-module">cutqc2.numeric.numpy module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cutqc2.numeric.html#module-contents">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="cutqc2.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cutqc2.html#module-cutqc2.configuration">cutqc2.configuration module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cutqc2.html#cutqc2.configuration.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="cutqc2.html#cutqc2.configuration.ConfigNode"><code class="docutils literal notranslate"><span class="pre">ConfigNode</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="cutqc2.html#cutqc2-qiskit-to-cudaq-module">cutqc2.qiskit_to_cudaq module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cutqc2.html#module-contents">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
+  <section id="cutqc2-library-qwalk-package">
+<h1 id="src-cutqc2-library-qwalk--page-root">cutqc2.library.QWalk package<a class="headerlink" href="#src-cutqc2-library-qwalk--page-root" title="Link to this heading">¶</a></h1>
+<section id="submodules">
+<h2 id="submodules">Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
+</section>
+<section id="cutqc2-library-qwalk-quantum-walk-module">
+<h2 id="cutqc2-library-qwalk-quantum-walk-module">cutqc2.library.QWalk.quantum_walk module<a class="headerlink" href="#cutqc2-library-qwalk-quantum-walk-module" title="Link to this heading">¶</a></h2>
+</section>
+<section id="module-contents">
+<h2 id="module-contents">Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+</section>
 </section>
 
 
@@ -267,7 +233,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
           
-            <a href="../contributing.html" title="Contributing to the code"
+            <a href="cutqc2.library.QFT.html" title="cutqc2.library.QFT package"
                class="md-flex md-footer-nav__link md-footer-nav__link--prev"
                rel="prev">
               <div class="md-flex__cell md-flex__cell--shrink">
@@ -276,17 +242,17 @@
               <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
                 <span class="md-flex__ellipsis">
                   <span
-                      class="md-footer-nav__direction"> "Previous" </span> Contributing to the code </span>
+                      class="md-footer-nav__direction"> "Previous" </span> cutqc2.library.QFT package </span>
               </div>
             </a>
           
           
-            <a href="cutqc2.html" title="cutqc2 package"
+            <a href="cutqc2.library.Random.html" title="cutqc2.library.Random package"
                class="md-flex md-footer-nav__link md-footer-nav__link--next"
                rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
                 class="md-flex__ellipsis"> <span
-                class="md-footer-nav__direction"> "Next" </span> cutqc2 package </span>
+                class="md-footer-nav__direction"> "Next" </span> cutqc2.library.Random package </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink"><i
                 class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>

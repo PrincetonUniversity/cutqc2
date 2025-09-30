@@ -1,0 +1,21 @@
+cutqc2.library.Random package
+=============================
+
+Submodules
+----------
+
+cutqc2.library.Random.random module
+-----------------------------------
+
+.. automodule:: cutqc2.library.Random.random
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cutqc2.library.Random
+   :members:
+   :undoc-members:
+   :show-inheritance:

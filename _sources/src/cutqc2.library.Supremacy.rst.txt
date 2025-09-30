@@ -1,0 +1,61 @@
+cutqc2.library.Supremacy package
+================================
+
+Submodules
+----------
+
+cutqc2.library.Supremacy.ABCD\_layer\_generation module
+-------------------------------------------------------
+
+.. automodule:: cutqc2.library.Supremacy.ABCD_layer_generation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cutqc2.library.Supremacy.Qbit\_Sycamore module
+----------------------------------------------
+
+.. automodule:: cutqc2.library.Supremacy.Qbit_Sycamore
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cutqc2.library.Supremacy.Qbit\_original module
+----------------------------------------------
+
+.. automodule:: cutqc2.library.Supremacy.Qbit_original
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cutqc2.library.Supremacy.Qgrid\_Sycamore module
+-----------------------------------------------
+
+.. automodule:: cutqc2.library.Supremacy.Qgrid_Sycamore
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cutqc2.library.Supremacy.Qgrid\_original module
+-----------------------------------------------
+
+.. automodule:: cutqc2.library.Supremacy.Qgrid_original
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cutqc2.library.Supremacy.cz\_layer\_generation module
+-----------------------------------------------------
+
+.. automodule:: cutqc2.library.Supremacy.cz_layer_generation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cutqc2.library.Supremacy
+   :members:
+   :undoc-members:
+   :show-inheritance:

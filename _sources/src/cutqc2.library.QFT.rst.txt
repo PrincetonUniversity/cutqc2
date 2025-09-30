@@ -1,0 +1,21 @@
+cutqc2.library.QFT package
+==========================
+
+Submodules
+----------
+
+cutqc2.library.QFT.qft\_circ module
+-----------------------------------
+
+.. automodule:: cutqc2.library.QFT.qft_circ
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cutqc2.library.QFT
+   :members:
+   :undoc-members:
+   :show-inheritance:
