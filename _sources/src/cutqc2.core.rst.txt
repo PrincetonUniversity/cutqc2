@@ -4,6 +4,14 @@ cutqc2.core package
 Submodules
 ----------
 
+cutqc2.core.compute\_graph module
+---------------------------------
+
+.. automodule:: cutqc2.core.compute_graph
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 cutqc2.core.cut\_circuit module
 -------------------------------
 
@@ -24,6 +32,14 @@ cutqc2.core.dynamic\_definition module
 --------------------------------------
 
 .. automodule:: cutqc2.core.dynamic_definition
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+cutqc2.core.mip module
+----------------------
+
+.. automodule:: cutqc2.core.mip
    :members:
    :undoc-members:
    :show-inheritance:

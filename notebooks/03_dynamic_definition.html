@@ -214,7 +214,7 @@
 <p>The Dynamic Definition algorithm allows us to sample probability distributions when storing the full-state probability is not tractable (due to memory requirements).</p>
 <p>The algorithm as implemented in <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> has 3 parameters:</p>
 <ul class="simple">
-<li><p>A function that returns a probability distribution given a <code class="docutils literal notranslate"><span class="pre">qubit_spec</span></code> - a string of <em>active</em> (<code class="docutils literal notranslate"><span class="pre">A</span></code>), <em>merged</em> (<code class="docutils literal notranslate"><span class="pre">M</span></code>) and <em>conditioned</em> (<code class="docutils literal notranslate"><span class="pre">0</span></code>/<code class="docutils literal notranslate"><span class="pre">1</span></code>) qubits. See the <a class="reference external" href="merge_unmerge.ipynb">merge_unmerge</a> notebook for an introduction on these.</p></li>
+<li><p>A function that returns a probability distribution given a <code class="docutils literal notranslate"><span class="pre">qubit_spec</span></code> - a string of <em>active</em> (<code class="docutils literal notranslate"><span class="pre">A</span></code>), <em>merged</em> (<code class="docutils literal notranslate"><span class="pre">M</span></code>) and <em>conditioned</em> (<code class="docutils literal notranslate"><span class="pre">0</span></code>/<code class="docutils literal notranslate"><span class="pre">1</span></code>) qubits. See the <a class="reference internal" href="02_merge_unmerge.html"><span class="doc">merge_unmerge</span></a> notebook for an introduction on these.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">capacity</span></code> - the max number of qubits we can mark as <strong>active</strong> at any point. This is referred to as <em>system memory</em> in Algorithm 1 of the CutQC paper.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_recursion</span></code> - the max recursions the algorithm goes through.</p></li>
 </ul>
@@ -245,7 +245,7 @@
 <p>Let us see it in action for a 4-qubit BV circuit. This corresponds to Figure 7 in the original CutQC paper.</p>
 <section id="4-qubit-BV-Circuit">
 <h2 id="4-qubit-BV-Circuit">4-qubit BV Circuit<a class="headerlink" href="#4-qubit-BV-Circuit" title="Link to this heading">¶</a></h2>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
 </pre></div>
 </div>
@@ -258,6 +258,15 @@
 <span class="n">four_qubit_BV_probability_distribution</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">15</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+(INFO) (base_tasks.py) (29-Sep-25 19:19:18) Pass: UnrollCustomDefinitions - 0.07200 (ms)
+(INFO) (base_tasks.py) (29-Sep-25 19:19:18) Pass: BasisTranslator - 0.01621 (ms)
+</pre></div></div>
 </div>
 <p>This circuit produces a single non-zero probability value of 1 at the bitstring index <code class="docutils literal notranslate"><span class="pre">1111</span></code>, which we emulate using <code class="docutils literal notranslate"><span class="pre">four_qubit_BV_probability_distribution</span></code>. We instantiate the <code class="docutils literal notranslate"><span class="pre">DynamicDefinition</span></code> class by providing it:</p>
 <ul class="simple">
@@ -300,8 +309,8 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:41) Calculating initial probabilities for qubit spec AMMM
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:41) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) Calculating initial probabilities for qubit spec AMMM
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) No more bins to process or max recursion level reached.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -309,7 +318,7 @@
 </div>
 <div class="output_area stderr docutils container">
 <div class="highlight"><pre>
-/media/vineetb/delta/projects/cutqc2/src/cutqc2/core/dynamic_definition.py:178: UserWarning: Generating all 2^num_qubits states. This may be memory intensive.
+/media/vineetb/delta/projects/cutqc2/src/cutqc2/core/dynamic_definition.py:183: UserWarning: Generating all 2^num_qubits states. This may be memory intensive.
   y = self.probabilities(full_states=full_states)
 </pre></div></div>
 </div>
@@ -336,9 +345,9 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AMMM
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AMMM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) Calculating initial probabilities for qubit spec AMMM
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) recursion_level=1, qubit_spec='AMMM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) No more bins to process or max recursion level reached.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -353,10 +362,10 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AMMM
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AMMM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=2, qubit_spec='11MM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) Calculating initial probabilities for qubit spec AMMM
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) recursion_level=1, qubit_spec='AMMM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) recursion_level=2, qubit_spec='11MM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) No more bins to process or max recursion level reached.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">
@@ -371,11 +380,11 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AMMM
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AMMM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=2, qubit_spec='11MM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=3, qubit_spec='111M'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) Calculating initial probabilities for qubit spec AMMM
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) recursion_level=1, qubit_spec='AMMM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) recursion_level=2, qubit_spec='11MM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) recursion_level=3, qubit_spec='111M'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:18) No more bins to process or max recursion level reached.
 </pre></div></div>
 </div>
 <div class="nboutput nblast docutils container">
@@ -390,7 +399,7 @@
 <section id="6-qubit-Supremacy-Circuit">
 <h2 id="6-qubit-Supremacy-Circuit">6-qubit Supremacy Circuit<a class="headerlink" href="#6-qubit-Supremacy-Circuit" title="Link to this heading">¶</a></h2>
 <p>As another example, let’s run Dynamic Definition on a 6-qubit Supremacy Circuit.</p>
-<div class="nbinput docutils container">
+<div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
 </pre></div>
 </div>
@@ -415,15 +424,6 @@
 </pre></div>
 </div>
 </div>
-<div class="nboutput nblast docutils container">
-<div class="prompt empty docutils container">
-</div>
-<div class="output_area docutils container">
-<div class="highlight"><pre>
-(INFO) (base_tasks.py) (18-Sep-25 09:42:42) Pass: UnrollCustomDefinitions - 0.07343 (ms)
-(INFO) (base_tasks.py) (18-Sep-25 09:42:42) Pass: BasisTranslator - 0.02503 (ms)
-</pre></div></div>
-</div>
 <p>With increasing values of <code class="docutils literal notranslate"><span class="pre">max_recursion</span></code>, the algorithm is able to approximate the ground truth probability vector better and better. <code class="docutils literal notranslate"><span class="pre">max_recursion</span></code> beyond 5 has no effect in this case, as there are no bins left to explore beyond that recursion level.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
@@ -445,33 +445,33 @@
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AAMMMM
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AAMMMM
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AAMMMM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AAMMMM
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AAMMMM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=2, qubit_spec='1001MM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AAMMMM
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AAMMMM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=2, qubit_spec='1001MM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=3, qubit_spec='1011MM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AAMMMM
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AAMMMM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=2, qubit_spec='1001MM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=3, qubit_spec='1011MM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=4, qubit_spec='0110MM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) Calculating initial probabilities for qubit spec AAMMMM
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=1, qubit_spec='AAMMMM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=2, qubit_spec='1001MM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=3, qubit_spec='1011MM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=4, qubit_spec='0110MM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) recursion_level=5, qubit_spec='0100MM'
-(INFO) (dynamic_definition.py) (18-Sep-25 09:42:42) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) Calculating initial probabilities for qubit spec AAMMMM
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) Calculating initial probabilities for qubit spec AAMMMM
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=1, qubit_spec='AAMMMM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) Calculating initial probabilities for qubit spec AAMMMM
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=1, qubit_spec='AAMMMM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=2, qubit_spec='1001MM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) Calculating initial probabilities for qubit spec AAMMMM
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=1, qubit_spec='AAMMMM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=2, qubit_spec='1001MM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=3, qubit_spec='1011MM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) Calculating initial probabilities for qubit spec AAMMMM
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=1, qubit_spec='AAMMMM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=2, qubit_spec='1001MM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=3, qubit_spec='1011MM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=4, qubit_spec='0110MM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) No more bins to process or max recursion level reached.
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) Calculating initial probabilities for qubit spec AAMMMM
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=1, qubit_spec='AAMMMM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=2, qubit_spec='1001MM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=3, qubit_spec='1011MM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=4, qubit_spec='0110MM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) recursion_level=5, qubit_spec='0100MM'
+(INFO) (dynamic_definition.py) (29-Sep-25 19:19:19) No more bins to process or max recursion level reached.
 </pre></div></div>
 </div>
 <div class="nboutput docutils container">

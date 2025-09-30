@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.gstatic.com/" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="_static/javascripts/modernizr.js"></script>
+  
+  
+  
+    <title>The CutCircuit class - Walkthrough &#8212; CutQC2  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=75810a84" />
+    <link rel="stylesheet" type="text/css" href="_static/material.css?v=79c92029" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="FAQs" href="faqs.html" />
+    <link rel="prev" title="CutQC2 zarr file format" href="notebooks/05_zarr.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=blue-grey data-md-color-accent=blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#cut_circuit_walkthrough" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="index.html" title="CutQC2  documentation"
+           class="md-header-nav__button md-logo">
+          
+            &nbsp;
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">CutQC2  documentation</span>
+          <span class="md-header-nav__topic"> The CutCircuit class - Walkthrough </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+      
+  
+  <script src="_static/javascripts/version_dropdown.js"></script>
+  <script>
+    var json_loc = ""versions.json"",
+        target_loc = "../",
+        text = "Versions";
+    $( document ).ready( add_version_dropdown(json_loc, target_loc, text));
+  </script>
+  
+
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+          <li class="md-tabs__item"><a href="index.html" class="md-tabs__link">CutQC2  documentation</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="index.html" title="CutQC2 documentation" class="md-nav__button md-logo">
+      
+        <img src="_static/" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="index.html"
+       title="CutQC2 documentation">CutQC2  documentation</a>
+  </label>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">"Contents"</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#cut-circuit-walkthrough--page-root" class="md-nav__link">The <code class="docutils literal notranslate"><span class="pre">CutCircuit</span></code> class - Walkthrough</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#initialization" class="md-nav__link">1) Initialization</a>
+        </li>
+        <li class="md-nav__item"><a href="#cutting-the-circuit" class="md-nav__link">2) Cutting the circuit</a>
+        </li>
+        <li class="md-nav__item"><a href="#executing-subcircuits-and-packing-probabilities" class="md-nav__link">3) Executing subcircuits and packing probabilities</a>
+        </li>
+        <li class="md-nav__item"><a href="#save-and-load" class="md-nav__link">4) Save and load</a>
+        </li>
+        <li class="md-nav__item"><a href="#reconstruction-setup" class="md-nav__link">5) Reconstruction setup</a>
+        </li>
+        <li class="md-nav__item"><a href="#computing-probabilities-mpi-aware-core" class="md-nav__link">6) Computing probabilities (MPI-aware core)</a>
+        </li>
+        <li class="md-nav__item"><a href="#plotting-and-verifying-probabilities" class="md-nav__link">7) Plotting and verifying probabilities</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="_sources/cut_circuit_walkthrough.md.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="the-cutcircuit-class-walkthrough">
+<h1 id="cut-circuit-walkthrough--page-root">The <code class="docutils literal notranslate"><span class="pre">CutCircuit</span></code> class - Walkthrough<a class="headerlink" href="#cut-circuit-walkthrough--page-root" title="Link to this heading">¶</a></h1>
+<p>This walkthrough traces the path through the key methods of <code class="docutils literal notranslate"><span class="pre">CutCircuit</span></code>, and explains the internal attributes and data structures as they are populated and consumed. It follows the example below.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cutqc2.library.sample</span><span class="w"> </span><span class="kn">import</span> <span class="n">sample_circuit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cutqc2.core.cut_circuit</span><span class="w"> </span><span class="kn">import</span> <span class="n">CutCircuit</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">"__main__"</span><span class="p">:</span>
+    <span class="n">cut_circuit</span> <span class="o">=</span> <span class="n">CutCircuit</span><span class="p">(</span><span class="n">sample_circuit</span><span class="p">)</span>
+
+    <span class="n">cut_circuit</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span>
+        <span class="n">max_subcircuit_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>  <span class="c1"># Max qubits per subcircuit</span>
+        <span class="n">max_cuts</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Max total cuts in the circuit</span>
+        <span class="n">num_subcircuits</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>  <span class="c1"># Desired number of subcircuits to try</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">cut_circuit</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">subcircuit</span> <span class="ow">in</span> <span class="n">cut_circuit</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">subcircuit</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">()</span>
+
+    <span class="n">cut_circuit</span><span class="o">.</span><span class="n">run_subcircuits</span><span class="p">()</span>
+    
+    <span class="n">cut_circuit</span><span class="o">.</span><span class="n">to_file</span><span class="p">(</span><span class="s2">"tutorial.zarr"</span><span class="p">)</span>
+    <span class="n">cut_circuit</span> <span class="o">=</span> <span class="n">CutCircuit</span><span class="o">.</span><span class="n">from_file</span><span class="p">(</span><span class="s2">"tutorial.zarr"</span><span class="p">)</span>
+
+    <span class="n">cut_circuit</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">capacity</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">max_recursion</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+
+    <span class="n">probabilities</span> <span class="o">=</span> <span class="n">cut_circuit</span><span class="o">.</span><span class="n">get_probabilities</span><span class="p">()</span>
+
+    <span class="n">error</span> <span class="o">=</span> <span class="n">cut_circuit</span><span class="o">.</span><span class="n">verify</span><span class="p">(</span><span class="n">probabilities</span><span class="p">,</span> <span class="n">raise_error</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Verification error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="n">cut_circuit</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">plot_ground_truth</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<section id="initialization">
+<h2 id="initialization">1) Initialization<a class="headerlink" href="#initialization" title="Link to this heading">¶</a></h2>
+<p>Constructor: <code class="docutils literal notranslate"><span class="pre">CutCircuit(circuit</span> <span class="pre">|</span> <span class="pre">circuit_qasm3)</span></code></p>
+<ul class="simple">
+<li><p>Inputs:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">circuit</span></code>: a <code class="docutils literal notranslate"><span class="pre">qiskit.QuantumCircuit</span></code>; if <code class="docutils literal notranslate"><span class="pre">None</span></code>, a qasm3 <code class="docutils literal notranslate"><span class="pre">str</span></code> representation of the circuit using the the <code class="docutils literal notranslate"><span class="pre">circuit_qasm3</span></code> argument must be provided.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cut_circuit</span> <span class="pre">=</span> <span class="pre">CutCircuit(circuit)</span></code> validates the circuit (single component, no classical bits, no barriers, ≤ 2-qubit ops). and initializes the following attributes:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.circuit</span></code>: a copy of the input circuit.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.circuit_with_cut_gates</span></code>: the input circuit with placeholder cut gates, useful for visualization. This is initially a blank <code class="docutils literal notranslate"><span class="pre">QuantumCircuit</span></code> with the same quantum registers, and is later populated when <code class="docutils literal notranslate"><span class="pre">cut()</span></code> is called.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.num_cuts</span></code>: 0 (number of cuts inserted - initially zero)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.subcircuits</span></code>: []  (list of <code class="docutils literal notranslate"><span class="pre">QuantumCircuit</span></code> subcircuits - initially empty)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.subcircuit_dagedges</span></code>: []  (list of lists of <code class="docutils literal notranslate"><span class="pre">DAGEdge</span></code> that define subcircuits). <code class="docutils literal notranslate"><span class="pre">DAGEdge</span></code> objects are abstractions that represent a two-qubit gate and its associated wire and gate indices.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.complete_path_map</span></code>: {} (wire_index → [(subcircuit_i, subcircuit_wire_index), …]). This maps each original wire to the sequence of subcircuits and local qubits it traverses.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.dynamic_definition</span></code>: None. This will later hold a <code class="docutils literal notranslate"><span class="pre">DynamicDefinition</span></code> object that manages the recursive reconstruction process.</p></li>
+</ul>
+</li>
+</ul>
+<p>Some other internal attributes that are initialized are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.inter_wire_dag</span></code>: a DAG containing only two-qubit gates (for cut search).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.inter_wire_dag_metadata</span></code>: metadata for <code class="docutils literal notranslate"><span class="pre">self.inter_wire_dag</span></code>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">n_vertices</span></code>: number of two-qubit vertices</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edges</span></code>: edges among those vertices</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">id_to_dag_edge</span></code>: mapping from integer vertex ids to <code class="docutils literal notranslate"><span class="pre">DAGEdge</span></code> objects.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="cutting-the-circuit">
+<h2 id="cutting-the-circuit">2) Cutting the circuit<a class="headerlink" href="#cutting-the-circuit" title="Link to this heading">¶</a></h2>
+<p>Method: <code class="docutils literal notranslate"><span class="pre">cut(max_subcircuit_width,</span> <span class="pre">max_cuts,</span> <span class="pre">num_subcircuits,</span> <span class="pre">subcircuits=None)</span></code></p>
+<ul class="simple">
+<li><p>This step calls <code class="docutils literal notranslate"><span class="pre">find_cuts()</span></code> to search a feasible partition:</p>
+<ul>
+<li><p>Internally, it uses <code class="docutils literal notranslate"><span class="pre">self.inter_wire_dag_metadata</span></code> and the <code class="docutils literal notranslate"><span class="pre">MIPCutSearcher</span></code> class, which is a MIP solver to find a partition of the two-qubit gates into subcircuits that respect certain constraints.</p></li>
+<li><p>Returns <code class="docutils literal notranslate"><span class="pre">list[list[DAGEdge]]</span></code> where each inner list is the list of <code class="docutils literal notranslate"><span class="pre">DAGEdge</span></code> objects (two-qubit gates) assigned to that subcircuit.</p></li>
+</ul>
+</li>
+<li><p>Once the gates are assigned to subcircuits, the <code class="docutils literal notranslate"><span class="pre">cut()</span></code> method:</p>
+<ul>
+<li><p>Traverses the original circuit topologically and constructs, for each subcircuit:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">subcircuit_instructions[subcircuit_i]</span></code>: list of Instructions mapped to that subcircuit and local wire indices.</p></li>
+<li><p>When the active subcircuit on a wire changes, inserts a <code class="docutils literal notranslate"><span class="pre">WireCutGate()</span></code> into <code class="docutils literal notranslate"><span class="pre">self.circuit_with_cut_gates</span></code> and increments <code class="docutils literal notranslate"><span class="pre">self.num_cuts</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Once parsed, it builds actual <code class="docutils literal notranslate"><span class="pre">QuantumCircuit</span></code> objects for each subcircuit from <code class="docutils literal notranslate"><span class="pre">subcircuit_instructions</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">complete_path_map[wire_index]</span> <span class="pre">→</span> <span class="pre">[(subcircuit_i,</span> <span class="pre">subcircuit_wire_index),</span> <span class="pre">...]</span></code>: the path a qubit takes across subcircuits.</p></li>
+</ul>
+</li>
+<li><p>Towards the end of <code class="docutils literal notranslate"><span class="pre">cut()</span></code>:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">populate_compute_graph()</span></code>:</p>
+<ul>
+<li><p>This step creates <code class="docutils literal notranslate"><span class="pre">self.compute_graph</span></code> (nodes and edges):</p>
+<ul>
+<li><p>For each subcircuit <code class="docutils literal notranslate"><span class="pre">j</span></code>: node attributes include</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">effective</span></code>: the number of effective qubits (reduced by outgoing cuts)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rho</span></code> and <code class="docutils literal notranslate"><span class="pre">O</span></code> counts (incoming/outgoing cut roles)</p></li>
+</ul>
+</li>
+<li><p>For each wire path in <code class="docutils literal notranslate"><span class="pre">complete_path_map</span></code>, adds edges between adjacent (upstream, downstream) subcircuits with attributes:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">O_qubit</span></code>: local outgoing qubit index in upstream subcircuit</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rho_qubit</span></code>: local incoming qubit index in downstream subcircuit</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">populate_subcircuit_entries()</span></code>:</p>
+<ul>
+<li><p>For each subcircuit node, this step enumerates incident edges and I/X/Y/Z choices, and builds:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.subcircuit_entries[subcircuit_idx]</span></code>: mapping of (initialization_labels, measurement_labels) to list of coefficient-weighted terms;</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.subcircuit_instances[subcircuit_idx]</span></code>: deduplicated list of all (initialization, measurement) tuples needed to run for that subcircuit.</p></li>
+</ul>
+</li>
+<li><p>Why this matters:</p>
+<ul>
+<li><p>This defines what experiments must be run <em>per subcircuit</em> to gather probability vectors needed for reconstruction.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">Compute Graph</p>
+<p>See the <a class="reference internal" href="notebooks/04_circuit_cutting_internals.html"><span class="std std-doc">Circuit-Cutting Implementation Details</span></a> tutorial for more details on the Computation Graph.</p>
+</div>
+<p>Result:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.subcircuits</span></code>: list of <code class="docutils literal notranslate"><span class="pre">QuantumCircuit</span></code> subcircuits.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.circuit_with_cut_gates</span></code>: the original circuit with <code class="docutils literal notranslate"><span class="pre">//</span></code> markers showing cuts.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.complete_path_map</span></code>: how original wires traverse subcircuits and local qubits.</p></li>
+</ul>
+<p>What you’ll see:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">print(cut_circuit)</span></code> now prints <code class="docutils literal notranslate"><span class="pre">self.circuit_with_cut_gates</span></code> and shows <code class="docutils literal notranslate"><span class="pre">//</span></code> where cuts were inserted.</p></li>
+<li><p>Iterating over <code class="docutils literal notranslate"><span class="pre">cut_circuit</span></code> using <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">subcircuit</span> <span class="pre">in</span> <span class="pre">cut_circuit:</span></code> iterates through each subcircuit, which can then be printed out.</p></li>
+</ul>
+</section>
+<section id="executing-subcircuits-and-packing-probabilities">
+<h2 id="executing-subcircuits-and-packing-probabilities">3) Executing subcircuits and packing probabilities<a class="headerlink" href="#executing-subcircuits-and-packing-probabilities" title="Link to this heading">¶</a></h2>
+<p>Method: <code class="docutils literal notranslate"><span class="pre">run_subcircuits(subcircuits=None,</span> <span class="pre">backend="statevector_simulator")</span></code></p>
+<ul class="simple">
+<li><p>Runs each subcircuit’s instances:</p>
+<ul>
+<li><p>Uses utility functions <code class="docutils literal notranslate"><span class="pre">run_subcircuit_instances</span></code> to execute and <code class="docutils literal notranslate"><span class="pre">attribute_shots</span></code> to map measured results to entries. This step fills:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.subcircuit_entry_probs[subcircuit_idx][(init,</span> <span class="pre">meas)]</span> <span class="pre">=</span> <span class="pre">2^k-length</span> <span class="pre">probability</span> <span class="pre">vector</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">self.subcircuit_packed_probs[subcircuit_idx]</span> <span class="pre">=</span> <span class="pre">get_packed_probabilities(subcircuit_idx)</span></code></p></li>
+</ul>
+</li>
+<li><p>The method: <code class="docutils literal notranslate"><span class="pre">get_packed_probabilities(subcircuit_i,</span> <span class="pre">qubit_spec=None)</span></code>, for each subcircuit:</p>
+<ul>
+<li><p>Builds a dense tensor with one axis of length 4 per incident edge (I/X/Y/Z), and a final axis of length <code class="docutils literal notranslate"><span class="pre">2^k</span></code> where <code class="docutils literal notranslate"><span class="pre">k</span></code> is the effective qubits for that subcircuit.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">qubit_spec</span></code> is provided for that subcircuit, applies <code class="docutils literal notranslate"><span class="pre">merge_prob_vector</span></code> to reduce the last axis. (This functionality is used in <code class="docutils literal notranslate"><span class="pre">compute_probabilities()</span></code> later).</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>After <code class="docutils literal notranslate"><span class="pre">run_subcircuits()</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">self.subcircuit_entry_probs</span></code> and <code class="docutils literal notranslate"><span class="pre">self.subcircuit_packed_probs</span></code> are populated and ready for the reconstruction phase.</p></li>
+</ul>
+</section>
+<section id="save-and-load">
+<h2 id="save-and-load">4) Save and load<a class="headerlink" href="#save-and-load" title="Link to this heading">¶</a></h2>
+<p>Method: <code class="docutils literal notranslate"><span class="pre">to_file(filepath</span> <span class="pre">|</span> <span class="pre">None,</span> <span class="pre">...)</span></code></p>
+<ul class="simple">
+<li><p>Saves the cut circuit and reconstruction artifacts to <code class="docutils literal notranslate"><span class="pre">.zarr</span></code>. If <code class="docutils literal notranslate"><span class="pre">filepath</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, uses a default scheme including qubit count, cut count, subcircuit count, and a timestamp.</p></li>
+</ul>
+<p>Method: <code class="docutils literal notranslate"><span class="pre">from_file(filepath)</span></code></p>
+<ul class="simple">
+<li><p>Loads a saved <code class="docutils literal notranslate"><span class="pre">CutCircuit</span></code> from <code class="docutils literal notranslate"><span class="pre">.zarr</span></code>, rehydrating its state for postprocessing or plotting.</p></li>
+</ul>
+</section>
+<section id="reconstruction-setup">
+<h2 id="reconstruction-setup">5) Reconstruction setup<a class="headerlink" href="#reconstruction-setup" title="Link to this heading">¶</a></h2>
+<p>When you call <code class="docutils literal notranslate"><span class="pre">postprocess(capacity,</span> <span class="pre">max_recursion)</span></code>, where <code class="docutils literal notranslate"><span class="pre">capacity</span></code> is the max active qubits allowed at any step, and <code class="docutils literal notranslate"><span class="pre">max_recursion</span></code> is the max depth of recursive refinement:</p>
+<ul class="simple">
+<li><p>It computes the flow structure across all subcircuits, and maps incoming positions to outgoing positions in a flattened layout used during aggregation.</p></li>
+<li><p>Builds <code class="docutils literal notranslate"><span class="pre">self.dynamic_definition</span> <span class="pre">=</span> <span class="pre">DynamicDefinition(num_qubits,</span> <span class="pre">capacity,</span> <span class="pre">prob_fn=self.compute_probabilities)</span></code></p></li>
+<li><p>Calls <code class="docutils literal notranslate"><span class="pre">self.dynamic_definition.run(max_recursion=...)</span></code></p>
+<ul>
+<li><p>This triggers the first call to <code class="docutils literal notranslate"><span class="pre">compute_probabilities(qubit_spec=None)</span></code> for an all-active (up to the desired capacity) initial qubit spec, and then recursive bin refinement, calling back to <code class="docutils literal notranslate"><span class="pre">compute_probabilities</span></code> with refined qubit specs in each recursion.</p></li>
+</ul>
+</li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">What <em>qubit_spec</em> means here</p>
+<p>The term <em>qubit_spec</em> is used throughout the codebase. This is a string over <code class="docutils literal notranslate"><span class="pre">{"A","M","0","1"}</span></code> across all effective qubits (in an internal, consistent order). <code class="docutils literal notranslate"><span class="pre">"A"</span></code> keeps a qubit active (resolved), <code class="docutils literal notranslate"><span class="pre">"M"</span></code> allows merging (marginalizing), and “0”/”1” fixes it to that state.</p>
+</div>
+</section>
+<section id="computing-probabilities-mpi-aware-core">
+<h2 id="computing-probabilities-mpi-aware-core">6) Computing probabilities (MPI-aware core)<a class="headerlink" href="#computing-probabilities-mpi-aware-core" title="Link to this heading">¶</a></h2>
+<p>Method: <code class="docutils literal notranslate"><span class="pre">compute_probabilities(qubit_spec=None)</span></code></p>
+<ul class="simple">
+<li><p>This method breaks down the problem:</p>
+<ul>
+<li><p>Partitions the global <code class="docutils literal notranslate"><span class="pre">qubit_spec</span></code> into per-subcircuit qubit spec.</p></li>
+<li><p>Builds a local <code class="docutils literal notranslate"><span class="pre">subcircuit_packed_probs</span></code> dictionary for all subcircuits, applying any merging implied by the per-subcircuit qubit spec.</p></li>
+<li><p>Defines the total “work” as the Cartesian product across all input cut-edge Pauli choices: <code class="docutils literal notranslate"><span class="pre">total_work</span> <span class="pre">=</span> <span class="pre">n_basis</span> <span class="pre">**</span> <span class="pre">sum(self.in_degrees)</span></code> with <code class="docutils literal notranslate"><span class="pre">n_basis=4</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Parallel execution:</p>
+<ul>
+<li><p>Rank 0 operates as a scheduler; workers (ranks &gt; 0) receive chunks of initialization tuples and return partial probability vectors.</p></li>
+<li><p>Scheduler (Rank 0):</p>
+<ul>
+<li><p>Slices the iterator of work into balanced chunks.</p></li>
+<li><p>Sends <code class="docutils literal notranslate"><span class="pre">[active_qubits,</span> <span class="pre">subcircuit_packed_probs,</span> <span class="pre">work_chunk]</span></code> to each worker with <code class="docutils literal notranslate"><span class="pre">MPI_WORK_TAG</span></code>.</p></li>
+<li><p>Receives partial results with <code class="docutils literal notranslate"><span class="pre">MPI_RESULT_TAG</span></code> and accumulates them.</p></li>
+<li><p>Sends <code class="docutils literal notranslate"><span class="pre">MPI_DONE_TAG</span></code> to each worker when no more chunks remain.</p></li>
+</ul>
+</li>
+<li><p>Worker (Rank &gt; 0):</p>
+<ul>
+<li><p>Receives a message; if <code class="docutils literal notranslate"><span class="pre">MPI_DONE_TAG</span></code>, breaks; otherwise, calls <code class="docutils literal notranslate"><span class="pre">_compute_probabilities(...)</span></code> on the chunk and replies with the partial result.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="important admonition">
+<p class="admonition-title">_compute_probabilities</p>
+<p>Method: <code class="docutils literal notranslate"><span class="pre">_compute_probabilities(active_qubits,</span> <span class="pre">subcircuit_packed_probs,</span> <span class="pre">initializations_list,</span> <span class="pre">...)</span></code></p>
+<ul class="simple">
+<li><p><strong>This is the core GPU-aware computational kernel</strong>.</p></li>
+<li><p>This step computes the partial probability vector for a given list of initialization tuples.</p></li>
+<li><p>For each initialization tuple, it constructs the per-subcircuit index <code class="docutils literal notranslate"><span class="pre">(init_slice,</span> <span class="pre">meas_slice,</span> <span class="pre">Ellipsis)</span></code> to pull the probability vector from <code class="docutils literal notranslate"><span class="pre">subcircuit_packed_probs</span></code>.</p></li>
+<li><p>Finally, it combines subcircuits left-to-right using <code class="docutils literal notranslate"><span class="pre">vector_kron</span></code> (a Python wrapper over a CUDA kernel) to form a single <code class="docutils literal notranslate"><span class="pre">2^active_qubits</span></code> vector.</p></li>
+</ul>
+</div>
+<p>At the end:</p>
+<ul class="simple">
+<li><p>Rank 0 divides by <code class="docutils literal notranslate"><span class="pre">2**self.num_cuts</span></code> (normalization of the stitched distribution), broadcasts to all ranks, and returns the vector.</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">Why this design</p>
+<ul class="simple">
+<li><p>A single call to <code class="docutils literal notranslate"><span class="pre">compute_probabilities</span></code> can be very expensive; distributing embarrassingly parallel initialization work scales linearly across ranks.</p></li>
+<li><p>Since each rank calls a CUDA kernel, this step can utilize multiple GPUs across nodes.</p></li>
+</ul>
+</div>
+</section>
+<section id="plotting-and-verifying-probabilities">
+<h2 id="plotting-and-verifying-probabilities">7) Plotting and verifying probabilities<a class="headerlink" href="#plotting-and-verifying-probabilities" title="Link to this heading">¶</a></h2>
+<p>Method: <code class="docutils literal notranslate"><span class="pre">get_probabilities(full_states=None,</span> <span class="pre">quasi=False)</span></code></p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">full_states</span></code> is <code class="docutils literal notranslate"><span class="pre">None</span></code>, creates all integers <code class="docutils literal notranslate"><span class="pre">[0,</span> <span class="pre">...,</span> <span class="pre">2^n</span> <span class="pre">-</span> <span class="pre">1]</span></code>.</p></li>
+<li><p>Computes the reconstruction bit permutation:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">perm</span> <span class="pre">=</span> <span class="pre">self.reconstruction_flat_qubit_order()</span></code></p>
+<ul>
+<li><p>Internally:</p>
+<ul>
+<li><p>Builds a flat list (by greedy subcircuit order) of original qubit indices that the downstream reconstruction yields.</p></li>
+<li><p>Converts it into a permutation vector so we can permute bits correctly. The permuted indices are stored as <code class="docutils literal notranslate"><span class="pre">permuted_indices</span></code>.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Calls <code class="docutils literal notranslate"><span class="pre">self.dynamic_definition.probabilities(full_states=permuted_indices)</span></code> to sum all bins into requested output indices; optionally converts quasi to real probabilities.</p></li>
+</ul>
+<p>Method: <code class="docutils literal notranslate"><span class="pre">verify(probabilities,</span> <span class="pre">backend="statevector_simulator",</span> <span class="pre">atol=1e-10,</span> <span class="pre">raise_error=True)</span></code></p>
+<ul class="simple">
+<li><p>Computes ground truth via <code class="docutils literal notranslate"><span class="pre">evaluate_circ(self.circuit,</span> <span class="pre">backend)</span></code> and returns a normalized MSE error. Raises an Exception (optional) if error is above tolerance.</p></li>
+</ul>
+<p>Method: <code class="docutils literal notranslate"><span class="pre">plot(plot_ground_truth=False,</span> <span class="pre">full_states=None,</span> <span class="pre">output_file=None)</span></code></p>
+<ul class="simple">
+<li><p>Plots reconstructed probabilities, optionally overlaying ground truth.</p></li>
+</ul>
+<div class="note admonition">
+<p class="admonition-title">Note</p>
+<p>Verifying probabilities is only possible for small circuits where the full statevector can be simulated. Plotting is possible for larger circuits, as long as <code class="docutils literal notranslate"><span class="pre">full_states</span></code> is judiciously selected and not too large.</p>
+</div>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="notebooks/05_zarr.html" title="CutQC2 zarr file format"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> "Previous" </span> CutQC2 zarr file format </span>
+              </div>
+            </a>
+          
+          
+            <a href="faqs.html" title="FAQs"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> "Next" </span> FAQs </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2025, Princeton University.
+              
+          </div>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <script src="_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

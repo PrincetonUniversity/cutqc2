@@ -13,6 +13,7 @@ By combining classical and quantum computation, CutQC2 significantly expands the
 
    installation
    tutorials
+   cut_circuit_walkthrough
    faqs
    deployment
    contributing
