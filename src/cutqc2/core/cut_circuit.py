@@ -25,7 +25,7 @@ from cutqc2.core.utils import (
     attribute_shots,
     chunked,
     merge_prob_vector,
-    permute_bits_vectorized,
+    permute_bits,
     run_subcircuit_instances,
 )
 from cutqc2.cupy import vector_kron
@@ -1132,7 +1132,7 @@ class CutCircuit:
             full_states = np.arange(2**self.circuit.num_qubits, dtype="int64")
 
         perm = self.reconstruction_flat_qubit_order()
-        permuted_indices = permute_bits_vectorized(
+        permuted_indices = permute_bits(
             arr=full_states,
             permutation=perm,
             n_bits=self.circuit.num_qubits,
