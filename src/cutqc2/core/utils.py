@@ -191,8 +191,11 @@ def unmerge_prob_vector(
 def run_subcircuit_instances(
     subcircuit, subcircuit_instance_init_meas, backend: str = "statevector_simulator"
 ):
+    total = len(subcircuit_instance_init_meas)
     subcircuit_measured_probs = {}
-    for instance_init_meas in subcircuit_instance_init_meas:
+    for i, instance_init_meas in enumerate(subcircuit_instance_init_meas):
+        logger.info(f"Running subcircuit instance {i + 1}/{total}")
+
         if "Z" in instance_init_meas[1]:
             continue
         subcircuit_instance = modify_subcircuit_instance(
