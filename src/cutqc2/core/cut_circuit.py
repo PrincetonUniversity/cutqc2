@@ -723,6 +723,7 @@ class CutCircuit:
         self,
         subcircuits: list[int] | None = None,
         backend: str = "statevector_simulator",
+        max_workers: int = 1,
     ):
         """
         Execute all subcircuits on a backend and collect probability vectors.
@@ -733,6 +734,8 @@ class CutCircuit:
             Subcircuit indices to run; defaults to all.
         backend
             Backend name (e.g., "statevector_simulator").
+        max_workers
+            Maximum parallel workers for running subcircuits.
         """
         subcircuits = subcircuits or range(len(self))
         for subcircuit in subcircuits:
@@ -741,6 +744,7 @@ class CutCircuit:
                 subcircuit=self[subcircuit],
                 subcircuit_instance_init_meas=self.subcircuit_instances[subcircuit],
                 backend=backend,
+                max_workers=max_workers,
             )
             self.subcircuit_entry_probs[subcircuit] = attribute_shots(
                 subcircuit_measured_probs=subcircuit_measured_probs,
