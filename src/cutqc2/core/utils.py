@@ -2,6 +2,7 @@ import copy
 import itertools
 import logging
 import warnings
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import numpy as np
 from qiskit.circuit.library.standard_gates import HGate, SdgGate, SGate, XGate
@@ -193,11 +194,13 @@ def run_subcircuit_instances(
 ):
     total = len(subcircuit_instance_init_meas)
     subcircuit_measured_probs = {}
-    for i, instance_init_meas in enumerate(subcircuit_instance_init_meas):
-        logger.info(f"Running subcircuit instance {i + 1}/{total}")
 
+    def process_instance(i, instance_init_meas):
+        logger.info(f"Running subcircuit instance {i + 1}/{total}")
+        results = {}
         if "Z" in instance_init_meas[1]:
-            continue
+            return results
+
         subcircuit_instance = modify_subcircuit_instance(
             subcircuit=subcircuit,
             init=instance_init_meas[0],
@@ -214,7 +217,17 @@ def run_subcircuit_instances(
             measured_prob = measure_prob(
                 unmeasured_prob=subcircuit_inst_prob, meas=meas
             )
-            subcircuit_measured_probs[(instance_init_meas[0], meas)] = measured_prob
+            results[(instance_init_meas[0], meas)] = measured_prob
+        return results
+
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        futures = [
+            executor.submit(process_instance, i, instance_init_meas)
+            for i, instance_init_meas in enumerate(subcircuit_instance_init_meas)
+        ]
+        for future in as_completed(futures):
+            subcircuit_measured_probs.update(future.result())
+
     return subcircuit_measured_probs
 
 
