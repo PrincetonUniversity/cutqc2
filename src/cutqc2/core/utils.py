@@ -203,13 +203,14 @@ def run_subcircuit_instances(
             init=instance_init_meas[0],
             meas=instance_init_meas[1],
         )
-
         subcircuit_inst_prob = evaluate_circ(
             circuit=subcircuit_instance, backend=backend
         )
 
         mutated_meas = mutate_measurement_basis(meas=instance_init_meas[1])
-        for meas in mutated_meas:
+        total_mutations = len(mutated_meas)
+        for j, meas in enumerate(mutated_meas):
+            logger.info(f"{j + 1}/{total_mutations}")
             measured_prob = measure_prob(
                 unmeasured_prob=subcircuit_inst_prob, meas=meas
             )
@@ -303,7 +304,7 @@ def measure_prob(unmeasured_prob, meas):
     if meas.count("comp") == len(meas) or type(unmeasured_prob) is float:
         return unmeasured_prob
     measured_prob = np.zeros(int(2 ** meas.count("comp")))
-    # print('Measuring in',meas)
+
     for full_state, p in enumerate(unmeasured_prob):
         sigma, effective_state = measure_state(full_state=full_state, meas=meas)
         measured_prob[effective_state] += sigma * p
