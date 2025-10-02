@@ -22,6 +22,7 @@ By combining classical and quantum computation, CutQC2 significantly expands the
    :caption: Advanced:
 
    cut_circuit_walkthrough
+   advanced_circuits
    deployment
    contributing
 
