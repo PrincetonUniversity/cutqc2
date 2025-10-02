@@ -59,11 +59,11 @@ Circuit to perform the Quantum Fourier Transform (or its inverse) as described i
 
 ### `aqft`
 
-An *approximate* QFT that ignores controlled-phase rotations where the angle is beneath a threshold. This is discussed in more detail in https://arxiv.org/abs/quant-ph/9601018 or https://arxiv.org/abs/quant-ph/0403071.
+An *approximate* QFT that ignores controlled-phase rotations where the angle is beneath a threshold. This is discussed in more detail in [https://arxiv.org/abs/quant-ph/9601018](https://arxiv.org/abs/quant-ph/9601018) or [https://arxiv.org/abs/quant-ph/0403071](https://arxiv.org/abs/quant-ph/0403071).
 
 ### `adder`
 
-An n-bit ripple-carry adder. Based on the specification given in Cuccaro, Draper, Kutin, Moulton. (https://arxiv.org/abs/quant-ph/0410184v1)
+An n-bit ripple-carry adder. Based on the specification given in Cuccaro, Draper, Kutin, Moulton. ([https://arxiv.org/abs/quant-ph/0410184v1](https://arxiv.org/abs/quant-ph/0410184v1))
 
 ### `regular`
 
