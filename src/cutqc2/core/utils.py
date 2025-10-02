@@ -2,8 +2,11 @@ import copy
 import itertools
 import logging
 import warnings
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from multiprocessing import cpu_count
 
 import numpy as np
+from qiskit import QuantumCircuit
 from qiskit.circuit.library.standard_gates import HGate, SdgGate, SGate, XGate
 from qiskit.converters import circuit_to_dag, dag_to_circuit
 
@@ -23,17 +26,7 @@ def chunked(gen, chunk_size):
         yield chunk
 
 
-def permute_bits(n: int, permutation: list[int]) -> int:
-    n_bits = len(permutation)
-    binary_n = f"{n:0{n_bits}b}"
-    # Get bit i from position permutation[i]
-    binary_n_permuted = "".join(binary_n[permutation[i]] for i in range(n_bits))
-    return int(binary_n_permuted, 2)
-
-
-def permute_bits_vectorized(
-    arr: np.ndarray, permutation: np.ndarray, n_bits: int
-) -> np.ndarray:
+def permute_bits(arr: np.ndarray, permutation: np.ndarray, n_bits: int) -> np.ndarray:
     n_bits = len(permutation)
     result = np.zeros_like(arr)
 
@@ -189,34 +182,109 @@ def unmerge_prob_vector(
 
 
 def run_subcircuit_instances(
-    subcircuit, subcircuit_instance_init_meas, backend: str = "statevector_simulator"
-):
+    subcircuit: QuantumCircuit,
+    subcircuit_instance_init_meas: list[tuple[tuple[str], tuple[str]]],
+    backend: str = "statevector_simulator",
+    max_workers: int = 1,
+) -> dict[tuple[tuple[str], tuple[str]], np.ndarray | float]:
+    """
+    Evaluate a set of subcircuit instances under different initializations and
+    measurement bases, returning their measured probability distributions.
+
+    The function iterates over provided `(init, meas)` specifications, creates a
+    runnable subcircuit instance via `modify_subcircuit_instance`, simulates it
+    using `evaluate_circ`, and then projects the resulting state/probabilities
+    into the requested measurement bases. If a measurement specification
+    contains "Z", that instance is skipped. Any identity basis entries "I" are
+    expanded into both "I" and "Z" via `mutate_measurement_basis` and each
+    mutation is measured separately.
+
+    Parameters
+    ----------
+    subcircuit : QuantumCircuit
+        Base subcircuit to instantiate and simulate.
+    subcircuit_instance_init_meas : list[tuple[tuple[str], tuple[str]]]
+        A list of `(init, meas)` pairs, where:
+        - `init` is a tuple of state labels per qubit (e.g., "zero", "one",
+          "plus", "minus", "plusI", "minusI").
+        - `meas` is a tuple of measurement basis labels per qubit (e.g.,
+          "comp", "X", "Y", "I"). If any entry is "Z", the instance is
+          skipped.
+    backend : str, optional
+        Backend identifier passed to `evaluate_circ` (default is
+        "statevector_simulator").
+    max_workers : int, optional
+        Maximum number of parallel threads to use (default is 1, i.e., no
+        parallelism).
+
+    Returns
+    -------
+    dict[tuple[tuple[str], tuple[str]], np.ndarray | float]
+        A mapping from `(init, meas)` to the measured probability vector (or a
+        scalar if the circuit evaluates to a single probability). The `meas`
+        key in the mapping reflects any mutated basis produced by
+        `mutate_measurement_basis`.
+    """
+    total = len(subcircuit_instance_init_meas)
     subcircuit_measured_probs = {}
-    for instance_init_meas in subcircuit_instance_init_meas:
+
+    def process_instance(i, instance_init_meas):
+        logger.info(f"Running subcircuit instance {i + 1}/{total}")
+        results = {}
         if "Z" in instance_init_meas[1]:
-            continue
+            return results
+
         subcircuit_instance = modify_subcircuit_instance(
             subcircuit=subcircuit,
             init=instance_init_meas[0],
             meas=instance_init_meas[1],
         )
-
         subcircuit_inst_prob = evaluate_circ(
             circuit=subcircuit_instance, backend=backend
         )
 
         mutated_meas = mutate_measurement_basis(meas=instance_init_meas[1])
-        for meas in mutated_meas:
+        total_mutations = len(mutated_meas)
+        for j, meas in enumerate(mutated_meas):
+            logger.info(f"{j + 1}/{total_mutations}")
             measured_prob = measure_prob(
                 unmeasured_prob=subcircuit_inst_prob, meas=meas
             )
-            subcircuit_measured_probs[(instance_init_meas[0], meas)] = measured_prob
+            results[(instance_init_meas[0], meas)] = measured_prob
+        return results
+
+    max_workers = min(max_workers, cpu_count(), total)
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [
+            executor.submit(process_instance, i, instance_init_meas)
+            for i, instance_init_meas in enumerate(subcircuit_instance_init_meas)
+        ]
+        for future in as_completed(futures):
+            subcircuit_measured_probs.update(future.result())
+
     return subcircuit_measured_probs
 
 
-def mutate_measurement_basis(meas):
+def mutate_measurement_basis(meas: tuple[str]) -> list[tuple[str]]:
     """
-    I and Z measurement basis correspond to the same logical circuit
+    Expand a measurement-basis specification by replacing identity entries
+    with both identity and Z bases.
+
+    If all entries are non-identity (no "I" present), the function returns a
+    singleton list containing the original `meas`. Otherwise, for each qubit
+    position with basis "I", it generates two alternatives: "I" and "Z". The
+    Cartesian product across positions yields all mutated basis tuples.
+
+    Parameters
+    ----------
+    meas : Sequence[str]
+        Per-qubit measurement bases (e.g., "comp", "X", "Y", "I").
+
+    Returns
+    -------
+    list[tuple[str, ...]]
+        All mutated measurement-basis tuples. If no mutation is needed, this is
+        `[meas]`.
     """
     if all(x != "I" for x in meas):
         return [meas]
@@ -229,53 +297,79 @@ def mutate_measurement_basis(meas):
     return list(itertools.product(*mutated_meas))
 
 
-def modify_subcircuit_instance(subcircuit, init, meas):  # noqa: PLR0912
+def modify_subcircuit_instance(  # noqa: PLR0912
+    subcircuit: QuantumCircuit, init: tuple[str], meas: tuple[str]
+) -> QuantumCircuit:
     """
-    Modify the different init, meas for a given subcircuit
-    Returns:
-    Modified subcircuit_instance
-    List of mutated measurements
+    Create a runnable instance of `subcircuit` with specified initialization and
+    measurement-basis rotations applied.
+
+    For each qubit i, the corresponding entry in `init` determines the state
+    preparation inserted at the front of the circuit DAG.
+
+    For each qubit i, the corresponding entry in `meas` determines a basis
+    rotation appended to the back of the circuit so that subsequent computational
+    basis measurement is equivalent to measuring in that basis.
+
+    Parameters
+    ----------
+    subcircuit : qiskit.QuantumCircuit
+        Base subcircuit to modify.
+    init : Sequence[str]
+        Per-qubit initialization labels. Length must equal the number of qubits
+        in `subcircuit`.
+    meas : Sequence[str]
+        Per-qubit measurement basis labels. Length must equal the number of
+        qubits in `subcircuit`.
+
+    Returns
+    -------
+    qiskit.QuantumCircuit
+        A new circuit with the requested preparations and basis rotations
+        applied.
     """
     subcircuit_dag = circuit_to_dag(subcircuit)
     subcircuit_instance_dag = copy.deepcopy(subcircuit_dag)
     for i, x in enumerate(init):
         q = subcircuit.qubits[i]
-        if x == "zero":
-            continue
-        if x == "one":
-            subcircuit_instance_dag.apply_operation_front(
-                op=XGate(), qargs=[q], cargs=[]
-            )
-        elif x == "plus":
-            subcircuit_instance_dag.apply_operation_front(
-                op=HGate(), qargs=[q], cargs=[]
-            )
-        elif x == "minus":
-            subcircuit_instance_dag.apply_operation_front(
-                op=HGate(), qargs=[q], cargs=[]
-            )
-            subcircuit_instance_dag.apply_operation_front(
-                op=XGate(), qargs=[q], cargs=[]
-            )
-        elif x == "plusI":
-            subcircuit_instance_dag.apply_operation_front(
-                op=SGate(), qargs=[q], cargs=[]
-            )
-            subcircuit_instance_dag.apply_operation_front(
-                op=HGate(), qargs=[q], cargs=[]
-            )
-        elif x == "minusI":
-            subcircuit_instance_dag.apply_operation_front(
-                op=SGate(), qargs=[q], cargs=[]
-            )
-            subcircuit_instance_dag.apply_operation_front(
-                op=HGate(), qargs=[q], cargs=[]
-            )
-            subcircuit_instance_dag.apply_operation_front(
-                op=XGate(), qargs=[q], cargs=[]
-            )
-        else:
-            raise Exception("Illegal initialization :", x)
+        match x:
+            case "zero":
+                continue
+            case "one":
+                subcircuit_instance_dag.apply_operation_front(
+                    op=XGate(), qargs=[q], cargs=[]
+                )
+            case "plus":
+                subcircuit_instance_dag.apply_operation_front(
+                    op=HGate(), qargs=[q], cargs=[]
+                )
+            case "minus":
+                subcircuit_instance_dag.apply_operation_front(
+                    op=HGate(), qargs=[q], cargs=[]
+                )
+                subcircuit_instance_dag.apply_operation_front(
+                    op=XGate(), qargs=[q], cargs=[]
+                )
+            case "plusI":
+                subcircuit_instance_dag.apply_operation_front(
+                    op=SGate(), qargs=[q], cargs=[]
+                )
+                subcircuit_instance_dag.apply_operation_front(
+                    op=HGate(), qargs=[q], cargs=[]
+                )
+            case "minusI":
+                subcircuit_instance_dag.apply_operation_front(
+                    op=SGate(), qargs=[q], cargs=[]
+                )
+                subcircuit_instance_dag.apply_operation_front(
+                    op=HGate(), qargs=[q], cargs=[]
+                )
+                subcircuit_instance_dag.apply_operation_front(
+                    op=XGate(), qargs=[q], cargs=[]
+                )
+            case _:
+                raise Exception("Illegal initialization :", x)
+
     for i, x in enumerate(meas):
         q = subcircuit.qubits[i]
         if x in ("I", "comp"):
@@ -296,23 +390,64 @@ def modify_subcircuit_instance(subcircuit, init, meas):  # noqa: PLR0912
     return dag_to_circuit(subcircuit_instance_dag)
 
 
-def measure_prob(unmeasured_prob, meas):
+def measure_prob(unmeasured_prob: np.ndarray, meas: tuple[str]) -> np.ndarray:
+    """
+    Project a probability vector from mixed measurement bases onto the
+    computational subspace defined by entries equal to "comp".
+
+    If all bases are computational (or `unmeasured_prob` is a scalar), the input
+    is returned unchanged. Otherwise, for each full state index, the state is
+    mapped to an effective computational-basis index using `measure_state` and
+    accumulated with the appropriate sign.
+
+    Parameters
+    ----------
+    unmeasured_prob : np.ndarray | float
+        Probability vector over all 2^n basis states (MSB-to-LSB convention) or
+        a scalar probability.
+    meas : Sequence[str]
+        Per-qubit measurement basis labels (e.g., "comp", "X", "Y", "I").
+
+    Returns
+    -------
+    np.ndarray | float
+        Measured probability vector over 2^k states, where k is the number of
+        entries equal to "comp" in `meas`. If the input is a scalar or `meas`
+        is entirely computational, the input is returned.
+    """
     if meas.count("comp") == len(meas) or type(unmeasured_prob) is float:
         return unmeasured_prob
     measured_prob = np.zeros(int(2 ** meas.count("comp")))
-    # print('Measuring in',meas)
+
     for full_state, p in enumerate(unmeasured_prob):
         sigma, effective_state = measure_state(full_state=full_state, meas=meas)
         measured_prob[effective_state] += sigma * p
     return measured_prob
 
 
-def measure_state(full_state, meas):
+def measure_state(full_state: int, meas: tuple[str]) -> tuple[int, int]:
     """
-    Compute the corresponding effective_state for the given full_state
-    Measured in basis `meas`
-    Returns sigma (int), effective_state (int)
-    where sigma = +-1
+    Map a full-basis state index to an effective computational-basis index under
+    mixed-basis measurement, and compute the accumulated sign.
+
+    The sign flips (sigma *= -1) whenever the measured bit is 1 and the basis
+    is not in {"I", "comp"}. Bits with basis "comp" contribute to the
+    effective computational index; bits with bases in {"I", "X", "Y"} are
+    marginalized out from the index (but may affect sign).
+
+    Parameters
+    ----------
+    full_state : int
+        Index of the n-bit computational basis state.
+    meas : Sequence[str]
+        Per-qubit measurement bases (length n).
+
+    Returns
+    -------
+    tuple[int, int]
+        A pair (sigma, effective_state) where sigma in {+1, -1} and
+        effective_state is the integer index in the compressed space spanned by
+        qubits with basis "comp".
     """
     bin_full_state = bin(full_state)[2:].zfill(len(meas))
     sigma = 1
@@ -323,14 +458,33 @@ def measure_state(full_state, meas):
         if meas_basis == "comp":
             bin_effective_state += meas_bit
     effective_state = int(bin_effective_state, 2) if bin_effective_state != "" else 0
-    # print('bin_full_state = %s --> %d * %s (%d)'%(bin_full_state,sigma,bin_effective_state,effective_state))
     return sigma, effective_state
 
 
-def attribute_shots(subcircuit_measured_probs, subcircuit_entries):
+def attribute_shots(
+    subcircuit_measured_probs: dict[tuple[tuple[str], tuple[str]], np.ndarray | float],
+    subcircuit_entries,
+) -> dict[tuple[tuple[str], tuple[str]], np.ndarray | float]:
     """
-    Attribute the subcircuit_instance shots into respective subcircuit entries
-    subcircuit_entry_probs[entry_init, entry_meas] = entry_prob
+    Aggregate measured probabilities for symbolic subcircuit entries by linear
+    combination of their contributing instances.
+
+    Each entry key maps to a list of terms `(coefficient, instance_key)`. The
+    function forms `entry_prob = sum_i coefficient_i *
+    subcircuit_measured_probs[instance_key_i]` for every entry.
+
+    Parameters
+    ----------
+    subcircuit_measured_probs : dict
+        Mapping from `(init, meas)` instance keys to measured probability vectors
+        (or scalars).
+    subcircuit_entries : dict
+        Mapping from entry keys to a list of `(coefficient, instance_key)` terms.
+
+    Returns
+    -------
+    dict
+        Mapping from entry keys to aggregated probability vectors (or scalars).
     """
     subcircuit_entry_probs = {}
     for subcircuit_entry_init_meas in subcircuit_entries:

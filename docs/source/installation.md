@@ -107,14 +107,21 @@ you will want to use the exact dependency versions that we have previously teste
 
 If you want to utilize circuit-cutting in `cutqc2`, you will need to install [Gurobi](https://www.gurobi.com/solutions/licensing/) and obtain a license.
 Small circuits will likely work without a license, but a valid license is needed for cutting moderate to large-sized circuits. Once you get an appropriate
-license, you will likely need to set the `GRB_LICENSE_FILE` environment variable. Alternately, you can use the following environment variables, which we
-use in our CI setup:
+license, you will likely need to set the `GRB_LICENSE_FILE` environment variable.
 
-```
-GUROBI_WLSACCESSID
-GUROBI_LICENSEID
-GUROBI_WLSSECRET
-```
+The following setup works on our clusters, and should work on most systems, Mac or Linux.
+
+#### Gurobi Named-User Academic License Setup
+
+  - Get License Key from Gurobi Portal
+    - Go to [https://portal.gurobi.com/](https://portal.gurobi.com/) and log in.
+    - Navigate to Licenses → Generate Now under "Named-User Academic"
+    - Copy the license key
+  - Install License Tools on your cluster
+    - Download `licensetools12.0.3_linux64.tar.gz` (or a similarly named file, depending on your operating system) from [Gurobi support](https://support.gurobi.com/hc/en-us/articles/360059842732-How-do-I-set-up-a-license-without-installing-the-full-Gurobi-package).
+    - Upload to cluster and extract - `tar -xzf licensetools12.0.3_linux64.tar.gz`.
+  - Run `grbgetkey` - `/path/to/extracted/files/grbgetkey <license-key>`
+  - [Test the package](#test-the-package) to ensure Gurobi is working correctly.
 
 ### MPI
 

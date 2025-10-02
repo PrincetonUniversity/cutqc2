@@ -25,7 +25,7 @@ from cutqc2.core.utils import (
     attribute_shots,
     chunked,
     merge_prob_vector,
-    permute_bits_vectorized,
+    permute_bits,
     run_subcircuit_instances,
 )
 from cutqc2.cupy import vector_kron
@@ -723,6 +723,7 @@ class CutCircuit:
         self,
         subcircuits: list[int] | None = None,
         backend: str = "statevector_simulator",
+        max_workers: int = 1,
     ):
         """
         Execute all subcircuits on a backend and collect probability vectors.
@@ -733,6 +734,8 @@ class CutCircuit:
             Subcircuit indices to run; defaults to all.
         backend
             Backend name (e.g., "statevector_simulator").
+        max_workers
+            Maximum parallel workers for running subcircuits.
         """
         subcircuits = subcircuits or range(len(self))
         for subcircuit in subcircuits:
@@ -741,6 +744,7 @@ class CutCircuit:
                 subcircuit=self[subcircuit],
                 subcircuit_instance_init_meas=self.subcircuit_instances[subcircuit],
                 backend=backend,
+                max_workers=max_workers,
             )
             self.subcircuit_entry_probs[subcircuit] = attribute_shots(
                 subcircuit_measured_probs=subcircuit_measured_probs,
@@ -1132,7 +1136,7 @@ class CutCircuit:
             full_states = np.arange(2**self.circuit.num_qubits, dtype="int64")
 
         perm = self.reconstruction_flat_qubit_order()
-        permuted_indices = permute_bits_vectorized(
+        permuted_indices = permute_bits(
             arr=full_states,
             permutation=perm,
             n_bits=self.circuit.num_qubits,

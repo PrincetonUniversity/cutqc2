@@ -67,7 +67,7 @@ def construct_qaoa_plus(P, G, params, reg_name, barriers=False, measure=False):
     return circ
 
 
-def generate_circ(num_qubits, depth, circuit_type, reg_name, connected_only, seed):
+def generate_circ(num_qubits, depth, circuit_type, reg_name="q", connected_only=True, seed=None):
     random.seed(seed)
     full_circ = None
     num_trials = 100
