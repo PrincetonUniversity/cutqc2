@@ -197,7 +197,11 @@
         </li>
         <li class="md-nav__item"><a href="#additional-installation-requirements" class="md-nav__link">Additional installation requirements</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#gurobi" class="md-nav__link">Gurobi</a>
+        <li class="md-nav__item"><a href="#gurobi" class="md-nav__link">Gurobi</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#gurobi-named-user-academic-license-setup" class="md-nav__link">Gurobi Named-User Academic License Setup</a>
+        </li></ul>
+            </nav>
         </li>
         <li class="md-nav__item"><a href="#mpi" class="md-nav__link">MPI</a>
         </li></ul>
@@ -333,13 +337,28 @@ you will want to use the exact dependency versions that we have previously teste
 <h3 id="gurobi">Gurobi<a class="headerlink" href="#gurobi" title="Link to this heading">¶</a></h3>
 <p>If you want to utilize circuit-cutting in <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code>, you will need to install <a class="reference external" href="https://www.gurobi.com/solutions/licensing/">Gurobi</a> and obtain a license.
 Small circuits will likely work without a license, but a valid license is needed for cutting moderate to large-sized circuits. Once you get an appropriate
-license, you will likely need to set the <code class="docutils literal notranslate"><span class="pre">GRB_LICENSE_FILE</span></code> environment variable. Alternately, you can use the following environment variables, which we
-use in our CI setup:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">GUROBI_WLSACCESSID</span>
-<span class="n">GUROBI_LICENSEID</span>
-<span class="n">GUROBI_WLSSECRET</span>
-</pre></div>
-</div>
+license, you will likely need to set the <code class="docutils literal notranslate"><span class="pre">GRB_LICENSE_FILE</span></code> environment variable.</p>
+<p>The following setup works on our clusters, and should work on most systems, Mac or Linux.</p>
+<section id="gurobi-named-user-academic-license-setup">
+<h4 id="gurobi-named-user-academic-license-setup">Gurobi Named-User Academic License Setup<a class="headerlink" href="#gurobi-named-user-academic-license-setup" title="Link to this heading">¶</a></h4>
+<ul class="simple">
+<li><p>Get License Key from Gurobi Portal</p>
+<ul>
+<li><p>Go to <a class="reference external" href="https://portal.gurobi.com/">https://portal.gurobi.com/</a> and log in.</p></li>
+<li><p>Navigate to Licenses → Generate Now under “Named-User Academic”</p></li>
+<li><p>Copy the license key</p></li>
+</ul>
+</li>
+<li><p>Install License Tools on your cluster</p>
+<ul>
+<li><p>Download <code class="docutils literal notranslate"><span class="pre">licensetools12.0.3_linux64.tar.gz</span></code> (or a similarly named file, depending on your operating system) from <a class="reference external" href="https://support.gurobi.com/hc/en-us/articles/360059842732-How-do-I-set-up-a-license-without-installing-the-full-Gurobi-package">Gurobi support</a>.</p></li>
+<li><p>Upload to cluster and extract - <code class="docutils literal notranslate"><span class="pre">tar</span> <span class="pre">-xzf</span> <span class="pre">licensetools12.0.3_linux64.tar.gz</span></code>.</p></li>
+</ul>
+</li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">grbgetkey</span></code> - <code class="docutils literal notranslate"><span class="pre">/path/to/extracted/files/grbgetkey</span> <span class="pre">&lt;license-key&gt;</span></code></p></li>
+<li><p><a class="reference internal" href="#test-the-package"><span class="std std-ref">Test the package</span></a> to ensure Gurobi is working correctly.</p></li>
+</ul>
+</section>
 </section>
 <section id="mpi">
 <h3 id="mpi">MPI<a class="headerlink" href="#mpi" title="Link to this heading">¶</a></h3>
