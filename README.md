@@ -10,4 +10,6 @@ for the paper [CutQC: using small quantum computers for large quantum circuit ev
 CutQC2 cuts a large quantum circuits into smaller subcircuits to run on smaller quantum computers.
 By combining classical and quantum computation, CutQC2 significantly expands the computational reach beyond either platform alone.
 
+CutQc2 utilizes the [Qiskit](https://www.ibm.com/quantum/qiskit) library and is developed with `qiskit` version `2.1.2`, though we test our package against the latest versions of `qiskit`.
+
 Complete documentation of CutQC2 is available [here](https://princetonuniversity.github.io/cutqc2/).

@@ -121,6 +121,7 @@ pillow==11.3.0
 platformdirs==4.3.8
 plotly==6.3.0
 pluggy==1.6.0
+pooch==1.8.2
 pre-commit==4.3.0
 prometheus-client==0.22.1
 prompt-toolkit==3.0.51

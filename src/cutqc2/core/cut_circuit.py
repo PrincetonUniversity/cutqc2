@@ -201,8 +201,15 @@ class CutCircuit:
         from cutqc2.io.zarr import zarr_to_cut_circuit
 
         supported_formats = {".zarr": zarr_to_cut_circuit}
-        assert filepath.suffix in supported_formats, "Unsupported format"
-        return supported_formats[filepath.suffix](filepath, *args, **kwargs)
+
+        # Sometimes the "file" may have been downloaded using `cutqc2 download`,
+        # and has the ".unzip" suffix. Remove it before checking the format.
+        _filepath = (
+            filepath if filepath.suffix != ".unzip" else filepath.with_suffix("")
+        )
+        assert _filepath.suffix in supported_formats, "Unsupported format"
+
+        return supported_formats[_filepath.suffix](filepath, *args, **kwargs)
 
     @staticmethod
     def get_inter_wire_dag(circuit: QuantumCircuit) -> DAGCircuit:
@@ -1356,8 +1363,15 @@ class CutCircuit:
         from cutqc2.io.zarr import cut_circuit_to_zarr
 
         supported_formats = {".zarr": cut_circuit_to_zarr}
-        assert filepath.suffix in supported_formats, "Unsupported format"
-        return supported_formats[filepath.suffix](self, filepath, *args, **kwargs)
+
+        # Sometimes the "file" may have been downloaded using `cutqc2 download`,
+        # and has the ".unzip" suffix. Remove it before checking the format.
+        _filepath = (
+            filepath if filepath.suffix != ".unzip" else filepath.with_suffix("")
+        )
+        assert _filepath.suffix in supported_formats, "Unsupported format"
+
+        return supported_formats[_filepath.suffix](self, filepath, *args, **kwargs)
 
     def plot(
         self,

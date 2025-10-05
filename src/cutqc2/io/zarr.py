@@ -5,7 +5,7 @@ import numpy as np
 import zarr
 from qiskit.qasm3 import dumps, loads
 
-from cutqc2 import __version__
+from cutqc2 import __version__, config
 from cutqc2.core.cut_circuit import CutCircuit
 from cutqc2.core.dag import DAGEdge
 from cutqc2.core.dynamic_definition import Bin, DynamicDefinition
@@ -112,8 +112,16 @@ def cut_circuit_to_zarr(cut_circuit, filepath: str | Path) -> None:
 def zarr_to_cut_circuit(filepath: str | Path) -> CutCircuit:  # noqa: PLR0912
     if isinstance(filepath, str):
         filepath = Path(filepath)
+    if not filepath.exists():
+        raise FileNotFoundError(f"File not found: {filepath}")
 
     root = zarr.open(str(filepath))
+
+    version = root.attrs.get("version", "unknown")
+    if version != __version__ and config.core.string_file_versioning:
+        raise RuntimeError(
+            f"Version mismatch: file version {version}, code version {__version__}"
+        )
 
     qasm_str = root.attrs["circuit_qasm"]
     cut_circuit = CutCircuit(loads(qasm_str))

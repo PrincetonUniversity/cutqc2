@@ -4,7 +4,9 @@ import click
 import numpy as np
 from mpi4py import MPI
 
+from cutqc2 import __version__
 from cutqc2.core.cut_circuit import CutCircuit
+from cutqc2.data.ondemand import get_file, list_files
 
 logger = logging.getLogger("cutqc2")
 
@@ -15,7 +17,9 @@ if rank != 0:
 
 
 @click.group()
-def cli():
+@click.version_option(__version__)
+@click.pass_context
+def cli(ctx):
     pass
 
 
@@ -131,6 +135,27 @@ def plot(file, output_file, x_min, x_max, plot_ground_truth):
         full_states=full_states,
         output_file=output_file,
     )
+
+
+@cli.command()
+@click.option(
+    "--file", help="Named file/folder to download. Use '--list' to see options."
+)
+@click.option("--path", type=click.Path(), default=None, help="Path to download to.")
+@click.option(
+    "--list",
+    is_flag=True,
+    default=False,
+    help="List available files/folders to download.",
+)
+def download(file, path, list: bool = False):
+    if list:
+        [print(f) for f in list_files()]  # noqa: T201
+    elif not file:
+        raise click.UsageError("Must provide --file or --list")
+    else:
+        download_path = get_file(file, path=path, return_download_path=True)
+        print(f"Downloaded to: {download_path}")  # noqa: T201
 
 
 if __name__ == "__main__":

@@ -7,6 +7,8 @@ cutqc2 cut \
   --num-subcircuits 10 \
   --output-file bv_38qubit.zarr
 
+# Notice the `--save` to save the post-processed results back to the
+# `.zarr` "file".
 cutqc2 postprocess \
   --file bv_38qubit.zarr \
   --capacity 20 \
