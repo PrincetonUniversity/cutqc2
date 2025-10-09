@@ -9,6 +9,7 @@ Subpackages
 
    cutqc2.core
    cutqc2.cupy
+   cutqc2.data
    cutqc2.io
    cutqc2.legacy
    cutqc2.library

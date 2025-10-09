@@ -247,14 +247,7 @@
 </ul>
 <section id="Downloading-a-pre-generated-and-pre-cut-circuit">
 <h3 id="Downloading-a-pre-generated-and-pre-cut-circuit">Downloading a pre-generated and pre-cut circuit<a class="headerlink" href="#Downloading-a-pre-generated-and-pre-cut-circuit" title="Link to this heading">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> package provides some pre-generated and pre-cut circuits to download. These are useful if you just wish to run post-processing. Use the <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">download</span></code> command to download these circuits as <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> files.</p>
-<p>The following command downloads and unzips a pre-cut and pre-run 16 qubit random circuit with 5 subcircuits. It is saved as <code class="docutils literal notranslate"><span class="pre">random_16q_5s.zarr.unzip</span></code> in the folder where you run the command.</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cutqc2 download \
-  --file random_16q_5s.zarr \
-  --path .
-</pre></div>
-</div>
-<p>You can see the list of available circuits to download by running <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">download</span> <span class="pre">--list</span></code>.</p>
+<p>To download a pre-generated and pre-cut circuit from <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code>, you can use the <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">download</span></code> command. Use <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">download</span> <span class="pre">--list</span></code> to see a list of available files, and `cutqc2 download</p>
 </section>
 </section>
 <section id="Postprocessing">

@@ -1,0 +1,21 @@
+cutqc2.data package
+===================
+
+Submodules
+----------
+
+cutqc2.data.ondemand module
+---------------------------
+
+.. automodule:: cutqc2.data.ondemand
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: cutqc2.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
