@@ -190,9 +190,37 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#submodules" class="md-nav__link">Submodules</a>
         </li>
-        <li class="md-nav__item"><a href="#cutqc2-library-dynamics-quantum-dynamics-module" class="md-nav__link">cutqc2.library.Dynamics.quantum_dynamics module</a>
+        <li class="md-nav__item"><a href="#module-cutqc2.library.Dynamics.quantum_dynamics" class="md-nav__link">cutqc2.library.Dynamics.quantum_dynamics module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Dynamics</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.H" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Dynamics.H</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#module-contents" class="md-nav__link">Module contents</a>
+        <li class="md-nav__item"><a href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.barriers" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Dynamics.barriers</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.measure" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Dynamics.measure</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.regname" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Dynamics.regname</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.qr" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Dynamics.qr</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.circ" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Dynamics.circ</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.apply_phase_shift" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Dynamics.apply_phase_shift()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.compute_to_Z_basis" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Dynamics.compute_to_Z_basis()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.gen_circuit" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Dynamics.gen_circuit()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.get_num_qubits" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Dynamics.get_num_qubits()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.uncompute_to_Z_basis" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">Dynamics.uncompute_to_Z_basis()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-cutqc2.library.Dynamics" class="md-nav__link">Module contents</a>
         </li></ul>
             </nav>
         </li>
@@ -215,11 +243,131 @@
 <section id="submodules">
 <h2 id="submodules">Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="cutqc2-library-dynamics-quantum-dynamics-module">
-<h2 id="cutqc2-library-dynamics-quantum-dynamics-module">cutqc2.library.Dynamics.quantum_dynamics module<a class="headerlink" href="#cutqc2-library-dynamics-quantum-dynamics-module" title="Link to this heading">¶</a></h2>
+<section id="module-cutqc2.library.Dynamics.quantum_dynamics">
+<span id="cutqc2-library-dynamics-quantum-dynamics-module"></span><h2 id="module-cutqc2.library.Dynamics.quantum_dynamics">cutqc2.library.Dynamics.quantum_dynamics module<a class="headerlink" href="#module-cutqc2.library.Dynamics.quantum_dynamics" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="cutqc2.library.Dynamics.quantum_dynamics.Dynamics">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cutqc2.library.Dynamics.quantum_dynamics.</span></span><span class="sig-name descname"><span class="pre">Dynamics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barriers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/Dynamics/quantum_dynamics.html#Dynamics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to implement the simulation of quantum dynamics as described
+in Section 4.7 of Nielsen &amp; Chuang (Quantum computation and quantum
+information (10th anniv. version), 2010.)</p>
+<p>A circuit implementing the quantum simulation can be generated for a given
+problem Hamiltonian parameterized by calling the gen_circuit() method.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.Dynamics.quantum_dynamics.Dynamics.H">
+<span class="sig-name descname"><span class="pre">H</span></span><a class="headerlink" href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.H" title="Link to this definition">¶</a></dt>
+<dd><p>The given Hamiltonian whose dynamics we want to simulate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>??</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.Dynamics.quantum_dynamics.Dynamics.barriers">
+<span class="sig-name descname"><span class="pre">barriers</span></span><a class="headerlink" href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.barriers" title="Link to this definition">¶</a></dt>
+<dd><p>should barriers be included in the generated circuit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.Dynamics.quantum_dynamics.Dynamics.measure">
+<span class="sig-name descname"><span class="pre">measure</span></span><a class="headerlink" href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.measure" title="Link to this definition">¶</a></dt>
+<dd><p>should a ClassicalRegister and measurements be added to the circuit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.Dynamics.quantum_dynamics.Dynamics.regname">
+<span class="sig-name descname"><span class="pre">regname</span></span><a class="headerlink" href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.regname" title="Link to this definition">¶</a></dt>
+<dd><p>optional string to name the quantum and classical registers. This
+allows for the easy concatenation of multiple QuantumCircuits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.Dynamics.quantum_dynamics.Dynamics.qr">
+<span class="sig-name descname"><span class="pre">qr</span></span><a class="headerlink" href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.qr" title="Link to this definition">¶</a></dt>
+<dd><p>Qiskit QuantumRegister holding all of the quantum bits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuantumRegister</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.Dynamics.quantum_dynamics.Dynamics.circ">
+<span class="sig-name descname"><span class="pre">circ</span></span><a class="headerlink" href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.circ" title="Link to this definition">¶</a></dt>
+<dd><p>Qiskit QuantumCircuit that represents the uccsd circuit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuantumCircuit</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.Dynamics.quantum_dynamics.Dynamics.apply_phase_shift">
+<span class="sig-name descname"><span class="pre">apply_phase_shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delta_t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/Dynamics/quantum_dynamics.html#Dynamics.apply_phase_shift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.apply_phase_shift" title="Link to this definition">¶</a></dt>
+<dd><p>Simulate the evolution of exp(-i(dt)Z)</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.Dynamics.quantum_dynamics.Dynamics.compute_to_Z_basis">
+<span class="sig-name descname"><span class="pre">compute_to_Z_basis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pauli_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/Dynamics/quantum_dynamics.html#Dynamics.compute_to_Z_basis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.compute_to_Z_basis" title="Link to this definition">¶</a></dt>
+<dd><p>Take the given pauli_str of the form ABCD and apply operations to the
+circuit which will take it from the ABCD basis to the ZZZZ basis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pauli_str</strong> (<em>str</em>) – string of the form ‘p1p2p3…pN’ where pK is a Pauli matrix</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.Dynamics.quantum_dynamics.Dynamics.gen_circuit">
+<span class="sig-name descname"><span class="pre">gen_circuit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/Dynamics/quantum_dynamics.html#Dynamics.gen_circuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.gen_circuit" title="Link to this definition">¶</a></dt>
+<dd><p>Create a circuit implementing the quantum dynamics simulation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuantumCircuit object of size nq with no ClassicalRegister and
+no measurements</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>QuantumCircuit</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.Dynamics.quantum_dynamics.Dynamics.get_num_qubits">
+<span class="sig-name descname"><span class="pre">get_num_qubits</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/Dynamics/quantum_dynamics.html#Dynamics.get_num_qubits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.get_num_qubits" title="Link to this definition">¶</a></dt>
+<dd><p>Given the problem Hamiltonian, return the appropriate number of qubits
+needed to simulate its dynamics.</p>
+<p>This number does not include the single ancilla qubit that is added
+to the circuit.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.Dynamics.quantum_dynamics.Dynamics.uncompute_to_Z_basis">
+<span class="sig-name descname"><span class="pre">uncompute_to_Z_basis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pauli_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/Dynamics/quantum_dynamics.html#Dynamics.uncompute_to_Z_basis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.Dynamics.quantum_dynamics.Dynamics.uncompute_to_Z_basis" title="Link to this definition">¶</a></dt>
+<dd><p>Take the given pauli_str of the form ABCD and apply operations to the
+circuit which will take it from the ZZZZ basis to the ABCD basis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pauli_str</strong> (<em>str</em>) – string of the form ‘p1p2p3…pN’ where pK is a Pauli matrix</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
 </section>
-<section id="module-contents">
-<h2 id="module-contents">Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<section id="module-cutqc2.library.Dynamics">
+<span id="module-contents"></span><h2 id="module-cutqc2.library.Dynamics">Module contents<a class="headerlink" href="#module-cutqc2.library.Dynamics" title="Link to this heading">¶</a></h2>
 </section>
 </section>
 

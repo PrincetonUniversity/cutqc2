@@ -190,9 +190,41 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#submodules" class="md-nav__link">Submodules</a>
         </li>
-        <li class="md-nav__item"><a href="#cutqc2-library-qaoa-hw-efficient-ansatz-module" class="md-nav__link">cutqc2.library.QAOA.hw_efficient_ansatz module</a>
+        <li class="md-nav__item"><a href="#module-cutqc2.library.QAOA.hw_efficient_ansatz" class="md-nav__link">cutqc2.library.QAOA.hw_efficient_ansatz module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.nq" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA.nq</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#module-contents" class="md-nav__link">Module contents</a>
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.d" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA.d</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.parameters" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA.parameters</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.seed" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA.seed</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.barriers" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA.barriers</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.measure" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA.measure</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.regname" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA.regname</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.qr" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA.qr</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.cr" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA.cr</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.circ" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA.circ</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.gen_circuit" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA.gen_circuit()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.get_noiseless_theta" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA.get_noiseless_theta()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.get_random_theta" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">HWEA.get_random_theta()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-cutqc2.library.QAOA" class="md-nav__link">Module contents</a>
         </li></ul>
             </nav>
         </li>
@@ -215,11 +247,167 @@
 <section id="submodules">
 <h2 id="submodules">Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="cutqc2-library-qaoa-hw-efficient-ansatz-module">
-<h2 id="cutqc2-library-qaoa-hw-efficient-ansatz-module">cutqc2.library.QAOA.hw_efficient_ansatz module<a class="headerlink" href="#cutqc2-library-qaoa-hw-efficient-ansatz-module" title="Link to this heading">¶</a></h2>
+<section id="module-cutqc2.library.QAOA.hw_efficient_ansatz">
+<span id="cutqc2-library-qaoa-hw-efficient-ansatz-module"></span><h2 id="module-cutqc2.library.QAOA.hw_efficient_ansatz">cutqc2.library.QAOA.hw_efficient_ansatz module<a class="headerlink" href="#module-cutqc2.library.QAOA.hw_efficient_ansatz" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cutqc2.library.QAOA.hw_efficient_ansatz.</span></span><span class="sig-name descname"><span class="pre">HWEA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'optimal'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barriers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/QAOA/hw_efficient_ansatz.html#HWEA"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to implement a hardware efficient ansatz for the QAOA algorithm.
+Based on the community detection circuit implemented by Francois-Marie Le Régent.
+This ansatz uses the entangler+rotation block structure like that described
+in the paper by Nikolaj Moll et al. (<a class="reference external" href="http://iopscience.iop.org/article/10.1088/2058-9565/aab822">http://iopscience.iop.org/article/10.1088/2058-9565/aab822</a>)</p>
+<p>A HW efficient ansatz circuit can be generated with an instance of this class
+by calling its gen_circuit() method.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.nq">
+<span class="sig-name descname"><span class="pre">nq</span></span><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.nq" title="Link to this definition">¶</a></dt>
+<dd><p>number of qubits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.d">
+<span class="sig-name descname"><span class="pre">d</span></span><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.d" title="Link to this definition">¶</a></dt>
+<dd><p>number of layers to apply. Where a layer = rotation block + entangler block
+This is also the same as the “P” value often referenced for QAOA.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.parameters" title="Link to this definition">¶</a></dt>
+<dd><p>optional string which changes the rotation angles in the rotation block
+[optimal, random, seeded]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.seed" title="Link to this definition">¶</a></dt>
+<dd><p>a number to seed the number generator with</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.barriers">
+<span class="sig-name descname"><span class="pre">barriers</span></span><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.barriers" title="Link to this definition">¶</a></dt>
+<dd><p>should barriers be included in the generated circuit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.measure">
+<span class="sig-name descname"><span class="pre">measure</span></span><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.measure" title="Link to this definition">¶</a></dt>
+<dd><p>should a classical register &amp; measurement be added to the circuit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.regname">
+<span class="sig-name descname"><span class="pre">regname</span></span><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.regname" title="Link to this definition">¶</a></dt>
+<dd><p>optional string to name the quantum and classical registers. This
+allows for the easy concatenation of multiple QuantumCircuits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.qr">
+<span class="sig-name descname"><span class="pre">qr</span></span><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.qr" title="Link to this definition">¶</a></dt>
+<dd><p>Qiskit QuantumRegister holding all of the quantum bits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuantumRegister</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.cr">
+<span class="sig-name descname"><span class="pre">cr</span></span><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.cr" title="Link to this definition">¶</a></dt>
+<dd><p>Qiskit ClassicalRegister holding all of the classical bits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ClassicalRegister</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.circ">
+<span class="sig-name descname"><span class="pre">circ</span></span><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.circ" title="Link to this definition">¶</a></dt>
+<dd><p>Qiskit QuantumCircuit that represents the hardware-efficient ansatz</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuantumCircuit</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.gen_circuit">
+<span class="sig-name descname"><span class="pre">gen_circuit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/QAOA/hw_efficient_ansatz.html#HWEA.gen_circuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.gen_circuit" title="Link to this definition">¶</a></dt>
+<dd><p>Create a circuit for the QAOA RyRz ansatz</p>
+<p>This methods generates a circuit with repeated layers of an entangler
+block sandwiched between parameterized rotation columns</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>QuantumCircuit</em> – QuantumCircuit of size nb_qubits with no ClassicalRegister
+and no measurements</p></li>
+<li><p><em>QiskitError</em> – Prints the error in the circuit</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.get_noiseless_theta">
+<span class="sig-name descname"><span class="pre">get_noiseless_theta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/QAOA/hw_efficient_ansatz.html#HWEA.get_noiseless_theta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.get_noiseless_theta" title="Link to this definition">¶</a></dt>
+<dd><p>Set the parameters to the optimal value which solves the community
+detection problem.</p>
+<p>This method returns a vector of length (1 + d)*2nq
+The first gate on the first qubit is a pi/2 rotation (Hadamard)
+After the entangler block, the first half of the qubits (round down for
+odd n_qubits) receive a pi rotation (X gate)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nb_qubits</strong> (<em>int</em>) – Number of qubits in the circuit</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>vector of length 2*nq * (1+d)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.get_random_theta">
+<span class="sig-name descname"><span class="pre">get_random_theta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/QAOA/hw_efficient_ansatz.html#HWEA.get_random_theta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.QAOA.hw_efficient_ansatz.HWEA.get_random_theta" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+</dd></dl>
 </section>
-<section id="module-contents">
-<h2 id="module-contents">Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<section id="module-cutqc2.library.QAOA">
+<span id="module-contents"></span><h2 id="module-cutqc2.library.QAOA">Module contents<a class="headerlink" href="#module-cutqc2.library.QAOA" title="Link to this heading">¶</a></h2>
 </section>
 </section>
 

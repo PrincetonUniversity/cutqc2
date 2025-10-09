@@ -190,9 +190,39 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#submodules" class="md-nav__link">Submodules</a>
         </li>
-        <li class="md-nav__item"><a href="#cutqc2-library-vqe-uccsd-ansatz-module" class="md-nav__link">cutqc2.library.VQE.uccsd_ansatz module</a>
+        <li class="md-nav__item"><a href="#module-cutqc2.library.VQE.uccsd_ansatz" class="md-nav__link">cutqc2.library.VQE.uccsd_ansatz module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UCCSD</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.width" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UCCSD.width</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#module-contents" class="md-nav__link">Module contents</a>
+        <li class="md-nav__item"><a href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.parameters" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UCCSD.parameters</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.seed" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UCCSD.seed</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.barriers" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UCCSD.barriers</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.regname" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UCCSD.regname</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.qr" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UCCSD.qr</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.circ" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UCCSD.circ</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.CNOTLadder" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UCCSD.CNOTLadder()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.DoubleExcitationOperator" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UCCSD.DoubleExcitationOperator()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.M_d" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UCCSD.M_d()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.SingleExcitationOperator" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UCCSD.SingleExcitationOperator()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.gen_circuit" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">UCCSD.gen_circuit()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-cutqc2.library.VQE" class="md-nav__link">Module contents</a>
         </li></ul>
             </nav>
         </li>
@@ -215,11 +245,155 @@
 <section id="submodules">
 <h2 id="submodules">Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="cutqc2-library-vqe-uccsd-ansatz-module">
-<h2 id="cutqc2-library-vqe-uccsd-ansatz-module">cutqc2.library.VQE.uccsd_ansatz module<a class="headerlink" href="#cutqc2-library-vqe-uccsd-ansatz-module" title="Link to this heading">¶</a></h2>
+<section id="module-cutqc2.library.VQE.uccsd_ansatz">
+<span id="cutqc2-library-vqe-uccsd-ansatz-module"></span><h2 id="module-cutqc2.library.VQE.uccsd_ansatz">cutqc2.library.VQE.uccsd_ansatz module<a class="headerlink" href="#module-cutqc2.library.VQE.uccsd_ansatz" title="Link to this heading">¶</a></h2>
+<p>Teague Tomesh - 3/25/2019</p>
+<p>Implementation of the UCCSD ansatz for use in the VQE algorithm.</p>
+<p>Based on the description given in Whitfield et al.
+(<a class="reference external" href="https://arxiv.org/abs/1001.3855?context=physics.chem-ph">https://arxiv.org/abs/1001.3855?context=physics.chem-ph</a>)</p>
+<p>Adapted from a Scaffold implementation by Pranav Gokhale]
+(<a class="reference external" href="https://github.com/epiqc/ScaffCC">https://github.com/epiqc/ScaffCC</a>)</p>
+<p>NOTE:
+Qiskit orders their circuits increasing from top -&gt; bottom</p>
+<blockquote>
+<div><p>0 —
+1 —
+2 —</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Both Whitfield et al. and Barkoutsos et al. order increasing from bottom -&gt; top</dt><dd><p>p 3 —
+q 2 —
+r 1 —
+s 0 —</p>
+</dd>
+</dl>
+<p>Not a problem. Qubit index is what matters. Set reverse_bits = True when
+drawing Qiskit circuit.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="cutqc2.library.VQE.uccsd_ansatz.UCCSD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cutqc2.library.VQE.uccsd_ansatz.</span></span><span class="sig-name descname"><span class="pre">UCCSD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barriers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/VQE/uccsd_ansatz.html#UCCSD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to implement the UCCSD ansatz as described in Whitfield et al.
+(<a class="reference external" href="https://arxiv.org/abs/1001.3855?context=physics.chem-ph">https://arxiv.org/abs/1001.3855?context=physics.chem-ph</a>)</p>
+<p>A UCCSD circuit can be generated for a given instance of the UCCSD class
+by calling the gen_circuit() method.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.VQE.uccsd_ansatz.UCCSD.width">
+<span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.width" title="Link to this definition">¶</a></dt>
+<dd><p>number of qubits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.VQE.uccsd_ansatz.UCCSD.parameters">
+<span class="sig-name descname"><span class="pre">parameters</span></span><a class="headerlink" href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.parameters" title="Link to this definition">¶</a></dt>
+<dd><p>choice of parameters [random, seeded]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.VQE.uccsd_ansatz.UCCSD.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><a class="headerlink" href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.seed" title="Link to this definition">¶</a></dt>
+<dd><p>a number to seed the number generator with</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.VQE.uccsd_ansatz.UCCSD.barriers">
+<span class="sig-name descname"><span class="pre">barriers</span></span><a class="headerlink" href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.barriers" title="Link to this definition">¶</a></dt>
+<dd><p>should barriers be included in the generated circuit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.VQE.uccsd_ansatz.UCCSD.regname">
+<span class="sig-name descname"><span class="pre">regname</span></span><a class="headerlink" href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.regname" title="Link to this definition">¶</a></dt>
+<dd><p>optional string to name the quantum and classical registers. This
+allows for the easy concatenation of multiple QuantumCircuits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.VQE.uccsd_ansatz.UCCSD.qr">
+<span class="sig-name descname"><span class="pre">qr</span></span><a class="headerlink" href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.qr" title="Link to this definition">¶</a></dt>
+<dd><p>Qiskit QuantumRegister holding all of the quantum bits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuantumRegister</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.VQE.uccsd_ansatz.UCCSD.circ">
+<span class="sig-name descname"><span class="pre">circ</span></span><a class="headerlink" href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.circ" title="Link to this definition">¶</a></dt>
+<dd><p>Qiskit QuantumCircuit that represents the uccsd circuit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuantumCircuit</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.VQE.uccsd_ansatz.UCCSD.CNOTLadder">
+<span class="sig-name descname"><span class="pre">CNOTLadder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">controlStartIndex</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controlStopIndex</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/VQE/uccsd_ansatz.html#UCCSD.CNOTLadder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.CNOTLadder" title="Link to this definition">¶</a></dt>
+<dd><p>Applies a ladder of CNOTs, as in the dashed-CNOT notation at bottom of
+Table A1 of Whitfield et al 2010</p>
+<p>Qubit indices increase from bottom to top</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.VQE.uccsd_ansatz.UCCSD.DoubleExcitationOperator">
+<span class="sig-name descname"><span class="pre">DoubleExcitationOperator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/VQE/uccsd_ansatz.html#UCCSD.DoubleExcitationOperator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.DoubleExcitationOperator" title="Link to this definition">¶</a></dt>
+<dd><p>Prerequisite: p &gt; q &gt; r &gt; s</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.VQE.uccsd_ansatz.UCCSD.M_d">
+<span class="sig-name descname"><span class="pre">M_d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dagger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/VQE/uccsd_ansatz.html#UCCSD.M_d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.M_d" title="Link to this definition">¶</a></dt>
+<dd><p>See Double Excitation Operator circuit in Table A1
+of Whitfield et al 2010</p>
+<p>Y in Table A1 of Whitfield et al 2010 really means Rx(-pi/2)</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.VQE.uccsd_ansatz.UCCSD.SingleExcitationOperator">
+<span class="sig-name descname"><span class="pre">SingleExcitationOperator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/VQE/uccsd_ansatz.html#UCCSD.SingleExcitationOperator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.SingleExcitationOperator" title="Link to this definition">¶</a></dt>
+<dd><p>Prerequisite: p &gt; q
+See Single Excitation Operator circuit in Table A1 of
+Whitfield et al 2010</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.VQE.uccsd_ansatz.UCCSD.gen_circuit">
+<span class="sig-name descname"><span class="pre">gen_circuit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/VQE/uccsd_ansatz.html#UCCSD.gen_circuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.VQE.uccsd_ansatz.UCCSD.gen_circuit" title="Link to this definition">¶</a></dt>
+<dd><p>Create a circuit implementing the UCCSD ansatz</p>
+<p>Given the number of qubits and parameters, construct the
+ansatz as given in Whitfield et al.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuantumCircuit object of size nq with no ClassicalRegister and
+no measurements</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>QuantumCircuit</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
 </section>
-<section id="module-contents">
-<h2 id="module-contents">Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<section id="module-cutqc2.library.VQE">
+<span id="module-contents"></span><h2 id="module-cutqc2.library.VQE">Module contents<a class="headerlink" href="#module-cutqc2.library.VQE" title="Link to this heading">¶</a></h2>
 </section>
 </section>
 

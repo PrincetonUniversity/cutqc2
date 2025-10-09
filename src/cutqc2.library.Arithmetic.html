@@ -190,9 +190,31 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#submodules" class="md-nav__link">Submodules</a>
         </li>
-        <li class="md-nav__item"><a href="#cutqc2-library-arithmetic-ripple-carry-adder-module" class="md-nav__link">cutqc2.library.Arithmetic.ripple_carry_adder module</a>
+        <li class="md-nav__item"><a href="#module-cutqc2.library.Arithmetic.ripple_carry_adder" class="md-nav__link">cutqc2.library.Arithmetic.ripple_carry_adder module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RCAdder</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.nbits" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RCAdder.nbits</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#module-contents" class="md-nav__link">Module contents</a>
+        <li class="md-nav__item"><a href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.nq" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RCAdder.nq</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.use_toffoli" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RCAdder.use_toffoli</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.barriers" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RCAdder.barriers</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.regname" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RCAdder.regname</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.qr" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RCAdder.qr</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.circ" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RCAdder.circ</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.gen_circuit" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RCAdder.gen_circuit()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-cutqc2.library.Arithmetic" class="md-nav__link">Module contents</a>
         </li></ul>
             </nav>
         </li>
@@ -215,11 +237,131 @@
 <section id="submodules">
 <h2 id="submodules">Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="cutqc2-library-arithmetic-ripple-carry-adder-module">
-<h2 id="cutqc2-library-arithmetic-ripple-carry-adder-module">cutqc2.library.Arithmetic.ripple_carry_adder module<a class="headerlink" href="#cutqc2-library-arithmetic-ripple-carry-adder-module" title="Link to this heading">¶</a></h2>
+<section id="module-cutqc2.library.Arithmetic.ripple_carry_adder">
+<span id="cutqc2-library-arithmetic-ripple-carry-adder-module"></span><h2 id="module-cutqc2.library.Arithmetic.ripple_carry_adder">cutqc2.library.Arithmetic.ripple_carry_adder module<a class="headerlink" href="#module-cutqc2.library.Arithmetic.ripple_carry_adder" title="Link to this heading">¶</a></h2>
+<p>Teague Tomesh - 2/10/2020</p>
+<p>Implementation of an n-bit ripple-carry adder.</p>
+<p>Based on the specification given in Cuccaro, Draper, Kutin, Moulton.
+(<a class="reference external" href="https://arxiv.org/abs/quant-ph/0410184v1">https://arxiv.org/abs/quant-ph/0410184v1</a>)</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cutqc2.library.Arithmetic.ripple_carry_adder.</span></span><span class="sig-name descname"><span class="pre">RCAdder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nbits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_toffoli</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">barriers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">regname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/Arithmetic/ripple_carry_adder.html#RCAdder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An n-bit ripple-carry adder can be generated using an instance of the
+RCAdder class by calling the gen_circuit() method.</p>
+<dl class="simple">
+<dt>This adder circuit uses 1 ancilla qubit to add together two values</dt><dd><p>a = a_(n-1)…a_0    and   b = b_(n-1)…a_0</p>
+</dd>
+<dt>and store their sum</dt><dd><p>s = s_n…s_0</p>
+</dd>
+</dl>
+<p>in the registers which initially held the b value.</p>
+<p>The adder circuit uses 2 + binary_len(a) + binary_len(b) qubits.
+The initial carry value is stored in the qubit at index = 0.
+The binary value of a_i is stored in the qubit at index = 2*i + 2
+The binary value of b_i is stored in the qubit at index = 2*i + 1
+The high bit, s_n, is stored in the last qubit at index = num_qubits - 1</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.nbits">
+<span class="sig-name descname"><span class="pre">nbits</span></span><a class="headerlink" href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.nbits" title="Link to this definition">¶</a></dt>
+<dd><p>size, in bits, of the numbers the adder can handle</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.nq">
+<span class="sig-name descname"><span class="pre">nq</span></span><a class="headerlink" href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.nq" title="Link to this definition">¶</a></dt>
+<dd><p>number of qubits needed to construct the adder circuit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">a,</span> <span class="pre">b</span></span></dt>
+<dd><p>optional parameters to specify the numbers the adder should add.
+Will throw an exception if the length of the bitstring representations
+of a or b are greater than nbits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.use_toffoli">
+<span class="sig-name descname"><span class="pre">use_toffoli</span></span><a class="headerlink" href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.use_toffoli" title="Link to this definition">¶</a></dt>
+<dd><p>Should the toffoli gate be used in the generated circuit or should it
+first be decomposed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.barriers">
+<span class="sig-name descname"><span class="pre">barriers</span></span><a class="headerlink" href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.barriers" title="Link to this definition">¶</a></dt>
+<dd><p>should barriers be included in the generated circuit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.regname">
+<span class="sig-name descname"><span class="pre">regname</span></span><a class="headerlink" href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.regname" title="Link to this definition">¶</a></dt>
+<dd><p>optional string to name the quantum and classical registers. This
+allows for the easy concatenation of multiple QuantumCircuits.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.qr">
+<span class="sig-name descname"><span class="pre">qr</span></span><a class="headerlink" href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.qr" title="Link to this definition">¶</a></dt>
+<dd><p>Qiskit QuantumRegister holding all of the quantum bits</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuantumRegister</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.circ">
+<span class="sig-name descname"><span class="pre">circ</span></span><a class="headerlink" href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.circ" title="Link to this definition">¶</a></dt>
+<dd><p>Qiskit QuantumCircuit that represents the uccsd circuit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuantumCircuit</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.gen_circuit">
+<span class="sig-name descname"><span class="pre">gen_circuit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/Arithmetic/ripple_carry_adder.html#RCAdder.gen_circuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.Arithmetic.ripple_carry_adder.RCAdder.gen_circuit" title="Link to this definition">¶</a></dt>
+<dd><p>Create a circuit implementing the ripple-carry adder</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>QuantumCircuit object of size self.nq</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>QuantumCircuit</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
 </section>
-<section id="module-contents">
-<h2 id="module-contents">Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<section id="module-cutqc2.library.Arithmetic">
+<span id="module-contents"></span><h2 id="module-cutqc2.library.Arithmetic">Module contents<a class="headerlink" href="#module-cutqc2.library.Arithmetic" title="Link to this heading">¶</a></h2>
 </section>
 </section>
 

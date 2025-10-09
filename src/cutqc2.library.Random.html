@@ -190,9 +190,23 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#submodules" class="md-nav__link">Submodules</a>
         </li>
-        <li class="md-nav__item"><a href="#cutqc2-library-random-random-module" class="md-nav__link">cutqc2.library.Random.random module</a>
+        <li class="md-nav__item"><a href="#module-cutqc2.library.Random.random" class="md-nav__link">cutqc2.library.Random.random module</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cutqc2.library.Random.random.RandomCircuit" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RandomCircuit</span></code></a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#cutqc2.library.Random.random.RandomCircuit.generate" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RandomCircuit.generate()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#module-contents" class="md-nav__link">Module contents</a>
+        <li class="md-nav__item"><a href="#cutqc2.library.Random.random.RandomCircuit.generate_entangled" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RandomCircuit.generate_entangled()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Random.random.RandomCircuit.get_random_control" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RandomCircuit.get_random_control()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.library.Random.random.RandomCircuit.get_random_target" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">RandomCircuit.get_random_target()</span></code></a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#module-cutqc2.library.Random" class="md-nav__link">Module contents</a>
         </li></ul>
             </nav>
         </li>
@@ -215,11 +229,38 @@
 <section id="submodules">
 <h2 id="submodules">Submodules<a class="headerlink" href="#submodules" title="Link to this heading">¶</a></h2>
 </section>
-<section id="cutqc2-library-random-random-module">
-<h2 id="cutqc2-library-random-random-module">cutqc2.library.Random.random module<a class="headerlink" href="#cutqc2-library-random-random-module" title="Link to this heading">¶</a></h2>
+<section id="module-cutqc2.library.Random.random">
+<span id="cutqc2-library-random-random-module"></span><h2 id="module-cutqc2.library.Random.random">cutqc2.library.Random.random module<a class="headerlink" href="#module-cutqc2.library.Random.random" title="Link to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="cutqc2.library.Random.random.RandomCircuit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cutqc2.library.Random.random.</span></span><span class="sig-name descname"><span class="pre">RandomCircuit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_degree</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_hadamards</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/Random/random.html#RandomCircuit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.Random.random.RandomCircuit" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.Random.random.RandomCircuit.generate">
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/Random/random.html#RandomCircuit.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.Random.random.RandomCircuit.generate" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.Random.random.RandomCircuit.generate_entangled">
+<span class="sig-name descname"><span class="pre">generate_entangled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/Random/random.html#RandomCircuit.generate_entangled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.Random.random.RandomCircuit.generate_entangled" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.Random.random.RandomCircuit.get_random_control">
+<span class="sig-name descname"><span class="pre">get_random_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">qubit_targets</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/Random/random.html#RandomCircuit.get_random_control"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.Random.random.RandomCircuit.get_random_control" title="Link to this definition">¶</a></dt>
+<dd><p>Get a random control qubit
+Prioritize the ones with spare targets
+Else choose from qubits with #targets&gt;0</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="cutqc2.library.Random.random.RandomCircuit.get_random_target">
+<span class="sig-name descname"><span class="pre">get_random_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">control_qubit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qubit_targets</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/library/Random/random.html#RandomCircuit.get_random_target"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.library.Random.random.RandomCircuit.get_random_target" title="Link to this definition">¶</a></dt>
+<dd><p>Get a random target qubit
+If the control qubit has exhausted its #targets, choose from existing targets
+Else prioritize the ones that have not been used</p>
+</dd></dl>
+</dd></dl>
 </section>
-<section id="module-contents">
-<h2 id="module-contents">Module contents<a class="headerlink" href="#module-contents" title="Link to this heading">¶</a></h2>
+<section id="module-cutqc2.library.Random">
+<span id="module-contents"></span><h2 id="module-cutqc2.library.Random">Module contents<a class="headerlink" href="#module-cutqc2.library.Random" title="Link to this heading">¶</a></h2>
 </section>
 </section>
 
