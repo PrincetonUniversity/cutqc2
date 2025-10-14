@@ -30,7 +30,10 @@ def test_figure4_save(figure_4_qiskit_circuit, tmp_path):
 
 
 def test_figure4_load_complete_path_map(figure_4_qiskit_circuit, tmp_path):
-    save_path = tmp_path / "test_cut_circuit_figure4_to_file.zarr"
+    # Even though we generate the zarr folder locally here, it may well
+    # have been dowloaded using `cutqc2 download` and have a `.unzip` suffix.
+    # We test against this case by providing a `.unzip` suffix here.
+    save_path = tmp_path / "test_cut_circuit_figure4_to_file.zarr.unzip"
 
     cut_circuit = CutCircuit(figure_4_qiskit_circuit)
     cut_circuit.cut(

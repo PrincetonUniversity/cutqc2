@@ -16,5 +16,8 @@ pytest:
 
 
 core:
+  # Whether to insist on loading CutCircuit from files with matching version
+  string_file_versioning: True
+  # Which numeric library to use - cupy/numpy
   numeric: cupy
 

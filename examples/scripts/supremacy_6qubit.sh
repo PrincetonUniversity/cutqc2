@@ -7,6 +7,8 @@ cutqc2 cut \
   --num-subcircuits 3 \
   --output-file supremacy_6qubit.zarr
 
+# Notice the `--save` to save the post-processed results back to the
+# `.zarr` "file".
 cutqc2 postprocess \
   --file supremacy_6qubit.zarr \
   --save
