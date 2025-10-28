@@ -5,8 +5,8 @@ from cutqc2.core.utils import measure_prob, measure_state
 """
 sigma, effective_state = measure_state(<unmeasured_state>, <measurement_bases>)
   unmeasured_state is the n-bit state from cut circuit
-  measurement_bases is the n-length list of measurement bases, LSB to MSB
-    (top-wire to bottom-wire).
+  measurement_bases is the n-length list of measurement bases, MSB to LSB
+    (bottom-wire to top-wire).
   sigma denotes the sign (+1, -1) in Eq. 3 of the paper
   effective_state is the state we wish to attribute the measurement to.
   This is the first n-1 bits of the n-bit unmeasured state.
@@ -36,7 +36,7 @@ def test_measure_state3():
     # Eq. 3 in paper:
     #   xx0, xx1 -> +xx  if M_last = I
     # So we have result = (+1, 0b00) = (1, 0)
-    sigma, effective_state = measure_state(0b100, ["comp", "comp", "I"])
+    sigma, effective_state = measure_state(0b100, ["I", "comp", "comp"])
     assert sigma == 1
     assert effective_state == 0
 
@@ -45,7 +45,7 @@ def test_measure_state4():
     # Eq. 3 in paper:
     #   xx1 -> -xx  if M_last != I
     # So we have result = (-1, 0b110) = (-1, 6)
-    sigma, effective_state = measure_state(0b1110, ["comp", "comp", "comp", "Z"])
+    sigma, effective_state = measure_state(0b1110, ["Z", "comp", "comp", "comp"])
     assert sigma == -1
     assert effective_state == 6
 
@@ -64,6 +64,6 @@ def test_measure_prob0():
             0.125,  # 110 -> -0.125 for 10
             0.125,  # 111 -> -0.125 for 11
         ],
-        ["comp", "comp", "Z"],
+        ["Z", "comp", "comp"],
     )
     assert np.allclose(result, [0.125, -0.125, -0.125, 0.125])

@@ -248,7 +248,7 @@ def run_subcircuit_instances(
         for j, meas in enumerate(mutated_meas):
             logger.info(f"{j + 1}/{total_mutations}")
             measured_prob = measure_prob(
-                unmeasured_prob=subcircuit_inst_prob, meas=meas
+                unmeasured_prob=subcircuit_inst_prob, meas=meas[::-1]
             )
             results[(instance_init_meas[0], meas)] = measured_prob
         return results
@@ -406,7 +406,7 @@ def measure_prob(unmeasured_prob: np.ndarray, meas: tuple[str]) -> np.ndarray:
         Probability vector over all 2^n basis states (MSB-to-LSB convention) or
         a scalar probability.
     meas : Sequence[str]
-        Per-qubit measurement basis labels (e.g., "comp", "X", "Y", "I").
+        Per-qubit measurement basis labels, MSB to LSB (e.g., "comp", "X", "Y", "I").
 
     Returns
     -------
@@ -440,7 +440,7 @@ def measure_state(full_state: int, meas: tuple[str]) -> tuple[int, int]:
     full_state : int
         Index of the n-bit computational basis state.
     meas : Sequence[str]
-        Per-qubit measurement bases (length n).
+        Per-qubit measurement bases (length n), MSB to LSB.
 
     Returns
     -------
@@ -452,7 +452,7 @@ def measure_state(full_state: int, meas: tuple[str]) -> tuple[int, int]:
     bin_full_state = bin(full_state)[2:].zfill(len(meas))
     sigma = 1
     bin_effective_state = ""
-    for meas_bit, meas_basis in zip(bin_full_state, meas[::-1], strict=False):
+    for meas_bit, meas_basis in zip(bin_full_state, meas, strict=False):
         if meas_bit == "1" and meas_basis not in ("I", "comp"):
             sigma *= -1
         if meas_basis == "comp":
