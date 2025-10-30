@@ -240,14 +240,13 @@ def run_subcircuit_instances(
             init=instance_init_meas[0],
             meas=instance_init_meas[1],
         )
+
         subcircuit_inst_prob = evaluate_circ(
             circuit=subcircuit_instance, backend=backend
         )
 
         mutated_meas = mutate_measurement_basis(meas=instance_init_meas[1])
-        total_mutations = len(mutated_meas)
         for j, meas in enumerate(mutated_meas):
-            logger.info(f"{j + 1}/{total_mutations}")
             measured_prob = measure_prob(
                 unmeasured_prob=subcircuit_inst_prob, meas=meas[::-1]
             )
