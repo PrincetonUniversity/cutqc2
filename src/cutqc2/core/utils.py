@@ -1,3 +1,4 @@
+import math
 import copy
 import itertools
 import logging
@@ -390,6 +391,28 @@ def modify_subcircuit_instance(  # noqa: PLR0912
     return dag_to_circuit(subcircuit_instance_dag)
 
 
+def bases_to_bitmask(bases: tuple[str]) -> np.array:
+    map = {'comp': 1, 'I': 0, 'X': 0, 'Y': 0, 'Z': 0}
+    mask = [map[b] for b in bases]
+    return np.array(mask)
+
+
+def compress_bits(arr: np.ndarray, mask: np.ndarray) -> np.ndarray:
+    """
+    Apply a bit mask that *drops* bits (rather than zeroing them out).
+    mask is an array/list of 0/1, where bit 0 = LSB, bit[-1] = MSB.
+    """
+    nbits = len(mask)
+    kept_positions = np.nonzero(mask)[0]
+    # Create mapping from old bit positions to new packed bit positions
+    shifts = np.arange(len(kept_positions))
+    # Compute new number by summing selected bits shifted to compact positions
+    result = np.zeros_like(arr)
+    for src, dst in zip(kept_positions, shifts):
+        result |= ((arr >> src) & 1) << dst
+    return result
+
+
 def measure_prob(unmeasured_prob: np.ndarray, meas: tuple[str]) -> np.ndarray:
     """
     Project a probability vector from mixed measurement bases onto the
@@ -417,12 +440,43 @@ def measure_prob(unmeasured_prob: np.ndarray, meas: tuple[str]) -> np.ndarray:
     """
     if meas.count("comp") == len(meas) or type(unmeasured_prob) is float:
         return unmeasured_prob
-    measured_prob = np.zeros(int(2 ** meas.count("comp")))
 
-    for full_state, p in enumerate(unmeasured_prob):
-        sigma, effective_state = measure_state(full_state=full_state, meas=meas)
-        measured_prob[effective_state] += sigma * p
+    measured_prob = np.zeros(int(2 ** meas.count("comp")))
+    meas_bitmask = bases_to_bitmask(meas)[::-1]
+    _n = int(math.log2(len(unmeasured_prob)))
+    effective_states = compress_bits(np.arange(1 << _n), meas_bitmask)
+
+    sigmas = measure_sign(np.arange(len(unmeasured_prob)), meas)
+    values = sigmas * unmeasured_prob
+
+    np.add.at(measured_prob, np.array(effective_states), np.array(values))
     return measured_prob
+
+
+def measure_sign(full_states: np.ndarray, meas: tuple[str, ...]) -> np.ndarray:
+    """
+    Vectorized version of sign measurement.
+    full_states: array of ints (shape (...,))
+    meas: tuple/list of strings, e.g. ("X", "I", "Y")
+    Returns array of ±1 with same shape as full_states.
+    """
+    n = len(meas)
+    full_states = np.asarray(full_states, dtype=np.int64)
+
+    # Bits to consider: from MSB→LSB, but we'll index LSB-first for efficiency
+    # Compute the bits matrix: shape (len(full_states), n)
+    bits = ((full_states[:, None] >> np.arange(n-1, -1, -1)) & 1).astype(bool)
+
+    # Mask of which bases trigger a sign flip (True = flip)
+    flip_mask = np.array([b not in ("I", "comp") for b in meas])
+
+    # Count flips: bits that are 1 *and* basis requires flipping
+    flips = np.sum(bits & flip_mask, axis=1)
+
+    # (-1) ** (# of flips)
+    sigma = np.where(flips % 2 == 0, 1, -1)
+
+    return sigma
 
 
 def measure_state(full_state: int, meas: tuple[str]) -> tuple[int, int]:
@@ -451,14 +505,11 @@ def measure_state(full_state: int, meas: tuple[str]) -> tuple[int, int]:
     """
     bin_full_state = bin(full_state)[2:].zfill(len(meas))
     sigma = 1
-    bin_effective_state = ""
     for meas_bit, meas_basis in zip(bin_full_state, meas, strict=False):
         if meas_bit == "1" and meas_basis not in ("I", "comp"):
             sigma *= -1
-        if meas_basis == "comp":
-            bin_effective_state += meas_bit
-    effective_state = int(bin_effective_state, 2) if bin_effective_state != "" else 0
-    return sigma, effective_state
+
+    return sigma
 
 
 def attribute_shots(

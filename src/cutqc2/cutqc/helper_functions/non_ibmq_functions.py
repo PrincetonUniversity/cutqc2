@@ -1,8 +1,6 @@
-import random, pickle, os, copy, random
-from qiskit import QuantumCircuit
+import copy
 import qiskit_aer as aer
-from qiskit.converters import circuit_to_dag, dag_to_circuit
-from qiskit.dagcircuit.dagcircuit import DAGCircuit
+from qiskit import transpile
 from qiskit.quantum_info import Statevector
 import numpy as np
 import psutil
@@ -47,4 +45,8 @@ def evaluate_circ(circuit, backend, options=None):
             )
             return noiseless_counts
     else:
-        raise NotImplementedError
+        circuit.save_statevector()
+        result = backend.run(transpile(circuit, backend)).result()
+        statevector = result.get_statevector(circuit)
+        prob_vector = Statevector(statevector).probabilities()
+        return prob_vector
