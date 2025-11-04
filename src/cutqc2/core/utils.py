@@ -1,7 +1,7 @@
-import math
 import copy
 import itertools
 import logging
+import math
 import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from multiprocessing import cpu_count
@@ -231,26 +231,35 @@ def run_subcircuit_instances(
 
     def process_instance(i, instance_init_meas):
         logger.info(f"Running subcircuit instance {i + 1}/{total}")
+        initialization, measurement = instance_init_meas
+
         results = {}
-        if "Z" in instance_init_meas[1]:
-            return results
+        # `mutate_measurement_basis` expands all occurrences of I bases into I
+        # and Z bases (".. measuring a qubit in either the I or Z basis
+        # corresponds physically to the same quantum circuit ..")
+        # So we can ignore any incoming bases that have "Z" in the measurement
+        # bases. Returning a {} results in no effective updates in the caller.
+        if "Z" in measurement:
+            return {}
 
         subcircuit_instance = modify_subcircuit_instance(
             subcircuit=subcircuit,
-            init=instance_init_meas[0],
-            meas=instance_init_meas[1],
+            init=initialization,
+            meas=measurement,
         )
 
         subcircuit_inst_prob = evaluate_circ(
             circuit=subcircuit_instance, backend=backend
         )
 
-        mutated_meas = mutate_measurement_basis(meas=instance_init_meas[1])
-        for j, meas in enumerate(mutated_meas):
+        mutated_measurement = mutate_measurement_basis(bases=measurement)
+        for _measurement in mutated_measurement:
+            # bases in `_measurement` are LSB to MSB. Reverse them since
+            # `measure_prob` is expecting MSB to LSB.
             measured_prob = measure_prob(
-                unmeasured_prob=subcircuit_inst_prob, meas=meas[::-1]
+                unmeasured_prob=subcircuit_inst_prob, meas=_measurement[::-1]
             )
-            results[(instance_init_meas[0], meas)] = measured_prob
+            results[(initialization, _measurement)] = measured_prob
         return results
 
     max_workers = min(max_workers, cpu_count(), total)
@@ -265,7 +274,7 @@ def run_subcircuit_instances(
     return subcircuit_measured_probs
 
 
-def mutate_measurement_basis(meas: tuple[str]) -> list[tuple[str]]:
+def mutate_measurement_basis(bases: tuple[str]) -> list[tuple[str]]:
     """
     Expand a measurement-basis specification by replacing identity entries
     with both identity and Z bases.
@@ -277,7 +286,7 @@ def mutate_measurement_basis(meas: tuple[str]) -> list[tuple[str]]:
 
     Parameters
     ----------
-    meas : Sequence[str]
+    bases : Sequence[str]
         Per-qubit measurement bases (e.g., "comp", "X", "Y", "I").
 
     Returns
@@ -286,15 +295,15 @@ def mutate_measurement_basis(meas: tuple[str]) -> list[tuple[str]]:
         All mutated measurement-basis tuples. If no mutation is needed, this is
         `[meas]`.
     """
-    if all(x != "I" for x in meas):
-        return [meas]
-    mutated_meas = []
-    for x in meas:
+    if all(x != "I" for x in bases):
+        return [bases]
+    mutated_bases = []
+    for x in bases:
         if x != "I":
-            mutated_meas.append([x])
+            mutated_bases.append([x])
         else:
-            mutated_meas.append(["I", "Z"])
-    return list(itertools.product(*mutated_meas))
+            mutated_bases.append(["I", "Z"])
+    return list(itertools.product(*mutated_bases))
 
 
 def modify_subcircuit_instance(  # noqa: PLR0912
@@ -391,23 +400,22 @@ def modify_subcircuit_instance(  # noqa: PLR0912
 
 
 def bases_to_bitmask(bases: tuple[str]) -> np.array:
-    map = {'comp': 1, 'I': 0, 'X': 0, 'Y': 0, 'Z': 0}
+    map = {"comp": 1, "I": 0, "X": 0, "Y": 0, "Z": 0}
     mask = [map[b] for b in bases]
     return np.array(mask)
 
 
 def compress_bits(arr: np.ndarray, mask: np.ndarray) -> np.ndarray:
     """
-    Apply a bit mask that *drops* bits (rather than zeroing them out).
+    Apply a bit mask that drops bits.
     mask is an array/list of 0/1, where bit 0 = LSB, bit[-1] = MSB.
     """
-    nbits = len(mask)
     kept_positions = np.nonzero(mask)[0]
     # Create mapping from old bit positions to new packed bit positions
     shifts = np.arange(len(kept_positions))
     # Compute new number by summing selected bits shifted to compact positions
     result = np.zeros_like(arr)
-    for src, dst in zip(kept_positions, shifts):
+    for src, dst in zip(kept_positions, shifts, strict=False):
         result |= ((arr >> src) & 1) << dst
     return result
 
@@ -452,7 +460,9 @@ def measure_prob(unmeasured_prob: np.ndarray, meas: tuple[str]) -> np.ndarray:
     return measured_prob
 
 
-def measure_sign(full_states: np.ndarray, meas: tuple[str, ...]) -> np.ndarray:
+def measure_sign(
+    full_states: np.ndarray | list[int], meas: tuple[str, ...]
+) -> np.ndarray:
     """
     Vectorized version of sign measurement.
     full_states: array of ints (shape (...,))
@@ -464,7 +474,7 @@ def measure_sign(full_states: np.ndarray, meas: tuple[str, ...]) -> np.ndarray:
 
     # Bits to consider: from MSB→LSB, but we'll index LSB-first for efficiency
     # Compute the bits matrix: shape (len(full_states), n)
-    bits = ((full_states[:, None] >> np.arange(n-1, -1, -1)) & 1).astype(bool)
+    bits = ((full_states[:, None] >> np.arange(n - 1, -1, -1)) & 1).astype(bool)
 
     # Mask of which bases trigger a sign flip (True = flip)
     flip_mask = np.array([b not in ("I", "comp") for b in meas])
@@ -473,42 +483,7 @@ def measure_sign(full_states: np.ndarray, meas: tuple[str, ...]) -> np.ndarray:
     flips = np.sum(bits & flip_mask, axis=1)
 
     # (-1) ** (# of flips)
-    sigma = np.where(flips % 2 == 0, 1, -1)
-
-    return sigma
-
-
-def measure_state(full_state: int, meas: tuple[str]) -> tuple[int, int]:
-    """
-    Map a full-basis state index to an effective computational-basis index under
-    mixed-basis measurement, and compute the accumulated sign.
-
-    The sign flips (sigma *= -1) whenever the measured bit is 1 and the basis
-    is not in {"I", "comp"}. Bits with basis "comp" contribute to the
-    effective computational index; bits with bases in {"I", "X", "Y"} are
-    marginalized out from the index (but may affect sign).
-
-    Parameters
-    ----------
-    full_state : int
-        Index of the n-bit computational basis state.
-    meas : Sequence[str]
-        Per-qubit measurement bases (length n), MSB to LSB.
-
-    Returns
-    -------
-    tuple[int, int]
-        A pair (sigma, effective_state) where sigma in {+1, -1} and
-        effective_state is the integer index in the compressed space spanned by
-        qubits with basis "comp".
-    """
-    bin_full_state = bin(full_state)[2:].zfill(len(meas))
-    sigma = 1
-    for meas_bit, meas_basis in zip(bin_full_state, meas, strict=False):
-        if meas_bit == "1" and meas_basis not in ("I", "comp"):
-            sigma *= -1
-
-    return sigma
+    return np.where(flips % 2 == 0, 1, -1)
 
 
 def attribute_shots(
