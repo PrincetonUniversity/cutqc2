@@ -1,7 +1,6 @@
 import copy
 import itertools
 import logging
-import math
 import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from multiprocessing import cpu_count
@@ -251,6 +250,7 @@ def run_subcircuit_instances(
         subcircuit_inst_prob = evaluate_circ(
             circuit=subcircuit_instance, backend=backend
         )
+        subcircuit_inst_prob = xp.asarray(subcircuit_inst_prob)
 
         mutated_measurement = mutate_measurement_basis(bases=measurement)
         for _measurement in mutated_measurement:
@@ -402,7 +402,7 @@ def modify_subcircuit_instance(  # noqa: PLR0912
 def bases_to_bitmask(bases: tuple[str]) -> np.array:
     map = {"comp": 1, "I": 0, "X": 0, "Y": 0, "Z": 0}
     mask = [map[b] for b in bases]
-    return np.array(mask)
+    return xp.array(mask)
 
 
 def compress_bits(arr: np.ndarray, mask: np.ndarray) -> np.ndarray:
@@ -410,11 +410,11 @@ def compress_bits(arr: np.ndarray, mask: np.ndarray) -> np.ndarray:
     Apply a bit mask that drops bits.
     mask is an array/list of 0/1, where bit 0 = LSB, bit[-1] = MSB.
     """
-    kept_positions = np.nonzero(mask)[0]
+    kept_positions = xp.nonzero(mask)[0]
     # Create mapping from old bit positions to new packed bit positions
-    shifts = np.arange(len(kept_positions))
+    shifts = xp.arange(len(kept_positions))
     # Compute new number by summing selected bits shifted to compact positions
-    result = np.zeros_like(arr)
+    result = xp.zeros_like(arr)
     for src, dst in zip(kept_positions, shifts, strict=False):
         result |= ((arr >> src) & 1) << dst
     return result
@@ -448,15 +448,15 @@ def measure_prob(unmeasured_prob: np.ndarray, meas: tuple[str]) -> np.ndarray:
     if meas.count("comp") == len(meas) or type(unmeasured_prob) is float:
         return unmeasured_prob
 
-    measured_prob = np.zeros(int(2 ** meas.count("comp")))
+    measured_prob = xp.zeros(int(2 ** meas.count("comp")))
     meas_bitmask = bases_to_bitmask(meas)[::-1]
-    _n = int(math.log2(len(unmeasured_prob)))
-    effective_states = compress_bits(np.arange(1 << _n), meas_bitmask)
+    _n = int(xp.round(xp.log2(unmeasured_prob.size)))
+    effective_states = compress_bits(xp.arange(1 << _n), meas_bitmask)
 
-    sigmas = measure_sign(np.arange(len(unmeasured_prob)), meas)
+    sigmas = measure_sign(xp.arange(len(unmeasured_prob)), meas)
     values = sigmas * unmeasured_prob
 
-    np.add.at(measured_prob, np.array(effective_states), np.array(values))
+    xp.add.at(measured_prob, xp.array(effective_states), xp.array(values))
     return measured_prob
 
 
@@ -470,20 +470,20 @@ def measure_sign(
     Returns array of ±1 with same shape as full_states.
     """
     n = len(meas)
-    full_states = np.asarray(full_states, dtype=np.int64)
+    full_states = xp.asarray(full_states, dtype=xp.int64)
 
     # Bits to consider: from MSB→LSB, but we'll index LSB-first for efficiency
     # Compute the bits matrix: shape (len(full_states), n)
-    bits = ((full_states[:, None] >> np.arange(n - 1, -1, -1)) & 1).astype(bool)
+    bits = ((full_states[:, None] >> xp.arange(n - 1, -1, -1)) & 1).astype(bool)
 
     # Mask of which bases trigger a sign flip (True = flip)
-    flip_mask = np.array([b not in ("I", "comp") for b in meas])
+    flip_mask = xp.array([b not in ("I", "comp") for b in meas])
 
     # Count flips: bits that are 1 *and* basis requires flipping
-    flips = np.sum(bits & flip_mask, axis=1)
+    flips = xp.sum(bits & flip_mask, axis=1)
 
     # (-1) ** (# of flips)
-    return np.where(flips % 2 == 0, 1, -1)
+    return xp.where(flips % 2 == 0, 1, -1)
 
 
 def attribute_shots(

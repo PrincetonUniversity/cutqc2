@@ -1,6 +1,5 @@
-import numpy as np
-
 from cutqc2.core.utils import measure_prob, measure_sign
+from cutqc2.numeric import xp
 
 """
 sigma = measure_sign(<unmeasured_states>, <measurement_bases>)
@@ -47,16 +46,18 @@ def test_measure_prob0():
     # We go from a 2^n probability vector for a subcircuit
     # to a 2^(n-1) "quasi"-probability vector
     result = measure_prob(
-        [
-            0.25,  # 000 -> +0.25  for 00
-            0,  # 001 -> +0.00  for 01
-            0,  # 010 -> +0.00  for 10
-            0.25,  # 011 -> +0.25  for 11
-            0.125,  # 100 -> -0.125 for 00
-            0.125,  # 101 -> -0.125 for 01
-            0.125,  # 110 -> -0.125 for 10
-            0.125,  # 111 -> -0.125 for 11
-        ],
+        xp.array(
+            [
+                0.25,  # 000 -> +0.25  for 00
+                0,  # 001 -> +0.00  for 01
+                0,  # 010 -> +0.00  for 10
+                0.25,  # 011 -> +0.25  for 11
+                0.125,  # 100 -> -0.125 for 00
+                0.125,  # 101 -> -0.125 for 01
+                0.125,  # 110 -> -0.125 for 10
+                0.125,  # 111 -> -0.125 for 11
+            ]
+        ),
         ["Z", "comp", "comp"],
     )
-    assert np.allclose(result, [0.125, -0.125, -0.125, 0.125])
+    assert xp.allclose(result, [0.125, -0.125, -0.125, 0.125])
