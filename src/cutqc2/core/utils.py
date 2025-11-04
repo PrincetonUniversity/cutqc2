@@ -2,8 +2,6 @@ import copy
 import itertools
 import logging
 import warnings
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from multiprocessing import cpu_count
 
 import numpy as np
 from qiskit import QuantumCircuit
@@ -185,7 +183,6 @@ def run_subcircuit_instances(
     subcircuit: QuantumCircuit,
     subcircuit_instance_init_meas: list[tuple[tuple[str], tuple[str]]],
     backend: str = "statevector_simulator",
-    max_workers: int = 1,
 ) -> dict[tuple[tuple[str], tuple[str]], np.ndarray | float]:
     """
     Evaluate a set of subcircuit instances under different initializations and
@@ -213,9 +210,6 @@ def run_subcircuit_instances(
     backend : str, optional
         Backend identifier passed to `evaluate_circ` (default is
         "statevector_simulator").
-    max_workers : int, optional
-        Maximum number of parallel threads to use (default is 1, i.e., no
-        parallelism).
 
     Returns
     -------
@@ -262,14 +256,9 @@ def run_subcircuit_instances(
             results[(initialization, _measurement)] = measured_prob
         return results
 
-    max_workers = min(max_workers, cpu_count(), total)
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [
-            executor.submit(process_instance, i, instance_init_meas)
-            for i, instance_init_meas in enumerate(subcircuit_instance_init_meas)
-        ]
-        for future in as_completed(futures):
-            subcircuit_measured_probs.update(future.result())
+    for i, instance_init_meas in enumerate(subcircuit_instance_init_meas):
+        result = process_instance(i, instance_init_meas)
+        subcircuit_measured_probs.update(result)
 
     return subcircuit_measured_probs
 
