@@ -185,7 +185,7 @@ def run_subcircuit_instance(
     subcircuit: QuantumCircuit,
     initialization: tuple[str],
     measurement: tuple[str],
-    backend: str | Backend = "statevector_simulator",
+    backend: str | Backend | None = None,
 ) -> tuple[int, dict[tuple[tuple[str], tuple[str]], np.ndarray | float]]:
     """
     Evaluate a subcircuit instance for the given initializations and
@@ -213,8 +213,7 @@ def run_subcircuit_instance(
         A tuple of measurement basis labels per qubit (e.g., "comp", "X", "Y",
         "I"). If any entry is "Z", the instance is skipped.
     backend : str or Backend, optional
-        Backend identifier passed to `evaluate_circ` (default is
-        "statevector_simulator").
+        Backend identifier for evaluation of circuits.
 
     Returns
     -------

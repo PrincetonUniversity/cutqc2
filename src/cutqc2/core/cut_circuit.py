@@ -19,6 +19,7 @@ from qiskit.dagcircuit import DAGCircuit, DAGOpNode
 from qiskit.providers.backend import Backend
 from qiskit.qasm3 import loads
 
+from cutqc2 import config
 from cutqc2.core.compute_graph import ComputeGraph
 from cutqc2.core.dag import DAGEdge, DagNode
 from cutqc2.core.dynamic_definition import DynamicDefinition
@@ -727,10 +728,10 @@ class CutCircuit:
         self.populate_compute_graph()
         self.populate_subcircuit_entries()
 
-    def run_subcircuits(
+    def run_subcircuits(  # noqa: PLR0915
         self,
         subcircuits: list[int] | None = None,
-        backend: str | Backend = "statevector_simulator",
+        backend: str | Backend | None = None,
     ):
         """
         Execute all subcircuits on a backend and collect probability vectors.
@@ -742,6 +743,7 @@ class CutCircuit:
         backend
             Backend name (e.g., "statevector_simulator") or Backend object.
         """
+        backend = backend or config.core.backend
         subcircuits = subcircuits or range(len(self))
 
         def work_gen():
@@ -1244,7 +1246,7 @@ class CutCircuit:
             )
         return reconstructed_probabilities
 
-    def get_ground_truth(self, backend: str) -> np.ndarray:
+    def get_ground_truth(self, backend: str | None = None) -> np.ndarray:
         """
         Evaluate the original circuit (without cuts) on a backend.
 
@@ -1264,7 +1266,7 @@ class CutCircuit:
     def verify(
         self,
         probabilities: np.ndarray,
-        backend: str = "statevector_simulator",
+        backend: str | None = None,
         atol: float = 1e-10,
         raise_error: bool = True,
     ) -> float:
@@ -1287,6 +1289,7 @@ class CutCircuit:
         float
             Relative mean squared error (normalized as in tests).
         """
+        backend = backend or config.core.backend
         logger.info("Verifying cut circuit against original circuit")
         ground_truth = self.get_ground_truth(backend)
 
@@ -1485,9 +1488,7 @@ class CutCircuit:
 
         fig, ax = plt.subplots()
         if plot_ground_truth:
-            ground_truth = self.get_ground_truth(backend="statevector_simulator")[
-                full_states
-            ]
+            ground_truth = self.get_ground_truth()[full_states]
             ax.plot(range(len(ground_truth)), ground_truth, linestyle="--", color="r")
 
         probabilities = self.get_probabilities(full_states=full_states)

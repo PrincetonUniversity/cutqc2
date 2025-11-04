@@ -5,10 +5,12 @@ from qiskit.quantum_info import Statevector
 import numpy as np
 import psutil
 
+from cutqc2 import config
 from cutqc2.cutqc.helper_functions.conversions import dict_to_array
 
 
-def evaluate_circ(circuit, backend, options=None):
+def evaluate_circ(circuit, backend: str | None, options=None):
+    backend = backend or config.core.backend
     circuit = copy.deepcopy(circuit)
     max_memory_mb = psutil.virtual_memory().total >> 20
     max_memory_mb = int(max_memory_mb / 4 * 3)
@@ -45,6 +47,9 @@ def evaluate_circ(circuit, backend, options=None):
             )
             return noiseless_counts
     else:
+        if backend == "aer_gpu_simulator":
+            from qiskit_aer import AerSimulator
+            backend = AerSimulator(method="statevector", device="GPU")
         # Use a provided `qiskit.providers.backend.Backend` object directly
         circuit.save_statevector()
         result = backend.run(transpile(circuit, backend)).result()

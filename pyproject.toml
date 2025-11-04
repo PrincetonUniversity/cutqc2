@@ -41,7 +41,9 @@ cutqc2 = "cutqc2.__main__:cli"
 
 [project.optional-dependencies]
 gpu = [
-    "cupy-cuda12x"
+    "cupy-cuda12x",
+    # https://github.com/Qiskit/qiskit-aer/issues/2336
+    "qiskit-aer-gpu-cu11"
 ]
 dev = [
     "pytest>6",
