@@ -7,6 +7,7 @@ import numpy as np
 from qiskit import QuantumCircuit
 from qiskit.circuit.library.standard_gates import HGate, SdgGate, SGate, XGate
 from qiskit.converters import circuit_to_dag, dag_to_circuit
+from qiskit.providers.backend import Backend
 
 from cutqc2.cutqc.helper_functions.non_ibmq_functions import evaluate_circ
 from cutqc2.numeric import xp
@@ -179,16 +180,18 @@ def unmerge_prob_vector(
     return unmerged
 
 
-def run_subcircuit_instances(
+def run_subcircuit_instance(
+    subcircuit_index: int,
     subcircuit: QuantumCircuit,
-    subcircuit_instance_init_meas: list[tuple[tuple[str], tuple[str]]],
-    backend: str = "statevector_simulator",
-) -> dict[tuple[tuple[str], tuple[str]], np.ndarray | float]:
+    initialization: tuple[str],
+    measurement: tuple[str],
+    backend: str | Backend = "statevector_simulator",
+) -> tuple[int, dict[tuple[tuple[str], tuple[str]], np.ndarray | float]]:
     """
-    Evaluate a set of subcircuit instances under different initializations and
+    Evaluate a subcircuit instance for the given initializations and
     measurement bases, returning their measured probability distributions.
 
-    The function iterates over provided `(init, meas)` specifications, creates a
+    The function expects one `(init, meas)` specification, creates a
     runnable subcircuit instance via `modify_subcircuit_instance`, simulates it
     using `evaluate_circ`, and then projects the resulting state/probabilities
     into the requested measurement bases. If a measurement specification
@@ -198,69 +201,57 @@ def run_subcircuit_instances(
 
     Parameters
     ----------
+    subcircuit_index : int
+        0-index of the subcircuit instance to simulate. Useful to collate
+        results in the caller.
     subcircuit : QuantumCircuit
-        Base subcircuit to instantiate and simulate.
-    subcircuit_instance_init_meas : list[tuple[tuple[str], tuple[str]]]
-        A list of `(init, meas)` pairs, where:
-        - `init` is a tuple of state labels per qubit (e.g., "zero", "one",
+        Subcircuit to instantiate and simulate.
+    initialization : tuple[str]
+        A tuple of state labels per qubit (e.g., "zero", "one",
           "plus", "minus", "plusI", "minusI").
-        - `meas` is a tuple of measurement basis labels per qubit (e.g.,
-          "comp", "X", "Y", "I"). If any entry is "Z", the instance is
-          skipped.
-    backend : str, optional
+    measurement: tuple[str]
+        A tuple of measurement basis labels per qubit (e.g., "comp", "X", "Y",
+        "I"). If any entry is "Z", the instance is skipped.
+    backend : str or Backend, optional
         Backend identifier passed to `evaluate_circ` (default is
         "statevector_simulator").
 
     Returns
     -------
-    dict[tuple[tuple[str], tuple[str]], np.ndarray | float]
-        A mapping from `(init, meas)` to the measured probability vector (or a
-        scalar if the circuit evaluates to a single probability). The `meas`
-        key in the mapping reflects any mutated basis produced by
-        `mutate_measurement_basis`.
+    tuple[int, dict[tuple[tuple[str], tuple[str]], np.ndarray | float]]
+
+        A 2-tuple with elements:
+            0: The passed-in subcircuit index
+            1: A mapping from `(init, meas)` to the measured probability vector
+            (or a scalar if the circuit evaluates to a single probability).
     """
-    total = len(subcircuit_instance_init_meas)
-    subcircuit_measured_probs = {}
+    results = {}
+    # `mutate_measurement_basis` expands all occurrences of I bases into I
+    # and Z bases (".. measuring a qubit in either the I or Z basis
+    # corresponds physically to the same quantum circuit ..")
+    # So we can ignore any incoming bases that have "Z" in the measurement
+    # bases. Returning a {} results in no effective updates in the caller.
+    if "Z" in measurement:
+        return subcircuit_index, {}
 
-    def process_instance(i, instance_init_meas):
-        logger.info(f"Running subcircuit instance {i + 1}/{total}")
-        initialization, measurement = instance_init_meas
+    subcircuit_instance = modify_subcircuit_instance(
+        subcircuit=subcircuit,
+        init=initialization,
+        meas=measurement,
+    )
 
-        results = {}
-        # `mutate_measurement_basis` expands all occurrences of I bases into I
-        # and Z bases (".. measuring a qubit in either the I or Z basis
-        # corresponds physically to the same quantum circuit ..")
-        # So we can ignore any incoming bases that have "Z" in the measurement
-        # bases. Returning a {} results in no effective updates in the caller.
-        if "Z" in measurement:
-            return {}
+    subcircuit_inst_prob = evaluate_circ(circuit=subcircuit_instance, backend=backend)
+    subcircuit_inst_prob = xp.asarray(subcircuit_inst_prob)
 
-        subcircuit_instance = modify_subcircuit_instance(
-            subcircuit=subcircuit,
-            init=initialization,
-            meas=measurement,
+    mutated_measurement = mutate_measurement_basis(bases=measurement)
+    for _measurement in mutated_measurement:
+        # bases in `_measurement` are LSB to MSB. Reverse them since
+        # `measure_prob` is expecting MSB to LSB.
+        measured_prob = measure_prob(
+            unmeasured_prob=subcircuit_inst_prob, meas=_measurement[::-1]
         )
-
-        subcircuit_inst_prob = evaluate_circ(
-            circuit=subcircuit_instance, backend=backend
-        )
-        subcircuit_inst_prob = xp.asarray(subcircuit_inst_prob)
-
-        mutated_measurement = mutate_measurement_basis(bases=measurement)
-        for _measurement in mutated_measurement:
-            # bases in `_measurement` are LSB to MSB. Reverse them since
-            # `measure_prob` is expecting MSB to LSB.
-            measured_prob = measure_prob(
-                unmeasured_prob=subcircuit_inst_prob, meas=_measurement[::-1]
-            )
-            results[(initialization, _measurement)] = measured_prob
-        return results
-
-    for i, instance_init_meas in enumerate(subcircuit_instance_init_meas):
-        result = process_instance(i, instance_init_meas)
-        subcircuit_measured_probs.update(result)
-
-    return subcircuit_measured_probs
+        results[(initialization, _measurement)] = measured_prob
+    return subcircuit_index, results
 
 
 def mutate_measurement_basis(bases: tuple[str]) -> list[tuple[str]]:

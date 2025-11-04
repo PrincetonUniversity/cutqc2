@@ -45,6 +45,7 @@ def evaluate_circ(circuit, backend, options=None):
             )
             return noiseless_counts
     else:
+        # Use a provided `qiskit.providers.backend.Backend` object directly
         circuit.save_statevector()
         result = backend.run(transpile(circuit, backend)).result()
         statevector = result.get_statevector(circuit)
