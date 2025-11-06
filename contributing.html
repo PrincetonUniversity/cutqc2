@@ -186,7 +186,11 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#running-the-code-without-a-gpu" class="md-nav__link">Running the code without a GPU</a>
         </li>
-        <li class="md-nav__item"><a href="#a-note-on-our-self-hosted-runner" class="md-nav__link">A note on our self-hosted runner</a>
+        <li class="md-nav__item"><a href="#a-note-on-our-self-hosted-runner" class="md-nav__link">A note on our self-hosted runner</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#gurobi-license-on-our-self-hosted-runner" class="md-nav__link">Gurobi License on our self-hosted runner</a>
+        </li></ul>
+            </nav>
         </li></ul>
             </nav>
         </li>
@@ -264,6 +268,29 @@ The <code class="docutils literal notranslate"><span class="pre">CUTQC2_CORE_NUM
 <p>In addition to Github-hosted runners, the project currently uses a <a class="reference external" href="https://docs.github.com/en/actions/concepts/runners/self-hosted-runners">self-hosted</a> runner at the Princeton <a class="reference external" href="https://researchcomputing.princeton.edu/">Research Computing</a> group.
 This runner is configured to run CI jobs on a host with multiple GPUs, and can be used for testing parts of the code that are single/multi-GPU enabled, with our without MPI.</p>
 <p>If the CI fails due to a reason that you cannot explain or fix, contact the maintainers, and we will try to help you out.</p>
+<section id="gurobi-license-on-our-self-hosted-runner">
+<h3 id="gurobi-license-on-our-self-hosted-runner">Gurobi License on our self-hosted runner<a class="headerlink" href="#gurobi-license-on-our-self-hosted-runner" title="Link to this heading">¶</a></h3>
+<p>For this repository, the following 2 “Environment Variables” have been defined in the Settings page:</p>
+<ul class="simple">
+<li><p>GUROBI_LICENSEID</p></li>
+<li><p>GUROBI_WLSACCESSID</p></li>
+</ul>
+<p>In addition, the following “Environment Secret” has been defined:</p>
+<ul class="simple">
+<li><p>GUROBI_WLSSECRET</p></li>
+</ul>
+<p>If/when Gurobi License expires, new values need to be obtained from the Gurobi Server. Go to <a class="reference external" href="https://license.gurobi.com/manager/licenses">Web License Manager</a>,
+create a new “Temporary Academic” license (typically valid for 3 months) and click Download. This prompts you to create an API key for the license, and generates
+a <code class="docutils literal notranslate"><span class="pre">gurobi.lic</span></code> file to download. The downloaded file has lines like:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>```
+WLSACCESSID=b2ab-...
+WLSSECRET=d5f2c..
+LICENSEID=1234567
+```
+</pre></div>
+</div>
+<p>Use the values on the 3 lines to get the values of the corresponding <code class="docutils literal notranslate"><span class="pre">GUROBI_*</span></code> variables and secret mentioned above.</p>
+</section>
 </section>
 </section>
 
