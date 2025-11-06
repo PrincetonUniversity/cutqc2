@@ -114,12 +114,12 @@ What you’ll see:
 - Iterating over `cut_circuit` using `for subcircuit in cut_circuit:` iterates through each subcircuit, which can then be printed out.
 
 
-### 3) Executing subcircuits and packing probabilities
+### 3) Executing subcircuits and packing probabilities (MPI-aware core)
 
 Method: `run_subcircuits(subcircuits=None, backend="statevector_simulator")`
 
 - Runs each subcircuit's instances:
-  - Uses utility functions `run_subcircuit_instances` to execute and `attribute_shots` to map measured results to entries. This step fills:
+  - Uses utility functions `run_subcircuit_instance` to execute and `attribute_shots` to map measured results to entries. This step fills:
     - `self.subcircuit_entry_probs[subcircuit_idx][(init, meas)] = 2^k-length probability vector`
     - `self.subcircuit_packed_probs[subcircuit_idx] = get_packed_probabilities(subcircuit_idx)`
   - The method: `get_packed_probabilities(subcircuit_i, qubit_spec=None)`, for each subcircuit:
@@ -129,6 +129,12 @@ Method: `run_subcircuits(subcircuits=None, backend="statevector_simulator")`
 After `run_subcircuits()`:
 - `self.subcircuit_entry_probs` and `self.subcircuit_packed_probs` are populated and ready for the reconstruction phase.
 
+```{admonition} Why this design
+:class: note
+
+- A single call to `run_subcircuit_instance` can be very expensive; distributing embarrassingly parallel initialization work scales linearly across ranks.
+- Since each rank calls functions on `cupy` arrays, this step can utilize multiple GPUs across nodes.
+```
 
 ### 4) Save and load
 
