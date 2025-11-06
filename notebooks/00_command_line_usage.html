@@ -188,11 +188,13 @@
   <ul class="md-nav__list" data-md-scrollfix="">
         <li class="md-nav__item"><a href="#notebooks-00-command-line-usage--page-root" class="md-nav__link">Using <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> on the command line</a><nav class="md-nav">
               <ul class="md-nav__list">
-        <li class="md-nav__item"><a href="#Circuit-cutting-and-execution" class="md-nav__link">Circuit cutting and execution</a><nav class="md-nav">
+        <li class="md-nav__item"><a href="#Circuit-cutting" class="md-nav__link">Circuit cutting</a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#Downloading-a-pre-generated-and-pre-cut-circuit" class="md-nav__link">Downloading a pre-generated and pre-cut circuit</a>
         </li></ul>
             </nav>
+        </li>
+        <li class="md-nav__item"><a href="#Circuit-execution" class="md-nav__link">Circuit execution</a>
         </li>
         <li class="md-nav__item"><a href="#Postprocessing" class="md-nav__link">Postprocessing</a>
         </li>
@@ -226,9 +228,9 @@
 <li><p><strong>(Optional) Verify</strong>: Verify the results of the original circuit using classical simulation.</p></li>
 <li><p><strong>(Optional) Visualize</strong>: Plot the probability distribution of the results.</p></li>
 </ol>
-<section id="Circuit-cutting-and-execution">
-<h2 id="Circuit-cutting-and-execution">Circuit cutting and execution<a class="headerlink" href="#Circuit-cutting-and-execution" title="Link to this heading">¶</a></h2>
-<p>Steps 1 and 2 are performed using the <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">cut</span></code> command.</p>
+<section id="Circuit-cutting">
+<h2 id="Circuit-cutting">Circuit cutting<a class="headerlink" href="#Circuit-cutting" title="Link to this heading">¶</a></h2>
+<p>Steps 1 is performed using the <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">cut</span></code> command.</p>
 <p>Say you have a qasm3 file representing a quantum circuit. Some examples are provided in the <code class="docutils literal notranslate"><span class="pre">examples/scripts</span></code> folder in the codebase. You can cut and execute the circuit as follows:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cutqc2 cut \
   --file supremacy_6qubit.qasm3 \
@@ -242,13 +244,33 @@
 <ul class="simple">
 <li><p>Cut the circuit into sub-circuits with a maximum width of 5 qubits, and a maximum of 10 cuts.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">num-subcircuits</span></code> parameter specifies how many sub-circuits to create. You can specify this parameter multiple times - <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code> will try each in sequence till it finds a suitable cut solution.</p></li>
-<li><p>Run each sub-circuit on a simulator (by default, <code class="docutils literal notranslate"><span class="pre">qiskit</span></code>’s statevector simulator is used).</p></li>
-<li><p>Save results (that can be used for reconstruction) in a <code class="docutils literal notranslate"><span class="pre">zarr</span></code> file named <code class="docutils literal notranslate"><span class="pre">supremacy_6qubit.zarr</span></code>. If you do not specify an <code class="docutils literal notranslate"><span class="pre">--output-file</span></code>, a default filename (that includes a timestamp, among other things) will be used.</p></li>
+<li><p>Save results in a <code class="docutils literal notranslate"><span class="pre">zarr</span></code> file named <code class="docutils literal notranslate"><span class="pre">supremacy_6qubit.zarr</span></code>. If you do not specify an <code class="docutils literal notranslate"><span class="pre">--output-file</span></code>, a default filename (that includes a timestamp, among other things) will be used.</p></li>
 </ul>
 <section id="Downloading-a-pre-generated-and-pre-cut-circuit">
 <h3 id="Downloading-a-pre-generated-and-pre-cut-circuit">Downloading a pre-generated and pre-cut circuit<a class="headerlink" href="#Downloading-a-pre-generated-and-pre-cut-circuit" title="Link to this heading">¶</a></h3>
-<p>To download a pre-generated and pre-cut circuit from <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code>, you can use the <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">download</span></code> command. Use <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">download</span> <span class="pre">--list</span></code> to see a list of available files, and `cutqc2 download</p>
+<p>To download a pre-generated and pre-cut circuit from <code class="docutils literal notranslate"><span class="pre">cutqc2</span></code>, you can use the <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">download</span></code> command. Use <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">download</span> <span class="pre">--list</span></code> to see a list of available files, and `cutqc2 download.</p>
 </section>
+</section>
+<section id="Circuit-execution">
+<h2 id="Circuit-execution">Circuit execution<a class="headerlink" href="#Circuit-execution" title="Link to this heading">¶</a></h2>
+<p>Once a circuit has been cut into smaller sub-circuits, <code class="docutils literal notranslate"><span class="pre">cutqc2</span> <span class="pre">run</span></code> runs each sub-circuit instance (many times after making minor tweaks to the gates at the cut-wires). By default, <code class="docutils literal notranslate"><span class="pre">qiskit</span></code>’s GPU-enabled aer simulator is used.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cutqc2 run \
+  --file supremacy_6qubit.zarr
+  --save
+</pre></div>
+</div>
+<p>This will:</p>
+<ul class="simple">
+<li><p>Read sub-circuit and cutting information from the file <code class="docutils literal notranslate"><span class="pre">supremacy_6qubit.zarr</span></code>.</p></li>
+<li><p>Run each subcircuit 4<strong>n times where n is the number of input or output cut wires in the subcircuit.</strong> This is a computationally and memory intensive step!** that can benefit from GPU and MPI support.</p></li>
+<li><p>Save results (that can be used for reconstruction) back in the <code class="docutils literal notranslate"><span class="pre">zarr</span></code> file that was used to load the subcircuits. You will typically want to save the results unless doing a dry-run, so make sure to specify this flag.</p></li>
+</ul>
+<p>To run this command in a cluster setting with multiple nodes (each having access to a GPU), use <code class="docutils literal notranslate"><span class="pre">mpirun</span></code> to execute this step:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>mpirun -np 4 cutqc2 run \
+  --file supremacy_6qubit.zarr \
+  --save
+</pre></div>
+</div>
 </section>
 <section id="Postprocessing">
 <h2 id="Postprocessing">Postprocessing<a class="headerlink" href="#Postprocessing" title="Link to this heading">¶</a></h2>
