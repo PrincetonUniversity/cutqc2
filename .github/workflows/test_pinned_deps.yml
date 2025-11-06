@@ -48,6 +48,17 @@ jobs:
       run: |
           uvx pre-commit run --all-files
 
+    - name: Install qiskit-aer-gpu
+      if: ${{ matrix.os == 'self-hosted' }}
+      # Due to a known issue with a very specific version
+      # of qiskit-aer-gpu working with qiskit-aer
+      # we manually install the required version here.
+      # Things seem to work only if we do this *after*
+      # having install qiskit-aer before.
+      # See https://github.com/Qiskit/qiskit-aer/issues/2336
+      run: |
+        uv pip install --python .venv/bin/python qiskit-aer-gpu-cu11 
+
     - name: Pytest with coverage
       if: ${{ matrix.os == 'self-hosted' }}
       run: |
