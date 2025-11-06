@@ -72,3 +72,4 @@ jobs:
         GUROBI_WLSACCESSID: ${{ vars.GUROBI_WLSACCESSID }}
         GUROBI_LICENSEID: ${{ vars.GUROBI_LICENSEID }}
         GUROBI_WLSSECRET: ${{ secrets.GUROBI_WLSSECRET }}
+        CUTQC2_CORE_BACKEND: statevector_simulator

@@ -58,5 +58,28 @@ To allow the package to be used without a GPU, pay attention to the following gu
 
   In addition to Github-hosted runners, the project currently uses a [self-hosted](https://docs.github.com/en/actions/concepts/runners/self-hosted-runners) runner at the Princeton [Research Computing](https://researchcomputing.princeton.edu/) group.
   This runner is configured to run CI jobs on a host with multiple GPUs, and can be used for testing parts of the code that are single/multi-GPU enabled, with our without MPI.
-  
+
   If the CI fails due to a reason that you cannot explain or fix, contact the maintainers, and we will try to help you out.
+  
+#### Gurobi License on our self-hosted runner
+
+  For this repository, the following 2 "Environment Variables" have been defined in the Settings page:
+  
+  - GUROBI_LICENSEID
+  - GUROBI_WLSACCESSID
+
+  In addition, the following "Environment Secret" has been defined:
+  
+  - GUROBI_WLSSECRET
+
+  If/when Gurobi License expires, new values need to be obtained from the Gurobi Server. Go to [Web License Manager](https://license.gurobi.com/manager/licenses),
+  create a new "Temporary Academic" license (typically valid for 3 months) and click Download. This prompts you to create an API key for the license, and generates
+  a `gurobi.lic` file to download. The downloaded file has lines like:
+    
+    ```
+    WLSACCESSID=b2ab-...
+    WLSSECRET=d5f2c..
+    LICENSEID=1234567
+    ```
+
+  Use the values on the 3 lines to get the values of the corresponding `GUROBI_*` variables and secret mentioned above. 
