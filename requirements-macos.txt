@@ -61,7 +61,7 @@ python-dateutil==2.9.0.post0
 python-dotenv==1.1.1
 pyyaml==6.0.2
 qiskit==2.1.2
-qiskit-aer==0.17.1
+qiskit-aer==0.17.2
 qiskit-qasm3-import==0.6.0
 requests==2.32.5
 rich==14.1.0
