@@ -189,7 +189,7 @@
         </li>
         <li class="md-nav__item"><a href="#cutting-the-circuit" class="md-nav__link">2) Cutting the circuit</a>
         </li>
-        <li class="md-nav__item"><a href="#executing-subcircuits-and-packing-probabilities" class="md-nav__link">3) Executing subcircuits and packing probabilities</a>
+        <li class="md-nav__item"><a href="#executing-subcircuits-and-packing-probabilities-mpi-aware-core" class="md-nav__link">3) Executing subcircuits and packing probabilities (MPI-aware core)</a>
         </li>
         <li class="md-nav__item"><a href="#save-and-load" class="md-nav__link">4) Save and load</a>
         </li>
@@ -363,13 +363,13 @@
 <li><p>Iterating over <code class="docutils literal notranslate"><span class="pre">cut_circuit</span></code> using <code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">subcircuit</span> <span class="pre">in</span> <span class="pre">cut_circuit:</span></code> iterates through each subcircuit, which can then be printed out.</p></li>
 </ul>
 </section>
-<section id="executing-subcircuits-and-packing-probabilities">
-<h2 id="executing-subcircuits-and-packing-probabilities">3) Executing subcircuits and packing probabilities<a class="headerlink" href="#executing-subcircuits-and-packing-probabilities" title="Link to this heading">¶</a></h2>
+<section id="executing-subcircuits-and-packing-probabilities-mpi-aware-core">
+<h2 id="executing-subcircuits-and-packing-probabilities-mpi-aware-core">3) Executing subcircuits and packing probabilities (MPI-aware core)<a class="headerlink" href="#executing-subcircuits-and-packing-probabilities-mpi-aware-core" title="Link to this heading">¶</a></h2>
 <p>Method: <code class="docutils literal notranslate"><span class="pre">run_subcircuits(subcircuits=None,</span> <span class="pre">backend="statevector_simulator")</span></code></p>
 <ul class="simple">
 <li><p>Runs each subcircuit’s instances:</p>
 <ul>
-<li><p>Uses utility functions <code class="docutils literal notranslate"><span class="pre">run_subcircuit_instances</span></code> to execute and <code class="docutils literal notranslate"><span class="pre">attribute_shots</span></code> to map measured results to entries. This step fills:</p>
+<li><p>Uses utility functions <code class="docutils literal notranslate"><span class="pre">run_subcircuit_instance</span></code> to execute and <code class="docutils literal notranslate"><span class="pre">attribute_shots</span></code> to map measured results to entries. This step fills:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">self.subcircuit_entry_probs[subcircuit_idx][(init,</span> <span class="pre">meas)]</span> <span class="pre">=</span> <span class="pre">2^k-length</span> <span class="pre">probability</span> <span class="pre">vector</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">self.subcircuit_packed_probs[subcircuit_idx]</span> <span class="pre">=</span> <span class="pre">get_packed_probabilities(subcircuit_idx)</span></code></p></li>
@@ -388,6 +388,13 @@
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">self.subcircuit_entry_probs</span></code> and <code class="docutils literal notranslate"><span class="pre">self.subcircuit_packed_probs</span></code> are populated and ready for the reconstruction phase.</p></li>
 </ul>
+<div class="note admonition">
+<p class="admonition-title">Why this design</p>
+<ul class="simple">
+<li><p>A single call to <code class="docutils literal notranslate"><span class="pre">run_subcircuit_instance</span></code> can be very expensive; distributing embarrassingly parallel initialization work scales linearly across ranks.</p></li>
+<li><p>Since each rank calls functions on <code class="docutils literal notranslate"><span class="pre">cupy</span></code> arrays, this step can utilize multiple GPUs across nodes.</p></li>
+</ul>
+</div>
 </section>
 <section id="save-and-load">
 <h2 id="save-and-load">4) Save and load<a class="headerlink" href="#save-and-load" title="Link to this heading">¶</a></h2>
