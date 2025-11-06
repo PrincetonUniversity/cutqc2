@@ -1,8 +1,0 @@
-{
-  "attributes": {
-    "qasm": "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[15] q;\ncp(pi/2) q[0], q[1];\nh q[1];\ncp(pi/4) q[0], q[2];\ncp(pi/2) q[1], q[2];\nh q[2];\ncp(pi/32) q[3], q[4];\ncp(pi/16) q[5], q[4];\ncp(pi/8) q[0], q[4];\ncp(pi/4) q[1], q[4];\ncp(pi/2) q[2], q[4];\nh q[4];\ncp(pi/32) q[5], q[6];\ncp(pi/16) q[0], q[6];\ncp(pi/8) q[1], q[6];\ncp(pi/4) q[2], q[6];\ncp(pi/2) q[4], q[6];\nh q[6];\ncp(pi/32) q[0], q[7];\ncp(pi/16) q[1], q[7];\ncp(pi/8) q[2], q[7];\ncp(pi/4) q[4], q[7];\ncp(pi/2) q[6], q[7];\nh q[7];\ncp(pi/32) q[1], q[8];\ncp(pi/16) q[2], q[8];\ncp(pi/8) q[4], q[8];\ncp(pi/4) q[6], q[8];\ncp(pi/2) q[7], q[8];\nh q[8];\ncp(pi/32) q[2], q[9];\ncp(pi/16) q[4], q[9];\ncp(pi/8) q[6], q[9];\ncp(pi/4) q[7], q[9];\ncp(pi/2) q[8], q[9];\nh q[9];\ncp(pi/32) q[4], q[10];\ncp(pi/16) q[6], q[10];\ncp(pi/8) q[7], q[10];\ncp(pi/4) q[8], q[10];\ncp(pi/2) q[9], q[10];\nh q[10];\ncp(pi/32) q[6], q[11];\ncp(pi/16) q[7], q[11];\ncp(pi/8) q[8], q[11];\ncp(pi/4) q[9], q[11];\ncp(pi/2) q[10], q[11];\nh q[11];\ncp(pi/32) q[7], q[12];\ncp(pi/16) q[8], q[12];\ncp(pi/8) q[9], q[12];\ncp(pi/4) q[10], q[12];\ncp(pi/2) q[11], q[12];\nh q[12];\ncp(pi/32) q[8], q[13];\ncp(pi/16) q[9], q[13];\ncp(pi/8) q[10], q[13];\ncp(pi/4) q[11], q[13];\ncp(pi/2) q[12], q[13];\nh q[13];\ncp(pi/32) q[9], q[14];\ncp(pi/16) q[10], q[14];\ncp(pi/8) q[11], q[14];\ncp(pi/4) q[12], q[14];\ncp(pi/2) q[13], q[14];\nh q[14];\n"
-  },
-  "zarr_format": 3,
-  "consolidated_metadata": null,
-  "node_type": "group"
-}
