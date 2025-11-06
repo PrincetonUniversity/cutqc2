@@ -279,11 +279,15 @@
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#cutqc2.core.utils.attribute_shots" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">attribute_shots()</span></code></a>
         </li>
+        <li class="md-nav__item"><a href="#cutqc2.core.utils.bases_to_bitmask" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">bases_to_bitmask()</span></code></a>
+        </li>
         <li class="md-nav__item"><a href="#cutqc2.core.utils.chunked" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">chunked()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#cutqc2.core.utils.compress_bits" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">compress_bits()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#cutqc2.core.utils.measure_prob" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">measure_prob()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#cutqc2.core.utils.measure_state" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">measure_state()</span></code></a>
+        <li class="md-nav__item"><a href="#cutqc2.core.utils.measure_sign" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">measure_sign()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#cutqc2.core.utils.merge_prob_vector" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">merge_prob_vector()</span></code></a>
         </li>
@@ -293,7 +297,7 @@
         </li>
         <li class="md-nav__item"><a href="#cutqc2.core.utils.permute_bits" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">permute_bits()</span></code></a>
         </li>
-        <li class="md-nav__item"><a href="#cutqc2.core.utils.run_subcircuit_instances" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">run_subcircuit_instances()</span></code></a>
+        <li class="md-nav__item"><a href="#cutqc2.core.utils.run_subcircuit_instance" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">run_subcircuit_instance()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#cutqc2.core.utils.unmerge_prob_vector" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">unmerge_prob_vector()</span></code></a>
         </li></ul>
@@ -613,9 +617,29 @@ subcircuit_measured_probs[instance_key_i]</cite> for every entry.</p>
 </dl>
 </dd></dl>
 <dl class="py function">
+<dt class="sig sig-object py" id="cutqc2.core.utils.bases_to_bitmask">
+<span class="sig-prename descclassname"><span class="pre">cutqc2.core.utils.</span></span><span class="sig-name descname"><span class="pre">bases_to_bitmask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bases</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/utils.html#bases_to_bitmask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.utils.bases_to_bitmask" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
 <dt class="sig sig-object py" id="cutqc2.core.utils.chunked">
 <span class="sig-prename descclassname"><span class="pre">cutqc2.core.utils.</span></span><span class="sig-name descname"><span class="pre">chunked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gen</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/utils.html#chunked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.utils.chunked" title="Link to this definition">¶</a></dt>
 <dd><p>Yield lists of length chunk_size from generator gen.</p>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="cutqc2.core.utils.compress_bits">
+<span class="sig-prename descclassname"><span class="pre">cutqc2.core.utils.</span></span><span class="sig-name descname"><span class="pre">compress_bits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/utils.html#compress_bits"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.utils.compress_bits" title="Link to this definition">¶</a></dt>
+<dd><p>Apply a bit mask that drops bits.
+mask is an array/list of 0/1, where bit 0 = LSB, bit[-1] = MSB.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
+</dd>
+</dl>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="cutqc2.core.utils.measure_prob">
@@ -631,7 +655,7 @@ accumulated with the appropriate sign.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>unmeasured_prob</strong> (<em>np.ndarray</em><em> | </em><em>float</em>) – Probability vector over all 2^n basis states (MSB-to-LSB convention) or
 a scalar probability.</p></li>
-<li><p><strong>meas</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>) – Per-qubit measurement basis labels (e.g., “comp”, “X”, “Y”, “I”).</p></li>
+<li><p><strong>meas</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>) – Per-qubit measurement basis labels, MSB to LSB (e.g., “comp”, “X”, “Y”, “I”).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -645,28 +669,15 @@ is entirely computational, the input is returned.</p>
 </dl>
 </dd></dl>
 <dl class="py function">
-<dt class="sig sig-object py" id="cutqc2.core.utils.measure_state">
-<span class="sig-prename descclassname"><span class="pre">cutqc2.core.utils.</span></span><span class="sig-name descname"><span class="pre">measure_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/utils.html#measure_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.utils.measure_state" title="Link to this definition">¶</a></dt>
-<dd><p>Map a full-basis state index to an effective computational-basis index under
-mixed-basis measurement, and compute the accumulated sign.</p>
-<p>The sign flips (sigma <a href="#id1"><span class="problematic" id="id2">*</span></a>= -1) whenever the measured bit is 1 and the basis
-is not in {“I”, “comp”}. Bits with basis “comp” contribute to the
-effective computational index; bits with bases in {“I”, “X”, “Y”} are
-marginalized out from the index (but may affect sign).</p>
+<dt class="sig sig-object py" id="cutqc2.core.utils.measure_sign">
+<span class="sig-prename descclassname"><span class="pre">cutqc2.core.utils.</span></span><span class="sig-name descname"><span class="pre">measure_sign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full_states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">meas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/utils.html#measure_sign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.utils.measure_sign" title="Link to this definition">¶</a></dt>
+<dd><p>Vectorized version of sign measurement.
+full_states: array of ints (shape (…,))
+meas: tuple/list of strings, e.g. (“X”, “I”, “Y”)
+Returns array of ±1 with same shape as full_states.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>full_state</strong> (<em>int</em>) – Index of the n-bit computational basis state.</p></li>
-<li><p><strong>meas</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>) – Per-qubit measurement bases (length n).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A pair (sigma, effective_state) where sigma in {+1, -1} and
-effective_state is the integer index in the compressed space spanned by
-qubits with basis “comp”.</p>
-</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>tuple[int, int]</p>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -726,7 +737,7 @@ applied.</p>
 </dd></dl>
 <dl class="py function">
 <dt class="sig sig-object py" id="cutqc2.core.utils.mutate_measurement_basis">
-<span class="sig-prename descclassname"><span class="pre">cutqc2.core.utils.</span></span><span class="sig-name descname"><span class="pre">mutate_measurement_basis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/utils.html#mutate_measurement_basis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.utils.mutate_measurement_basis" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">cutqc2.core.utils.</span></span><span class="sig-name descname"><span class="pre">mutate_measurement_basis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bases</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/utils.html#mutate_measurement_basis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.utils.mutate_measurement_basis" title="Link to this definition">¶</a></dt>
 <dd><p>Expand a measurement-basis specification by replacing identity entries
 with both identity and Z bases.</p>
 <p>If all entries are non-identity (no “I” present), the function returns a
@@ -735,7 +746,7 @@ position with basis “I”, it generates two alternatives: “I” and “Z”.
 Cartesian product across positions yields all mutated basis tuples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>meas</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>) – Per-qubit measurement bases (e.g., “comp”, “X”, “Y”, “I”).</p>
+<dd class="field-odd"><p><strong>bases</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>) – Per-qubit measurement bases (e.g., “comp”, “X”, “Y”, “I”).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>All mutated measurement-basis tuples. If no mutation is needed, this is
@@ -756,11 +767,11 @@ Cartesian product across positions yields all mutated basis tuples.</p>
 </dl>
 </dd></dl>
 <dl class="py function">
-<dt class="sig sig-object py" id="cutqc2.core.utils.run_subcircuit_instances">
-<span class="sig-prename descclassname"><span class="pre">cutqc2.core.utils.</span></span><span class="sig-name descname"><span class="pre">run_subcircuit_instances</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subcircuit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subcircuit_instance_init_meas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'statevector_simulator'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_workers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/utils.html#run_subcircuit_instances"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.utils.run_subcircuit_instances" title="Link to this definition">¶</a></dt>
-<dd><p>Evaluate a set of subcircuit instances under different initializations and
+<dt class="sig sig-object py" id="cutqc2.core.utils.run_subcircuit_instance">
+<span class="sig-prename descclassname"><span class="pre">cutqc2.core.utils.</span></span><span class="sig-name descname"><span class="pre">run_subcircuit_instance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subcircuit_index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subcircuit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initialization</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">measurement</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/cutqc2/core/utils.html#run_subcircuit_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cutqc2.core.utils.run_subcircuit_instance" title="Link to this definition">¶</a></dt>
+<dd><p>Evaluate a subcircuit instance for the given initializations and
 measurement bases, returning their measured probability distributions.</p>
-<p>The function iterates over provided <cite>(init, meas)</cite> specifications, creates a
+<p>The function expects one <cite>(init, meas)</cite> specification, creates a
 runnable subcircuit instance via <cite>modify_subcircuit_instance</cite>, simulates it
 using <cite>evaluate_circ</cite>, and then projects the resulting state/probabilities
 into the requested measurement bases. If a measurement specification
@@ -770,32 +781,30 @@ mutation is measured separately.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>subcircuit</strong> (<em>QuantumCircuit</em>) – Base subcircuit to instantiate and simulate.</p></li>
-<li><p><strong>subcircuit_instance_init_meas</strong> (<em>list</em><em>[</em><em>tuple</em><em>[</em><em>tuple</em><em>[</em><em>str</em><em>]</em><em>, </em><em>tuple</em><em>[</em><em>str</em><em>]</em><em>]</em><em>]</em>) – <p>A list of <cite>(init, meas)</cite> pairs, where:
-- <cite>init</cite> is a tuple of state labels per qubit (e.g., “zero”, “one”,</p>
-<blockquote>
-<div><p>”plus”, “minus”, “plusI”, “minusI”).</p>
-</div></blockquote>
-<ul>
-<li><p><cite>meas</cite> is a tuple of measurement basis labels per qubit (e.g.,
-“comp”, “X”, “Y”, “I”). If any entry is “Z”, the instance is
-skipped.</p></li>
-</ul>
+<li><p><strong>subcircuit_index</strong> (<em>int</em>) – 0-index of the subcircuit instance to simulate. Useful to collate
+results in the caller.</p></li>
+<li><p><strong>subcircuit</strong> (<em>QuantumCircuit</em>) – Subcircuit to instantiate and simulate.</p></li>
+<li><p><strong>initialization</strong> (<em>tuple</em><em>[</em><em>str</em><em>]</em>) – <dl class="simple">
+<dt>A tuple of state labels per qubit (e.g., “zero”, “one”,</dt><dd><p>”plus”, “minus”, “plusI”, “minusI”).</p>
+</dd>
+</dl>
 </p></li>
-<li><p><strong>backend</strong> (<em>str</em><em>, </em><em>optional</em>) – Backend identifier passed to <cite>evaluate_circ</cite> (default is
-“statevector_simulator”).</p></li>
-<li><p><strong>max_workers</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum number of parallel threads to use (default is 1, i.e., no
-parallelism).</p></li>
+<li><p><strong>measurement</strong> (<em>tuple</em><em>[</em><em>str</em><em>]</em>) – A tuple of measurement basis labels per qubit (e.g., “comp”, “X”, “Y”,
+“I”). If any entry is “Z”, the instance is skipped.</p></li>
+<li><p><strong>backend</strong> (<em>str</em><em> or </em><em>Backend</em><em>, </em><em>optional</em>) – Backend identifier for evaluation of circuits.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A mapping from <cite>(init, meas)</cite> to the measured probability vector (or a
-scalar if the circuit evaluates to a single probability). The <cite>meas</cite>
-key in the mapping reflects any mutated basis produced by
-<cite>mutate_measurement_basis</cite>.</p>
+<dd class="field-even"><p><dl class="simple">
+<dt>A 2-tuple with elements:</dt><dd><p>0: The passed-in subcircuit index
+1: A mapping from <cite>(init, meas)</cite> to the measured probability vector
+(or a scalar if the circuit evaluates to a single probability).</p>
+</dd>
+</dl>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dict[tuple[tuple[str], tuple[str]], np.ndarray | float]</p>
+<dd class="field-odd"><p>tuple[int, dict[tuple[tuple[str], tuple[str]], np.ndarray | float]]</p>
 </dd>
 </dl>
 </dd></dl>

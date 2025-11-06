@@ -198,13 +198,12 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">concurrent.futures</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">as_completed</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cpu_count</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit</span><span class="w"> </span><span class="kn">import</span> <span class="n">QuantumCircuit</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.circuit.library.standard_gates</span><span class="w"> </span><span class="kn">import</span> <span class="n">HGate</span><span class="p">,</span> <span class="n">SdgGate</span><span class="p">,</span> <span class="n">SGate</span><span class="p">,</span> <span class="n">XGate</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.converters</span><span class="w"> </span><span class="kn">import</span> <span class="n">circuit_to_dag</span><span class="p">,</span> <span class="n">dag_to_circuit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">qiskit.providers.backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">Backend</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">cutqc2.cutqc.helper_functions.non_ibmq_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">evaluate_circ</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">cutqc2.numeric</span><span class="w"> </span><span class="kn">import</span> <span class="n">xp</span>
@@ -389,19 +388,20 @@
 
 
 
-<div class="viewcode-block" id="run_subcircuit_instances">
-<a class="viewcode-back" href="../../../src/cutqc2.core.html#cutqc2.core.utils.run_subcircuit_instances">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">run_subcircuit_instances</span><span class="p">(</span>
+<div class="viewcode-block" id="run_subcircuit_instance">
+<a class="viewcode-back" href="../../../src/cutqc2.core.html#cutqc2.core.utils.run_subcircuit_instance">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_subcircuit_instance</span><span class="p">(</span>
+    <span class="n">subcircuit_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">subcircuit</span><span class="p">:</span> <span class="n">QuantumCircuit</span><span class="p">,</span>
-    <span class="n">subcircuit_instance_init_meas</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]],</span>
-    <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"statevector_simulator"</span><span class="p">,</span>
-    <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="n">initialization</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">measurement</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">backend</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Backend</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">float</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Evaluate a set of subcircuit instances under different initializations and</span>
+<span class="sd">    Evaluate a subcircuit instance for the given initializations and</span>
 <span class="sd">    measurement bases, returning their measured probability distributions.</span>
 
-<span class="sd">    The function iterates over provided `(init, meas)` specifications, creates a</span>
+<span class="sd">    The function expects one `(init, meas)` specification, creates a</span>
 <span class="sd">    runnable subcircuit instance via `modify_subcircuit_instance`, simulates it</span>
 <span class="sd">    using `evaluate_circ`, and then projects the resulting state/probabilities</span>
 <span class="sd">    into the requested measurement bases. If a measurement specification</span>
@@ -411,74 +411,62 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    subcircuit_index : int</span>
+<span class="sd">        0-index of the subcircuit instance to simulate. Useful to collate</span>
+<span class="sd">        results in the caller.</span>
 <span class="sd">    subcircuit : QuantumCircuit</span>
-<span class="sd">        Base subcircuit to instantiate and simulate.</span>
-<span class="sd">    subcircuit_instance_init_meas : list[tuple[tuple[str], tuple[str]]]</span>
-<span class="sd">        A list of `(init, meas)` pairs, where:</span>
-<span class="sd">        - `init` is a tuple of state labels per qubit (e.g., "zero", "one",</span>
+<span class="sd">        Subcircuit to instantiate and simulate.</span>
+<span class="sd">    initialization : tuple[str]</span>
+<span class="sd">        A tuple of state labels per qubit (e.g., "zero", "one",</span>
 <span class="sd">          "plus", "minus", "plusI", "minusI").</span>
-<span class="sd">        - `meas` is a tuple of measurement basis labels per qubit (e.g.,</span>
-<span class="sd">          "comp", "X", "Y", "I"). If any entry is "Z", the instance is</span>
-<span class="sd">          skipped.</span>
-<span class="sd">    backend : str, optional</span>
-<span class="sd">        Backend identifier passed to `evaluate_circ` (default is</span>
-<span class="sd">        "statevector_simulator").</span>
-<span class="sd">    max_workers : int, optional</span>
-<span class="sd">        Maximum number of parallel threads to use (default is 1, i.e., no</span>
-<span class="sd">        parallelism).</span>
+<span class="sd">    measurement: tuple[str]</span>
+<span class="sd">        A tuple of measurement basis labels per qubit (e.g., "comp", "X", "Y",</span>
+<span class="sd">        "I"). If any entry is "Z", the instance is skipped.</span>
+<span class="sd">    backend : str or Backend, optional</span>
+<span class="sd">        Backend identifier for evaluation of circuits.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dict[tuple[tuple[str], tuple[str]], np.ndarray | float]</span>
-<span class="sd">        A mapping from `(init, meas)` to the measured probability vector (or a</span>
-<span class="sd">        scalar if the circuit evaluates to a single probability). The `meas`</span>
-<span class="sd">        key in the mapping reflects any mutated basis produced by</span>
-<span class="sd">        `mutate_measurement_basis`.</span>
+<span class="sd">    tuple[int, dict[tuple[tuple[str], tuple[str]], np.ndarray | float]]</span>
+
+<span class="sd">        A 2-tuple with elements:</span>
+<span class="sd">            0: The passed-in subcircuit index</span>
+<span class="sd">            1: A mapping from `(init, meas)` to the measured probability vector</span>
+<span class="sd">            (or a scalar if the circuit evaluates to a single probability).</span>
 <span class="sd">    """</span>
-    <span class="n">total</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">subcircuit_instance_init_meas</span><span class="p">)</span>
-    <span class="n">subcircuit_measured_probs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># `mutate_measurement_basis` expands all occurrences of I bases into I</span>
+    <span class="c1"># and Z bases (".. measuring a qubit in either the I or Z basis</span>
+    <span class="c1"># corresponds physically to the same quantum circuit ..")</span>
+    <span class="c1"># So we can ignore any incoming bases that have "Z" in the measurement</span>
+    <span class="c1"># bases. Returning a {} results in no effective updates in the caller.</span>
+    <span class="k">if</span> <span class="s2">"Z"</span> <span class="ow">in</span> <span class="n">measurement</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">subcircuit_index</span><span class="p">,</span> <span class="p">{}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">process_instance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">instance_init_meas</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Running subcircuit instance </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">if</span> <span class="s2">"Z"</span> <span class="ow">in</span> <span class="n">instance_init_meas</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="n">results</span>
+    <span class="n">subcircuit_instance</span> <span class="o">=</span> <span class="n">modify_subcircuit_instance</span><span class="p">(</span>
+        <span class="n">subcircuit</span><span class="o">=</span><span class="n">subcircuit</span><span class="p">,</span>
+        <span class="n">init</span><span class="o">=</span><span class="n">initialization</span><span class="p">,</span>
+        <span class="n">meas</span><span class="o">=</span><span class="n">measurement</span><span class="p">,</span>
+    <span class="p">)</span>
 
-        <span class="n">subcircuit_instance</span> <span class="o">=</span> <span class="n">modify_subcircuit_instance</span><span class="p">(</span>
-            <span class="n">subcircuit</span><span class="o">=</span><span class="n">subcircuit</span><span class="p">,</span>
-            <span class="n">init</span><span class="o">=</span><span class="n">instance_init_meas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-            <span class="n">meas</span><span class="o">=</span><span class="n">instance_init_meas</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="n">subcircuit_inst_prob</span> <span class="o">=</span> <span class="n">evaluate_circ</span><span class="p">(</span><span class="n">circuit</span><span class="o">=</span><span class="n">subcircuit_instance</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span><span class="p">)</span>
+    <span class="n">subcircuit_inst_prob</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">subcircuit_inst_prob</span><span class="p">)</span>
+
+    <span class="n">mutated_measurement</span> <span class="o">=</span> <span class="n">mutate_measurement_basis</span><span class="p">(</span><span class="n">bases</span><span class="o">=</span><span class="n">measurement</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_measurement</span> <span class="ow">in</span> <span class="n">mutated_measurement</span><span class="p">:</span>
+        <span class="c1"># bases in `_measurement` are LSB to MSB. Reverse them since</span>
+        <span class="c1"># `measure_prob` is expecting MSB to LSB.</span>
+        <span class="n">measured_prob</span> <span class="o">=</span> <span class="n">measure_prob</span><span class="p">(</span>
+            <span class="n">unmeasured_prob</span><span class="o">=</span><span class="n">subcircuit_inst_prob</span><span class="p">,</span> <span class="n">meas</span><span class="o">=</span><span class="n">_measurement</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">subcircuit_inst_prob</span> <span class="o">=</span> <span class="n">evaluate_circ</span><span class="p">(</span>
-            <span class="n">circuit</span><span class="o">=</span><span class="n">subcircuit_instance</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="n">backend</span>
-        <span class="p">)</span>
-
-        <span class="n">mutated_meas</span> <span class="o">=</span> <span class="n">mutate_measurement_basis</span><span class="p">(</span><span class="n">meas</span><span class="o">=</span><span class="n">instance_init_meas</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="n">total_mutations</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mutated_meas</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">meas</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mutated_meas</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">j</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total_mutations</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-            <span class="n">measured_prob</span> <span class="o">=</span> <span class="n">measure_prob</span><span class="p">(</span>
-                <span class="n">unmeasured_prob</span><span class="o">=</span><span class="n">subcircuit_inst_prob</span><span class="p">,</span> <span class="n">meas</span><span class="o">=</span><span class="n">meas</span>
-            <span class="p">)</span>
-            <span class="n">results</span><span class="p">[(</span><span class="n">instance_init_meas</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">meas</span><span class="p">)]</span> <span class="o">=</span> <span class="n">measured_prob</span>
-        <span class="k">return</span> <span class="n">results</span>
-
-    <span class="n">max_workers</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">max_workers</span><span class="p">,</span> <span class="n">cpu_count</span><span class="p">(),</span> <span class="n">total</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="n">max_workers</span><span class="o">=</span><span class="n">max_workers</span><span class="p">)</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
-        <span class="n">futures</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">process_instance</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">instance_init_meas</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">instance_init_meas</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subcircuit_instance_init_meas</span><span class="p">)</span>
-        <span class="p">]</span>
-        <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
-            <span class="n">subcircuit_measured_probs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
-
-    <span class="k">return</span> <span class="n">subcircuit_measured_probs</span></div>
+        <span class="n">results</span><span class="p">[(</span><span class="n">initialization</span><span class="p">,</span> <span class="n">_measurement</span><span class="p">)]</span> <span class="o">=</span> <span class="n">measured_prob</span>
+    <span class="k">return</span> <span class="n">subcircuit_index</span><span class="p">,</span> <span class="n">results</span></div>
 
 
 
 <div class="viewcode-block" id="mutate_measurement_basis">
 <a class="viewcode-back" href="../../../src/cutqc2.core.html#cutqc2.core.utils.mutate_measurement_basis">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">mutate_measurement_basis</span><span class="p">(</span><span class="n">meas</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">mutate_measurement_basis</span><span class="p">(</span><span class="n">bases</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Expand a measurement-basis specification by replacing identity entries</span>
 <span class="sd">    with both identity and Z bases.</span>
@@ -490,7 +478,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    meas : Sequence[str]</span>
+<span class="sd">    bases : Sequence[str]</span>
 <span class="sd">        Per-qubit measurement bases (e.g., "comp", "X", "Y", "I").</span>
 
 <span class="sd">    Returns</span>
@@ -499,15 +487,15 @@
 <span class="sd">        All mutated measurement-basis tuples. If no mutation is needed, this is</span>
 <span class="sd">        `[meas]`.</span>
 <span class="sd">    """</span>
-    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="o">!=</span> <span class="s2">"I"</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">meas</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">meas</span><span class="p">]</span>
-    <span class="n">mutated_meas</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">meas</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">x</span> <span class="o">!=</span> <span class="s2">"I"</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">bases</span><span class="p">]</span>
+    <span class="n">mutated_bases</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="s2">"I"</span><span class="p">:</span>
-            <span class="n">mutated_meas</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">])</span>
+            <span class="n">mutated_bases</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">mutated_meas</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">"I"</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">])</span>
-    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">mutated_meas</span><span class="p">))</span></div>
+            <span class="n">mutated_bases</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s2">"I"</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">])</span>
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">mutated_bases</span><span class="p">))</span></div>
 
 
 
@@ -607,6 +595,33 @@
 
 
 
+<div class="viewcode-block" id="bases_to_bitmask">
+<a class="viewcode-back" href="../../../src/cutqc2.core.html#cutqc2.core.utils.bases_to_bitmask">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">bases_to_bitmask</span><span class="p">(</span><span class="n">bases</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">:</span>
+    <span class="nb">map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"comp"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"I"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"X"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"Y"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"Z"</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span><span class="nb">map</span><span class="p">[</span><span class="n">b</span><span class="p">]</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bases</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">xp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="compress_bits">
+<a class="viewcode-back" href="../../../src/cutqc2.core.html#cutqc2.core.utils.compress_bits">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">compress_bits</span><span class="p">(</span><span class="n">arr</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">mask</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Apply a bit mask that drops bits.</span>
+<span class="sd">    mask is an array/list of 0/1, where bit 0 = LSB, bit[-1] = MSB.</span>
+<span class="sd">    """</span>
+    <span class="n">kept_positions</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># Create mapping from old bit positions to new packed bit positions</span>
+    <span class="n">shifts</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">kept_positions</span><span class="p">))</span>
+    <span class="c1"># Compute new number by summing selected bits shifted to compact positions</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">kept_positions</span><span class="p">,</span> <span class="n">shifts</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">|=</span> <span class="p">((</span><span class="n">arr</span> <span class="o">&gt;&gt;</span> <span class="n">src</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="n">dst</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+
 <div class="viewcode-block" id="measure_prob">
 <a class="viewcode-back" href="../../../src/cutqc2.core.html#cutqc2.core.utils.measure_prob">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">measure_prob</span><span class="p">(</span><span class="n">unmeasured_prob</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">meas</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
@@ -625,7 +640,7 @@
 <span class="sd">        Probability vector over all 2^n basis states (MSB-to-LSB convention) or</span>
 <span class="sd">        a scalar probability.</span>
 <span class="sd">    meas : Sequence[str]</span>
-<span class="sd">        Per-qubit measurement basis labels (e.g., "comp", "X", "Y", "I").</span>
+<span class="sd">        Per-qubit measurement basis labels, MSB to LSB (e.g., "comp", "X", "Y", "I").</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -636,51 +651,46 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">meas</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">"comp"</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">meas</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">unmeasured_prob</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">float</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">unmeasured_prob</span>
-    <span class="n">measured_prob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">meas</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">"comp"</span><span class="p">)))</span>
 
-    <span class="k">for</span> <span class="n">full_state</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unmeasured_prob</span><span class="p">):</span>
-        <span class="n">sigma</span><span class="p">,</span> <span class="n">effective_state</span> <span class="o">=</span> <span class="n">measure_state</span><span class="p">(</span><span class="n">full_state</span><span class="o">=</span><span class="n">full_state</span><span class="p">,</span> <span class="n">meas</span><span class="o">=</span><span class="n">meas</span><span class="p">)</span>
-        <span class="n">measured_prob</span><span class="p">[</span><span class="n">effective_state</span><span class="p">]</span> <span class="o">+=</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">p</span>
+    <span class="n">measured_prob</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">meas</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s2">"comp"</span><span class="p">)))</span>
+    <span class="n">meas_bitmask</span> <span class="o">=</span> <span class="n">bases_to_bitmask</span><span class="p">(</span><span class="n">meas</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">_n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">xp</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">xp</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">unmeasured_prob</span><span class="o">.</span><span class="n">size</span><span class="p">)))</span>
+    <span class="n">effective_states</span> <span class="o">=</span> <span class="n">compress_bits</span><span class="p">(</span><span class="n">xp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">_n</span><span class="p">),</span> <span class="n">meas_bitmask</span><span class="p">)</span>
+
+    <span class="n">sigmas</span> <span class="o">=</span> <span class="n">measure_sign</span><span class="p">(</span><span class="n">xp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">unmeasured_prob</span><span class="p">)),</span> <span class="n">meas</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">sigmas</span> <span class="o">*</span> <span class="n">unmeasured_prob</span>
+
+    <span class="n">xp</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">at</span><span class="p">(</span><span class="n">measured_prob</span><span class="p">,</span> <span class="n">xp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">effective_states</span><span class="p">),</span> <span class="n">xp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">measured_prob</span></div>
 
 
 
-<div class="viewcode-block" id="measure_state">
-<a class="viewcode-back" href="../../../src/cutqc2.core.html#cutqc2.core.utils.measure_state">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">measure_state</span><span class="p">(</span><span class="n">full_state</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">meas</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<div class="viewcode-block" id="measure_sign">
+<a class="viewcode-back" href="../../../src/cutqc2.core.html#cutqc2.core.utils.measure_sign">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">measure_sign</span><span class="p">(</span>
+    <span class="n">full_states</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">meas</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Map a full-basis state index to an effective computational-basis index under</span>
-<span class="sd">    mixed-basis measurement, and compute the accumulated sign.</span>
-
-<span class="sd">    The sign flips (sigma *= -1) whenever the measured bit is 1 and the basis</span>
-<span class="sd">    is not in {"I", "comp"}. Bits with basis "comp" contribute to the</span>
-<span class="sd">    effective computational index; bits with bases in {"I", "X", "Y"} are</span>
-<span class="sd">    marginalized out from the index (but may affect sign).</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    full_state : int</span>
-<span class="sd">        Index of the n-bit computational basis state.</span>
-<span class="sd">    meas : Sequence[str]</span>
-<span class="sd">        Per-qubit measurement bases (length n).</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    tuple[int, int]</span>
-<span class="sd">        A pair (sigma, effective_state) where sigma in {+1, -1} and</span>
-<span class="sd">        effective_state is the integer index in the compressed space spanned by</span>
-<span class="sd">        qubits with basis "comp".</span>
+<span class="sd">    Vectorized version of sign measurement.</span>
+<span class="sd">    full_states: array of ints (shape (...,))</span>
+<span class="sd">    meas: tuple/list of strings, e.g. ("X", "I", "Y")</span>
+<span class="sd">    Returns array of ±1 with same shape as full_states.</span>
 <span class="sd">    """</span>
-    <span class="n">bin_full_state</span> <span class="o">=</span> <span class="nb">bin</span><span class="p">(</span><span class="n">full_state</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">meas</span><span class="p">))</span>
-    <span class="n">sigma</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">bin_effective_state</span> <span class="o">=</span> <span class="s2">""</span>
-    <span class="k">for</span> <span class="n">meas_bit</span><span class="p">,</span> <span class="n">meas_basis</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bin_full_state</span><span class="p">,</span> <span class="n">meas</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">strict</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">meas_bit</span> <span class="o">==</span> <span class="s2">"1"</span> <span class="ow">and</span> <span class="n">meas_basis</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"I"</span><span class="p">,</span> <span class="s2">"comp"</span><span class="p">):</span>
-            <span class="n">sigma</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="k">if</span> <span class="n">meas_basis</span> <span class="o">==</span> <span class="s2">"comp"</span><span class="p">:</span>
-            <span class="n">bin_effective_state</span> <span class="o">+=</span> <span class="n">meas_bit</span>
-    <span class="n">effective_state</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">bin_effective_state</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="k">if</span> <span class="n">bin_effective_state</span> <span class="o">!=</span> <span class="s2">""</span> <span class="k">else</span> <span class="mi">0</span>
-    <span class="k">return</span> <span class="n">sigma</span><span class="p">,</span> <span class="n">effective_state</span></div>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">meas</span><span class="p">)</span>
+    <span class="n">full_states</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">full_states</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">xp</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+    <span class="c1"># Bits to consider: from MSB→LSB, but we'll index LSB-first for efficiency</span>
+    <span class="c1"># Compute the bits matrix: shape (len(full_states), n)</span>
+    <span class="n">bits</span> <span class="o">=</span> <span class="p">((</span><span class="n">full_states</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">&gt;&gt;</span> <span class="n">xp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="c1"># Mask of which bases trigger a sign flip (True = flip)</span>
+    <span class="n">flip_mask</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">b</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"I"</span><span class="p">,</span> <span class="s2">"comp"</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">meas</span><span class="p">])</span>
+
+    <span class="c1"># Count flips: bits that are 1 *and* basis requires flipping</span>
+    <span class="n">flips</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">bits</span> <span class="o">&amp;</span> <span class="n">flip_mask</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># (-1) ** (# of flips)</span>
+    <span class="k">return</span> <span class="n">xp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">flips</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
 
 
 
