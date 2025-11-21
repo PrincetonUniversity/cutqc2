@@ -20,4 +20,8 @@ core:
   string_file_versioning: True
   # Which numeric library to use - cupy/numpy
   numeric: cupy
-
+  # Default backend to use for evaluating circuits. One of:
+  # statevector_simulator - best for local testing and small circuits.
+  # aer_gpu_simulator - if you want to use a GPU.
+  # noiseless_qasm_simulator
+  backend: aer_gpu_simulator

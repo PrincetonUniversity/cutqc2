@@ -79,7 +79,7 @@ def cut_circuit_to_zarr(cut_circuit, filepath: str | Path) -> None:
                 prob_group = subcircuit_group.create_group("probabilities")
                 for k, v in cut_circuit.subcircuit_entry_probs[subcircuit_i].items():
                     key = "_".join(["-".join(k[0]), "-".join(k[1])])
-                    prob_group.create_array(key, data=np.array(v, dtype="float64"))
+                    prob_group.create_array(key, data=xp.asnumpy(v))
 
                 subcircuit_group.create_array(
                     "packed_probabilities",

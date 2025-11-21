@@ -7,6 +7,12 @@ cutqc2 cut \
   --num-subcircuits 3 \
   --output-file supremacy_6qubit.zarr
 
+# Notice the `--save` to save the subcircuit probabilities back to the
+# `.zarr` "file".
+cutqc2 run \
+  --file supremacy_6qubit.zarr \
+  --save
+
 # Notice the `--save` to save the post-processed results back to the
 # `.zarr` "file".
 cutqc2 postprocess \

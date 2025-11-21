@@ -17,6 +17,12 @@ cutqc2 download \
 #   --max-cuts 10 \
 #   --num-subcircuits 5 \
 #   --output-file random_16qubit.zarr
+#
+# followed by
+#
+# cutqc2 run \
+#   --file supremacy_6qubit.zarr \
+#   --save
 # and adjust the path the subsequent steps accordingly.
 
 # Notice the `--save` to save the post-processed results back to the

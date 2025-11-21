@@ -39,22 +39,15 @@ def cli(ctx):
     default=(5,),
 )
 @click.option(
-    "--max-workers",
-    type=int,
-    default=1,
-    help="Maximum number of workers for parallel execution.",
-)
-@click.option(
     "--output-file",
     type=str,
     help="Output file to save the cut circuit in Zarr format.",
 )
-def cut(  # noqa: PLR0913
+def cut(
     file,
     max_subcircuit_width,
     max_cuts,
     num_subcircuits,
-    max_workers,
     output_file,
 ):
     circuit_qasm3 = file.read()
@@ -64,9 +57,22 @@ def cut(  # noqa: PLR0913
         max_cuts=max_cuts,
         num_subcircuits=list(num_subcircuits),
     )
-
-    cut_circuit.run_subcircuits(max_workers=max_workers)
     cut_circuit.to_file(output_file)
+
+
+@cli.command()
+@click.option("--file", required=True, help="Zarr file location.")
+@click.option(
+    "--save",
+    is_flag=True,
+    default=False,
+    help="Save results to Zarr file after running subcircuits.",
+)
+def run(file, save):
+    cut_circuit = CutCircuit.from_file(file)
+    cut_circuit.run_subcircuits()
+    if rank == 0 and save:
+        cut_circuit.to_file(file)
 
 
 @cli.command()

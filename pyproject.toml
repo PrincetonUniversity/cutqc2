@@ -41,7 +41,7 @@ cutqc2 = "cutqc2.__main__:cli"
 
 [project.optional-dependencies]
 gpu = [
-    "cupy-cuda12x"
+    "cupy-cuda12x",
 ]
 dev = [
     "pytest>6",

@@ -115,7 +115,7 @@ The following setup works on our clusters, and should work on most systems, Mac 
 
   - Get License Key from Gurobi Portal
     - Go to [https://portal.gurobi.com/](https://portal.gurobi.com/) and log in.
-    - Navigate to Licenses → Generate Now under "Named-User Academic"
+    - Navigate to Licenses → Generate a new one under "Named-User Academic"
     - Copy the license key
   - Install License Tools on your cluster
     - Download `licensetools12.0.3_linux64.tar.gz` (or a similarly named file, depending on your operating system) from [Gurobi support](https://support.gurobi.com/hc/en-us/articles/360059842732-How-do-I-set-up-a-license-without-installing-the-full-Gurobi-package).

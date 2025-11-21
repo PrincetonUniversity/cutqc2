@@ -16,8 +16,10 @@ from qiskit.circuit.library import UnitaryGate
 from qiskit.circuit.operation import Operation
 from qiskit.converters import circuit_to_dag
 from qiskit.dagcircuit import DAGCircuit, DAGOpNode
+from qiskit.providers.backend import Backend
 from qiskit.qasm3 import loads
 
+from cutqc2 import config
 from cutqc2.core.compute_graph import ComputeGraph
 from cutqc2.core.dag import DAGEdge, DagNode
 from cutqc2.core.dynamic_definition import DynamicDefinition
@@ -26,7 +28,7 @@ from cutqc2.core.utils import (
     chunked,
     merge_prob_vector,
     permute_bits,
-    run_subcircuit_instances,
+    run_subcircuit_instance,
 )
 from cutqc2.cupy import vector_kron
 from cutqc2.cutqc.helper_functions.conversions import quasi_to_real
@@ -726,11 +728,10 @@ class CutCircuit:
         self.populate_compute_graph()
         self.populate_subcircuit_entries()
 
-    def run_subcircuits(
+    def run_subcircuits(  # noqa: PLR0915
         self,
         subcircuits: list[int] | None = None,
-        backend: str = "statevector_simulator",
-        max_workers: int = 1,
+        backend: str | Backend | None = None,
     ):
         """
         Execute all subcircuits on a backend and collect probability vectors.
@@ -740,21 +741,107 @@ class CutCircuit:
         subcircuits
             Subcircuit indices to run; defaults to all.
         backend
-            Backend name (e.g., "statevector_simulator").
-        max_workers
-            Maximum parallel workers for running subcircuits.
+            Backend name (e.g., "statevector_simulator") or Backend object.
         """
+        backend = backend or config.core.backend
         subcircuits = subcircuits or range(len(self))
+
+        def work_gen():
+            for subcircuit in subcircuits:
+                for init_meas in self.subcircuit_instances[subcircuit]:
+                    yield subcircuit, init_meas
+
+        gen = work_gen()
+        total_work = sum(len(self.subcircuit_instances[j]) for j in range(len(self)))
+        num_workers = mpi_size - 1
+        active_workers = 0
+        MPI_WORK_TAG, MPI_DONE_TAG, MPI_RESULT_TAG = 1, 2, 3
+        subcircuit_measured_probs = {j: {} for j in range(len(self))}
+
+        if mpi_rank == 0:
+            if num_workers == 0:
+                # No workers, just do the work locally
+                for j, (_subcircuit, _inst_meas) in enumerate(gen):
+                    logger.info(f"{j + 1}/{total_work}")
+                    _, d = run_subcircuit_instance(
+                        subcircuit_index=_subcircuit,
+                        subcircuit=self[_subcircuit],
+                        initialization=_inst_meas[0],
+                        measurement=_inst_meas[1],
+                        backend=backend,
+                    )
+                    subcircuit_measured_probs[_subcircuit] |= d
+            else:
+                processed_work = 0
+
+                # Initially send one work item to each worker
+                for worker_rank in range(1, mpi_size):
+                    try:
+                        work = next(gen)
+                        _subcircuit, _inst_meas = work
+                        mpi_comm.send(
+                            [
+                                _subcircuit,
+                                self[_subcircuit],
+                                _inst_meas[0],
+                                _inst_meas[1],
+                                backend,
+                            ],
+                            dest=worker_rank,
+                            tag=MPI_WORK_TAG,
+                        )
+                        active_workers += 1
+                    except StopIteration:
+                        break
+
+                while active_workers > 0:
+                    # Receive results from any worker
+                    status = MPI.Status()
+                    _result = mpi_comm.recv(
+                        source=MPI.ANY_SOURCE, tag=MPI_RESULT_TAG, status=status
+                    )
+                    processed_work += 1
+                    logger.info(
+                        f"  Processed {processed_work}/{total_work} initializations"
+                    )
+                    subcircuit_measured_probs[_result[0]] |= _result[1]
+
+                    worker_rank = status.Get_source()
+                    try:
+                        work = next(gen)
+                        _subcircuit, _inst_meas = work
+                        mpi_comm.send(
+                            [
+                                _subcircuit,
+                                self[_subcircuit],
+                                _inst_meas[0],
+                                _inst_meas[1],
+                                backend,
+                            ],
+                            dest=worker_rank,
+                            tag=MPI_WORK_TAG,
+                        )
+                    except StopIteration:
+                        # No more work; tell this worker to stop
+                        mpi_comm.send(None, dest=worker_rank, tag=MPI_DONE_TAG)
+                        active_workers -= 1
+
+        else:
+            # Worker process
+            while True:
+                status = MPI.Status()
+                work = mpi_comm.recv(source=0, tag=MPI.ANY_TAG, status=status)
+                if status.Get_tag() == MPI_DONE_TAG:
+                    break
+                result = run_subcircuit_instance(*work)
+                mpi_comm.send(result, dest=0, tag=MPI_RESULT_TAG)
+
+        subcircuit_measured_probs = mpi_comm.bcast(subcircuit_measured_probs, root=0)
+        mpi_comm.Barrier()
+
         for subcircuit in subcircuits:
-            logger.info(f"Running subcircuit {subcircuit} on backend: {backend}")
-            subcircuit_measured_probs = run_subcircuit_instances(
-                subcircuit=self[subcircuit],
-                subcircuit_instance_init_meas=self.subcircuit_instances[subcircuit],
-                backend=backend,
-                max_workers=max_workers,
-            )
             self.subcircuit_entry_probs[subcircuit] = attribute_shots(
-                subcircuit_measured_probs=subcircuit_measured_probs,
+                subcircuit_measured_probs=subcircuit_measured_probs[subcircuit],
                 subcircuit_entries=self.subcircuit_entries[subcircuit],
             )
             self.subcircuit_packed_probs[subcircuit] = self.get_packed_probabilities(
@@ -1159,7 +1246,7 @@ class CutCircuit:
             )
         return reconstructed_probabilities
 
-    def get_ground_truth(self, backend: str) -> np.ndarray:
+    def get_ground_truth(self, backend: str | None = None) -> np.ndarray:
         """
         Evaluate the original circuit (without cuts) on a backend.
 
@@ -1179,7 +1266,7 @@ class CutCircuit:
     def verify(
         self,
         probabilities: np.ndarray,
-        backend: str = "statevector_simulator",
+        backend: str | None = None,
         atol: float = 1e-10,
         raise_error: bool = True,
     ) -> float:
@@ -1202,6 +1289,7 @@ class CutCircuit:
         float
             Relative mean squared error (normalized as in tests).
         """
+        backend = backend or config.core.backend
         logger.info("Verifying cut circuit against original circuit")
         ground_truth = self.get_ground_truth(backend)
 
@@ -1400,9 +1488,7 @@ class CutCircuit:
 
         fig, ax = plt.subplots()
         if plot_ground_truth:
-            ground_truth = self.get_ground_truth(backend="statevector_simulator")[
-                full_states
-            ]
+            ground_truth = self.get_ground_truth()[full_states]
             ax.plot(range(len(ground_truth)), ground_truth, linestyle="--", color="r")
 
         probabilities = self.get_probabilities(full_states=full_states)
