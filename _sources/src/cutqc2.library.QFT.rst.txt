@@ -9,13 +9,13 @@ cutqc2.library.QFT.qft\_circ module
 
 .. automodule:: cutqc2.library.QFT.qft_circ
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: cutqc2.library.QFT
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

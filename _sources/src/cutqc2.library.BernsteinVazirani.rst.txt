@@ -9,13 +9,13 @@ cutqc2.library.BernsteinVazirani.bernstein\_vazirani module
 
 .. automodule:: cutqc2.library.BernsteinVazirani.bernstein_vazirani
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: cutqc2.library.BernsteinVazirani
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

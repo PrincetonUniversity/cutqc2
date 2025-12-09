@@ -9,13 +9,13 @@ cutqc2.io.zarr module
 
 .. automodule:: cutqc2.io.zarr
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: cutqc2.io
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

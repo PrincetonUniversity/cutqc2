@@ -9,13 +9,13 @@ cutqc2.library.Random.random module
 
 .. automodule:: cutqc2.library.Random.random
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: cutqc2.library.Random
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

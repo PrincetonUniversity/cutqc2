@@ -9,13 +9,13 @@ cutqc2.library.Arithmetic.ripple\_carry\_adder module
 
 .. automodule:: cutqc2.library.Arithmetic.ripple_carry_adder
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: cutqc2.library.Arithmetic
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

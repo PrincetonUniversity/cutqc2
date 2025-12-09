@@ -9,13 +9,13 @@ cutqc2.data.ondemand module
 
 .. automodule:: cutqc2.data.ondemand
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: cutqc2.data
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

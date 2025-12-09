@@ -9,21 +9,21 @@ cutqc2.numeric.cupy module
 
 .. automodule:: cutqc2.numeric.cupy
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 cutqc2.numeric.numpy module
 ---------------------------
 
 .. automodule:: cutqc2.numeric.numpy
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: cutqc2.numeric
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

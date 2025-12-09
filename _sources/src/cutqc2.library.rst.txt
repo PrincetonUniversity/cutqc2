@@ -27,13 +27,13 @@ cutqc2.library.generators module
 
 .. automodule:: cutqc2.library.generators
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: cutqc2.library
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

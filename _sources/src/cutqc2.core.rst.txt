@@ -9,53 +9,53 @@ cutqc2.core.compute\_graph module
 
 .. automodule:: cutqc2.core.compute_graph
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 cutqc2.core.cut\_circuit module
 -------------------------------
 
 .. automodule:: cutqc2.core.cut_circuit
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 cutqc2.core.dag module
 ----------------------
 
 .. automodule:: cutqc2.core.dag
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 cutqc2.core.dynamic\_definition module
 --------------------------------------
 
 .. automodule:: cutqc2.core.dynamic_definition
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 cutqc2.core.mip module
 ----------------------
 
 .. automodule:: cutqc2.core.mip
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 cutqc2.core.utils module
 ------------------------
 
 .. automodule:: cutqc2.core.utils
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: cutqc2.core
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

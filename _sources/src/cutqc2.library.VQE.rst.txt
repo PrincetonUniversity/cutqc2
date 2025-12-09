@@ -9,13 +9,13 @@ cutqc2.library.VQE.uccsd\_ansatz module
 
 .. automodule:: cutqc2.library.VQE.uccsd_ansatz
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: cutqc2.library.VQE
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

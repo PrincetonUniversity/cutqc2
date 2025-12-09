@@ -9,13 +9,13 @@ cutqc2.library.utils.testhwea module
 
 .. automodule:: cutqc2.library.utils.testhwea
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: cutqc2.library.utils
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

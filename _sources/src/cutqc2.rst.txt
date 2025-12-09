@@ -23,21 +23,21 @@ cutqc2.configuration module
 
 .. automodule:: cutqc2.configuration
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 cutqc2.qiskit\_to\_cudaq module
 -------------------------------
 
 .. automodule:: cutqc2.qiskit_to_cudaq
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: cutqc2
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
